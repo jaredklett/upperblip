@@ -1,0 +1,85 @@
+<!-- $Id: build.xml,v 1.1 2005/11/03 19:41:46 jklett Exp $ -->
+<project name="UpperBlip" default="build" basedir=".">
+
+	<property name="src" value="src" />
+	<property name="build" value="classes" />
+	<property name="lib" value="lib" />
+	<property name="etc" value="etc" />
+	<property name="icons" value="etc/icons" />
+	<property name="now" value="" />
+	<property name="jarfile" value="upper.jar" />
+	<property name="blipprops" value="com-pokkari-blip-upper.properties" />
+	<property name="wizardprops" value="org-pietschy-wizard.properties" />
+	<property name="filedropjar" value="filedrop*.jar" />
+	<property name="commonjars" value="commons-*.jar" />
+	<property name="wizardjar" value="wizard*.jar" />
+	<property name="metainf" value="**/META-INF/" />
+<!--
+	<path id="classpath">
+		<pathelement path="${lib}/wizard.jar" />
+	</path>
+-->
+	<target name="init">
+		<!-- expand library jars -->
+		<unjar dest="${build}">
+			<patternset>
+				<exclude name="${metainf}" />
+			</patternset>
+			<fileset dir="${lib}">
+				<include name="**/${filedropjar}" />
+			</fileset>
+		</unjar>
+		<unjar dest="${build}">
+			<patternset>
+				<exclude name="${metainf}" />
+			</patternset>
+			<fileset dir="${lib}">
+				<include name="**/${commonjars}" />
+			</fileset>
+		</unjar>
+		<unjar dest="${build}">
+			<patternset>
+				<exclude name="${metainf}" />
+			</patternset>
+			<fileset dir="${lib}">
+				<include name="**/${wizardjar}" />
+			</fileset>
+		</unjar>
+<!--
+		<echo message="Creating time stamp for files ..." />
+		<tstamp>
+			<format property="now" pattern="yyyyMMddHHmm" />
+		</tstamp>
+-->
+	</target>
+
+	<target name="compile" depends="init">
+
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build}" />
+
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac srcdir="${src}" destdir="${build}" debug="on" deprecation="on" />
+<!--
+			<classpath refid="classpath" />
+		</javac>
+-->
+	</target>
+
+	<target name="package" depends="compile">
+		<!-- copy icons dir -->
+		<copy todir="${build}/icons">
+			<fileset dir="${icons}">
+				<exclude name="**/*CVS*" />
+			</fileset>
+		</copy>
+		<!-- copy properties files -->
+		<copy file="${etc}/${blipprops}" tofile="${build}/${blipprops}" />
+		<copy file="${etc}/${wizardprops}" tofile="${build}/${wizardprops}" />
+		<!-- jar it up -->
+		<jar destfile="${jarfile}" basedir="${build}" manifest="${src}/MainClass" />
+	</target>
+
+	<target name="build" depends="package" />
+
+</project>
