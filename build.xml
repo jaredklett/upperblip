@@ -1,5 +1,8 @@
-<!-- $Id: build.xml,v 1.1 2005/11/03 19:41:46 jklett Exp $ -->
+<!-- $Id: build.xml,v 1.2 2005/11/10 00:32:54 jklett Exp $ -->
 <project name="UpperBlip" default="build" basedir=".">
+
+	<taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen" classpath="jsmooth/lib/jsmoothgen-ant.jar" />
+	<taskdef name="jarbundler" classpath="jarbundler/lib/jarbundler.jar" classname="com.loomcom.ant.tasks.jarbundler.JarBundler" />
 
 	<property name="src" value="src" />
 	<property name="build" value="classes" />
@@ -67,6 +70,8 @@
 	</target>
 
 	<target name="package" depends="compile">
+		<buildnumber />
+		<echo message="Build number: ${build.number}" />
 		<!-- copy icons dir -->
 		<copy todir="${build}/icons">
 			<fileset dir="${icons}">
@@ -78,6 +83,12 @@
 		<copy file="${etc}/${wizardprops}" tofile="${build}/${wizardprops}" />
 		<!-- jar it up -->
 		<jar destfile="${jarfile}" basedir="${build}" manifest="${src}/MainClass" />
+		<!-- Make a Windows .exe -->
+		<jsmoothgen project="jsmooth/UpperBlipProject.jsmooth" skeletonroot="jsmooth/skeletons"/>
+		<!-- Make a Mac OS X .app -->
+		<delete dir="app/UpperBlip.app" />
+		<mkdir dir="app" />
+		<jarbundler dir="app" name="UpperBlip" mainclass="com.pokkari.blip.upper.Main" jars="${jarfile}" extraclasspath="$JAVAROOT/upper.jar" version="1.0 beta (build ${build.number})" infostring="UpperBlip, Copyright 2005 Pokkari, Inc." jvmversion="1.4*" icon="etc/upperbliposxicon.icns" />
 	</target>
 
 	<target name="build" depends="package" />
