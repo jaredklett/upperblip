@@ -26,14 +26,14 @@ import org.pietschy.wizard.*;
  * 
  * 
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.1 2005/11/03 18:57:23 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.2 2005/11/10 00:33:39 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.1 $";
+	public static final String CVS_REV = "$Revision: 1.2 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -48,6 +48,8 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // Instance variables //////////////////////////////////////////////////////////
 
+	/** */
+	private boolean running;
 	/** */
 	private int time;
 	/** */
@@ -69,7 +71,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 				timeLabel.setText("Time remaining: less than a minute");
 			} else {
 				int minutes = time / 60;
-				while (minutes > 0) {
+				while (minutes > 0 && running) {
 					if (minutes > 1)
 						timeLabel.setText("Time remaining: about " + minutes + " minutes");
 					else if (minutes > 0)
@@ -140,7 +142,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 	public void run() {
 		setBusy(true);
 		float bps = 38400.0f;
-		String url = "http://cirrus.pokkari.tv/file/post";
+		String url = "http://www.blip.tv/file/post";
 		Uploader uploader = new Uploader(url);
 		File[] files = model.getFiles();
 		progress.setMinimum(0);
@@ -162,9 +164,13 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 			// do the upload
 			long start = System.currentTimeMillis();
 			Thread thread = new Thread(timer);
+			running = true;
 			thread.start();
 			boolean success = uploader.uploadFile(files[i], props);
 			long delta = System.currentTimeMillis() - start;
+			// Halt the timer thread
+			running = false;
+			thread.interrupt();
 			if (!success) {
 				int choice = JOptionPane.showConfirmDialog(
 					Main.getMainInstance().getMainFrame(),
@@ -173,7 +179,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 					JOptionPane.YES_NO_OPTION,
 					JOptionPane.ERROR_MESSAGE
 				);
-	
+
 				if (choice == JOptionPane.NO_OPTION)
 					break;
 			}

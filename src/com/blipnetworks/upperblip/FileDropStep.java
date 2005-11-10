@@ -29,14 +29,14 @@ import org.pietschy.wizard.*;
  * 
  * 
  * @author Jared Klett
- * @version $Id: FileDropStep.java,v 1.1 2005/11/03 18:57:23 jklett Exp $
+ * @version $Id: FileDropStep.java,v 1.2 2005/11/10 00:33:39 jklett Exp $
  */
 
 public class FileDropStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.1 $";
+	public static final String CVS_REV = "$Revision: 1.2 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -90,6 +90,7 @@ public class FileDropStep extends AbstractWizardStep {
 					fileList = new ArrayList();
 				fileList.add(file);
 				((DefaultListModel)list.getModel()).addElement(file.getName());
+				setComplete(true);
 			}
 		}
 	};

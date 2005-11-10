@@ -31,14 +31,14 @@ import org.apache.commons.httpclient.methods.multipart.*;
  * TODO: use a logging interface for stack traces and println's.
  * 
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.1 2005/11/03 18:57:23 jklett Exp $
+ * @version $Id: Uploader.java,v 1.2 2005/11/10 00:33:39 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.1 $";
+	public static final String CVS_REV = "$Revision: 1.2 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -56,7 +56,9 @@ public class Uploader {
 	/** The hash key to the username parameter. */
 	public static final String USER_PARAM_KEY = "userlogin";
 	/** The hash key to the password parameter. */
-	public static final String PASS_PARAM_KEY = "lowpassword";
+	public static final String PASS_PARAM_KEY = "password";
+	/** The hash key to the password parameter. */
+	public static final String WEAK_PASS_PARAM_KEY = "lowpassword";
 	/** The hash key to the skin parameter. */
 	public static final String SKIN_PARAM_KEY = "skin";
 	/** The hash key to the description parameter. */
