@@ -25,20 +25,22 @@ import org.pietschy.wizard.*;
  * 
  * 
  * @author Jared Klett
- * @version $Id: AuthStep.java,v 1.1 2005/11/03 18:57:22 jklett Exp $
+ * @version $Id: AuthStep.java,v 1.2 2006/03/14 22:59:10 jklett Exp $
  */
 
 public class AuthStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.1 $";
+	public static final String CVS_REV = "$Revision: 1.2 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
 	/** blah */
+    // TODO: externalize
 	private static final String TITLE_TEXT = "Enter login information";
 	/** blah */
+    // TODO: externalize
 	private static final String SUMMARY_TEXT = "Please enter your username and password to access your account on Blip.tv";
 
 // Enumerated types ////////////////////////////////////////////////////////////
@@ -81,10 +83,13 @@ public class AuthStep extends AbstractWizardStep {
 		super(TITLE_TEXT, SUMMARY_TEXT);
 
 		// Create and layout components
+        // TODO: externalize
 		JLabel userLabel = new JLabel("Username:");
+        // TODO: externalize
 		JLabel passLabel = new JLabel("Password:");
 		userField = new JTextField(15);
 		passField = new JPasswordField(15);
+        // TODO: externalize
 		remBox = new JCheckBox("Remember my password");
 
 		GridBagLayout gbl = new GridBagLayout();

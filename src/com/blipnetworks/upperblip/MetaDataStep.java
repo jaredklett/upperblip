@@ -26,20 +26,22 @@ import org.pietschy.wizard.*;
  * 
  * 
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.1 2005/11/03 18:57:23 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.2 2006/03/14 22:59:10 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.1 $";
+	public static final String CVS_REV = "$Revision: 1.2 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
 	/** blah */
+    // TODO: externalize
 	private static final String TITLE_TEXT = "Enter titles and descriptions";
 	/** blah */
+    // TODO: externalize
 	private static final String SUMMARY_TEXT = "For each video, please enter a title and a description.";
 
 // Enumerated types ////////////////////////////////////////////////////////////
@@ -98,9 +100,12 @@ public class MetaDataStep extends AbstractWizardStep {
 					panel.getBorder()
 				)
 			);
+            // TODO: externalize
 			JLabel fileLabel = new JLabel("Video file:");
 			JLabel fileNameLabel = new JLabel(files[i].getName(), new ImageIcon(ClassLoader.getSystemResource("icons/Movie16.gif")), SwingConstants.LEFT);
+            // TODO: externalize
 			JLabel titleLabel = new JLabel("Title:");
+            // TODO: externalize
 			JLabel descLabel = new JLabel("Description:");
 			//TODO: add this functionality
 			//JButton titleButton = new JButton("Apply title to all");

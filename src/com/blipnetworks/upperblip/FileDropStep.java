@@ -29,20 +29,22 @@ import org.pietschy.wizard.*;
  * 
  * 
  * @author Jared Klett
- * @version $Id: FileDropStep.java,v 1.2 2005/11/10 00:33:39 jklett Exp $
+ * @version $Id: FileDropStep.java,v 1.3 2006/03/14 22:59:10 jklett Exp $
  */
 
 public class FileDropStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.2 $";
+	public static final String CVS_REV = "$Revision: 1.3 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
 	/** blah */
+    // TODO: externalize
 	private static final String TITLE_TEXT = "Select video files to upload";
 	/** blah */
+    // TODO: externalize
 	private static final String SUMMARY_TEXT = "Drag and drop video files from your desktop into the window.";
 
 // Enumerated types ////////////////////////////////////////////////////////////
@@ -132,8 +134,10 @@ public class FileDropStep extends AbstractWizardStep {
 
 		JPanel panel = new JPanel();
 		((FlowLayout)panel.getLayout()).setAlignment(FlowLayout.LEFT);
-		JButton addButton = new JButton(new ImageIcon(ClassLoader.getSystemResource("icons/Add16.gif")));
+        // TODO: externalize
+        JButton addButton = new JButton(new ImageIcon(ClassLoader.getSystemResource("icons/Add16.gif")));
 		addButton.addActionListener(adder);
+        // TODO: externalize
 		JButton removeButton = new JButton(new ImageIcon(ClassLoader.getSystemResource("icons/Remove16.gif")));
 		removeButton.addActionListener(remover);
 		panel.add(addButton);

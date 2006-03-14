@@ -1,7 +1,7 @@
 /* 
  * @(#)UploadStep.java
  * 
- * Copyright (c) 2005 by Pokkari, Inc.
+ * Copyright (c) 2006 by Pokkari, Inc.
  * 117 West 25th St, Floor 2
  * New York, NY 10001
  * All rights reserved.
@@ -13,7 +13,6 @@
 package com.pokkari.blip.upper;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
@@ -26,20 +25,22 @@ import org.pietschy.wizard.*;
  * 
  * 
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.2 2005/11/10 00:33:39 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.3 2006/03/14 22:59:10 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.2 $";
+	public static final String CVS_REV = "$Revision: 1.3 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
 	/** blah */
-	private static final String TITLE_TEXT = "Video upload";
+    // TODO: externalize
+	private static final String TITLE_TEXT = "Upload!";
 	/** blah */
+    // TODO: externalize
 	private static final String SUMMARY_TEXT = "Please wait while your videos are uploaded.";
 
 // Enumerated types ////////////////////////////////////////////////////////////
@@ -67,7 +68,8 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 
 	private Runnable timer = new Runnable() {
 		public void run() {
-			if (time < 60) {			
+            // TODO: externalize
+			if (time < 60) {
 				timeLabel.setText("Time remaining: less than a minute");
 			} else {
 				int minutes = time / 60;
@@ -97,6 +99,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 		super(TITLE_TEXT, SUMMARY_TEXT);
 
 		// Create and layout components
+        // TODO: externalize
 		rateLabel = new JLabel("Calculating transfer rate, please wait...");
 		timeLabel = new JLabel("Time remaining: unknown");
 		progress = new JProgressBar();
@@ -110,6 +113,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 		panel.setBorder(
 			BorderFactory.createCompoundBorder(
 				BorderFactory.createCompoundBorder(
+                        // TODO: externalize
 					BorderFactory.createTitledBorder("Upload progress"),
 					BorderFactory.createEmptyBorder(5, 5, 5, 5)
 				),
@@ -142,6 +146,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 	public void run() {
 		setBusy(true);
 		float bps = 38400.0f;
+        // TODO: externalize
 		String url = "http://www.blip.tv/file/post";
 		Uploader uploader = new Uploader(url);
 		File[] files = model.getFiles();
@@ -160,6 +165,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 			// calculate the approximate transfer time for the next file
 			time = (int)(files[i].length() / bps);
 			String kbpstr = Float.toString(bps / 1000);
+            // TODO: externalize
 			rateLabel.setText("Uploading \"" + files[i].getName() + "\" at " + kbpstr.substring(0, kbpstr.indexOf(".") + 2) + " KB/s");
 			// do the upload
 			long start = System.currentTimeMillis();
@@ -174,6 +180,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 			if (!success) {
 				int choice = JOptionPane.showConfirmDialog(
 					Main.getMainInstance().getMainFrame(),
+                        // TODO: externalize
 					"It seems that a problem arose while uploading.\nDo you wish to continue attempting to upload?",
 					"Error occurred during upload",
 					JOptionPane.YES_NO_OPTION,
@@ -192,6 +199,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 			progress.setValue(progress.getValue() + 1);
 		}
 		setBusy(false);
+        // TODO: externalize
 		rateLabel.setText("All uploads complete!");
 		timeLabel.setText("");
 		setComplete(true);
@@ -225,6 +233,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 		long t = 0L;
 		StringBuffer buffer = new StringBuffer();
 
+        // TODO: externalize
 		if(time < 60000) {
 			t = time / 1000;
 			buffer.append(t).append(" second");
