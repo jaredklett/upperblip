@@ -15,7 +15,7 @@ package com.pokkari.blip.util;
 import java.io.*;
 import java.util.*;
 
-import javax.xml.parsers.*;
+//import javax.xml.parsers.*;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.cookie.*;
@@ -31,14 +31,14 @@ import org.apache.commons.httpclient.methods.multipart.*;
  * TODO: use a logging interface for stack traces and println's.
  * 
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.2 2005/11/10 00:33:39 jklett Exp $
+ * @version $Id: Uploader.java,v 1.3 2006/03/16 04:30:53 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.2 $";
+	public static final String CVS_REV = "$Revision: 1.3 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -53,6 +53,8 @@ public class Uploader {
 	public static final String POST_PARAM_KEY = "post";
 	/** The hash key to the category ID parameter. */
 	public static final String CAT_PARAM_KEY = "categories_id";
+	/** The hash key to the topics parameter. */
+	public static final String TAGS_PARAM_KEY = "topics";
 	/** The hash key to the username parameter. */
 	public static final String USER_PARAM_KEY = "userlogin";
 	/** The hash key to the password parameter. */
@@ -70,6 +72,8 @@ public class Uploader {
 	public static final String TITLE_PARAM_DEF = "Working title";
 	/** Default: the post ID of the post, if none is supplied. */
 	public static final String POST_PARAM_DEF = "1";
+	/** Default: the topics for the post, if none is supplied. */
+	public static final String TAGS_PARAM_DEF = "";
 	/** Default: the category ID of the post, if none is supplied. */
 	public static final String CAT_PARAM_DEF = "-1";
 	/** Default: the user login - this should be supplied. */
@@ -92,6 +96,10 @@ public class Uploader {
 	}
 
 // Instance methods ///////////////////////////////////////////////////////////
+
+	public void setGuid(String guid) {
+		url = url + guid;
+	}
 
 	/**
 	 *
@@ -116,6 +124,7 @@ public class Uploader {
 				new StringPart(TITLE_PARAM_KEY, parameters.getProperty(TITLE_PARAM_KEY, TITLE_PARAM_DEF)),
 				new StringPart(POST_PARAM_KEY, parameters.getProperty(POST_PARAM_KEY, POST_PARAM_DEF)),
 				new StringPart(CAT_PARAM_KEY, parameters.getProperty(CAT_PARAM_KEY, CAT_PARAM_DEF)),
+				new StringPart(TAGS_PARAM_KEY, parameters.getProperty(TAGS_PARAM_KEY, TAGS_PARAM_DEF)),
 				new StringPart(USER_PARAM_KEY, parameters.getProperty(USER_PARAM_KEY, USER_PARAM_DEF)),
 				new StringPart(PASS_PARAM_KEY, parameters.getProperty(PASS_PARAM_KEY, PASS_PARAM_DEF)),
 				new StringPart(SKIN_PARAM_KEY, parameters.getProperty(SKIN_PARAM_KEY, SKIN_PARAM_DEF)),

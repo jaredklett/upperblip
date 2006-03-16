@@ -1,7 +1,7 @@
 /* 
  * @(#)Main.java
  * 
- * Copyright (c) 2005 by Pokkari, Inc.
+ * Copyright (c) 2006 by Pokkari, Inc.
  * 117 West 25th St, Floor 2
  * New York, NY 10001
  * All rights reserved.
@@ -28,14 +28,14 @@ import com.pokkari.util.BuildNumber;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.3 2006/03/14 22:59:10 jklett Exp $
+ * @version $Id: Main.java,v 1.4 2006/03/16 04:30:53 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.3 $";
+    public static final String CVS_REV = "$Revision: 1.4 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -43,19 +43,39 @@ public class Main {
     private static final String PREFS_DIR = "/Library/Preferences/";
     private static final String PROPS_FILE = "com.pokkari.UpperBlip.properties";
     private static final String PREFS_PROPERTIES = System.getProperty("user.home") + PREFS_DIR + PROPS_FILE;
+    private static final String APP_PROPERTIES = "com-pokkari-blip-upper.properties";
 
     private static boolean macintosh = System.getProperty("os.name").equals("Mac OS X");
 
+    /** blah */
     private static final String X_KEY = "x.pos";
+    /** blah */
     private static final String Y_KEY = "y.pos";
+    /** blah */
     private static final String WIDTH_KEY = "width";
+    /** blah */
     private static final String HEIGHT_KEY = "height";
+    /** blah */
     private static final String USER_KEY = "user";
+    /** blah */
     private static final String PASS_KEY = "pass";
+    /** blah */
     private static final String REM_KEY = "pass.rem";
+    /** blah */
     private static final String ZERO = "0";
 
     private static Main m;
+
+    public static Properties appProperties = new Properties();
+
+    static {
+        try {
+            appProperties.load(ClassLoader.getSystemResource(APP_PROPERTIES).openStream());
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 // Enumerated types ////////////////////////////////////////////////////////////
 

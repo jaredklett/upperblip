@@ -21,7 +21,7 @@ import javax.swing.*;
 
 /**
  * @author Jared Klett
- * @version $Id: UpperBlipModel.java,v 1.2 2006/03/14 22:59:10 jklett Exp $
+ * @version $Id: UpperBlipModel.java,v 1.3 2006/03/16 04:30:53 jklett Exp $
  */
 
 public class UpperBlipModel extends StaticModel implements HelpBroker {
@@ -29,6 +29,7 @@ public class UpperBlipModel extends StaticModel implements HelpBroker {
     private File[] files;
     private String[] titles;
     private String[] descriptions;
+    private String[] tags;
     private String username;
     private String password;
     private boolean remember;
@@ -53,6 +54,10 @@ public class UpperBlipModel extends StaticModel implements HelpBroker {
         return titles;
     }
 
+    public String[] getTags() {
+        return tags;
+    }
+
     public String[] getDescriptions() {
         return descriptions;
     }
@@ -75,6 +80,10 @@ public class UpperBlipModel extends StaticModel implements HelpBroker {
 
     public void setTitles(String[] titles) {
         this.titles = titles;
+    }
+
+    public void setTags(String[] tags) {
+        this.tags = tags;
     }
 
     public void setDescriptions(String[] descriptions) {
