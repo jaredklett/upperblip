@@ -13,7 +13,6 @@
 package com.pokkari.blip.upper;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.io.*;
 import java.util.Properties;
 import java.util.prefs.*;
@@ -21,31 +20,34 @@ import java.util.prefs.*;
 import javax.swing.*;
 
 import org.pietschy.wizard.*;
-import com.pokkari.blip.util.Command;
-import com.pokkari.util.BuildNumber;
 
 /**
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.4 2006/03/16 04:30:53 jklett Exp $
+ * @version $Id: Main.java,v 1.5 2006/03/16 22:33:23 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.4 $";
+    public static final String CVS_REV = "$Revision: 1.5 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
+    // TODO: cleanup
     private static final String PREFS_NODE = "com.pokkari.blip.upper";
     private static final String PREFS_DIR = "/Library/Preferences/";
     private static final String PROPS_FILE = "com.pokkari.UpperBlip.properties";
     private static final String PREFS_PROPERTIES = System.getProperty("user.home") + PREFS_DIR + PROPS_FILE;
-    private static final String APP_PROPERTIES = "com-pokkari-blip-upper.properties";
+    private static final String PREFS_NAME = "UpperBlip preferences";
+    private static final String CANCEL_TITLE_KEY = "main.cancel.title";
+    private static final String CANCEL_TEXT_KEY = "main.cancel.text";
+    private static final String FRAME_TITLE_KEY = "main.frame.title";
 
     private static boolean macintosh = System.getProperty("os.name").equals("Mac OS X");
+    public static final String APP_PROPERTIES = "com-pokkari-blip-upper.properties";
 
     /** blah */
     private static final String X_KEY = "x.pos";
@@ -98,10 +100,9 @@ public class Main {
             //System.out.println("Wizard cancelled");
 
             int choice = JOptionPane.showConfirmDialog(
-                    // TODO: externalize
                     Main.getMainInstance().getMainFrame(),
-                    "Canceling will exit this application.\nAre you sure you want to cancel?",
-                    "Please confirm cancel",
+                    I18n.getString(CANCEL_TEXT_KEY),
+                    I18n.getString(CANCEL_TITLE_KEY),
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE
             );
@@ -178,8 +179,7 @@ public class Main {
         Wizard wizard = new Wizard(model);
         wizard.setDefaultExitMode(Wizard.EXIT_ON_FINISH);
         wizard.addWizardListener(wl);
-        // TODO: externalize
-        frame = new JFrame("UpperBlip");
+        frame = new JFrame(I18n.getString(FRAME_TITLE_KEY));
         frame.getContentPane().setLayout(new BorderLayout());
         frame.getContentPane().add(wizard, BorderLayout.CENTER);
         if (x == 0 && y == 0 && w == 0 && h == 0) {
@@ -190,8 +190,8 @@ public class Main {
         } else {
             frame.setBounds(x, y, w, h);
         }
+        // TODO: what should I use here instead?
         frame.show();
-        //wizard.showInFrame("UpperBlip");
         Runtime.getRuntime().addShutdownHook(shutdownHook);
     }
 
@@ -223,8 +223,7 @@ public class Main {
                 }
             }
             try {
-                // TODO: externalize
-                props.store(new FileOutputStream(PREFS_PROPERTIES), "UpperBlip preferences");
+                props.store(new FileOutputStream(PREFS_PROPERTIES), PREFS_NAME);
             }
             catch (Exception e) {
                 e.printStackTrace();

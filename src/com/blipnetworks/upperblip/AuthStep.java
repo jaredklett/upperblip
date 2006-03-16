@@ -13,7 +13,6 @@
 package com.pokkari.blip.upper;
 
 import java.awt.*;
-import java.awt.event.*;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -25,23 +24,27 @@ import org.pietschy.wizard.*;
  * 
  * 
  * @author Jared Klett
- * @version $Id: AuthStep.java,v 1.2 2006/03/14 22:59:10 jklett Exp $
+ * @version $Id: AuthStep.java,v 1.3 2006/03/16 22:33:23 jklett Exp $
  */
 
 public class AuthStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.2 $";
+	public static final String CVS_REV = "$Revision: 1.3 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
 	/** blah */
-    // TODO: externalize
-	private static final String TITLE_TEXT = "Enter login information";
+	private static final String TITLE_KEY = "auth.title";
 	/** blah */
-    // TODO: externalize
-	private static final String SUMMARY_TEXT = "Please enter your username and password to access your account on Blip.tv";
+	private static final String SUMMARY_KEY = "auth.summary";
+    /** blah */
+    private static final String USER_LABEL_KEY = "auth.user.label";
+    /** blah */
+    private static final String PASS_LABEL_KEY = "auth.pass.label";
+    /** blah */
+    private static final String BOX_LABEL_KEY = "auth.box.label";
 
 // Enumerated types ////////////////////////////////////////////////////////////
 
@@ -80,17 +83,14 @@ public class AuthStep extends AbstractWizardStep {
 // Constructor /////////////////////////////////////////////////////////////////
 
 	public AuthStep() {
-		super(TITLE_TEXT, SUMMARY_TEXT);
+		super(I18n.getString(TITLE_KEY), I18n.getString(SUMMARY_KEY));
 
 		// Create and layout components
-        // TODO: externalize
-		JLabel userLabel = new JLabel("Username:");
-        // TODO: externalize
-		JLabel passLabel = new JLabel("Password:");
+		JLabel userLabel = new JLabel(I18n.getString(USER_LABEL_KEY));
+		JLabel passLabel = new JLabel(I18n.getString(PASS_LABEL_KEY));
 		userField = new JTextField(15);
 		passField = new JPasswordField(15);
-        // TODO: externalize
-		remBox = new JCheckBox("Remember my password");
+		remBox = new JCheckBox(I18n.getString(BOX_LABEL_KEY));
 
 		GridBagLayout gbl = new GridBagLayout();
 		GridBagConstraints gbc = new GridBagConstraints();

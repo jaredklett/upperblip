@@ -19,6 +19,7 @@ import java.util.*;
 import javax.swing.*;
 
 import com.pokkari.blip.util.*;
+import com.pokkari.blip.util.I18n;
 import com.pokkari.util.*;
 import org.pietschy.wizard.*;
 
@@ -26,23 +27,27 @@ import org.pietschy.wizard.*;
  * 
  * 
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.4 2006/03/16 04:30:53 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.5 2006/03/16 22:33:23 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.4 $";
+	public static final String CVS_REV = "$Revision: 1.5 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
 	/** blah */
-    // TODO: externalize
-	private static final String TITLE_TEXT = "Upload!";
+	private static final String TITLE_KEY = "upload.title";
 	/** blah */
-    // TODO: externalize
-	private static final String SUMMARY_TEXT = "Please wait while your videos are uploaded.";
+	private static final String SUMMARY_KEY = "upload.summary";
+    /** blah */
+    private static final String BORDER_LABEL_KEY = "upload.border.label";
+    /** blah */
+    private static final String RATE_LABEL_KEY = "upload.rate.label";
+    /** blah */
+    private static final String TIME_LABEL_KEY = "upload.time.label";
 	/** blah */
 	public static final String PROP_BASE_URL = "base.url";
 
@@ -105,12 +110,12 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 // Constructor ////////////////////////////////////////////////////////////////
 
 	public UploadStep() {
-		super(TITLE_TEXT, SUMMARY_TEXT);
+		super(I18n.getString(TITLE_KEY), I18n.getString(SUMMARY_KEY));
 
 		// Create and layout components
         // TODO: externalize
-		rateLabel = new JLabel("Calculating transfer rate, please wait...");
-		timeLabel = new JLabel("Time remaining: unknown");
+		rateLabel = new JLabel(I18n.getString(RATE_LABEL_KEY));
+		timeLabel = new JLabel(I18n.getString(TIME_LABEL_KEY));
 		progress = new JProgressBar();
 		progress.setIndeterminate(true);
 
@@ -123,7 +128,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 			BorderFactory.createCompoundBorder(
 				BorderFactory.createCompoundBorder(
                         // TODO: externalize
-					BorderFactory.createTitledBorder("Upload progress"),
+					BorderFactory.createTitledBorder(I18n.getString(BORDER_LABEL_KEY)),
 					BorderFactory.createEmptyBorder(5, 5, 5, 5)
 				),
 				panel.getBorder()

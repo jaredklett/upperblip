@@ -26,23 +26,27 @@ import org.pietschy.wizard.*;
  * 
  * 
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.2 2006/03/14 22:59:10 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.3 2006/03/16 22:33:23 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.2 $";
+	public static final String CVS_REV = "$Revision: 1.3 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
 	/** blah */
-    // TODO: externalize
-	private static final String TITLE_TEXT = "Enter titles and descriptions";
+	private static final String TITLE_KEY = "meta.title";
 	/** blah */
-    // TODO: externalize
-	private static final String SUMMARY_TEXT = "For each video, please enter a title and a description.";
+	private static final String SUMMARY_KEY = "meta.summary";
+    /** blah */
+    private static final String FILE_LABEL_KEY = "meta.file.label";
+    /** blah */
+    private static final String TITLE_LABEL_KEY = "meta.title.label";
+    /** blah */
+    private static final String DESC_LABEL_KEY = "meta.desc.label";
 
 // Enumerated types ////////////////////////////////////////////////////////////
 
@@ -62,7 +66,7 @@ public class MetaDataStep extends AbstractWizardStep {
 // Constructor /////////////////////////////////////////////////////////////////
 
 	public MetaDataStep() {
-		super(TITLE_TEXT, SUMMARY_TEXT);
+		super(I18n.getString(TITLE_KEY), I18n.getString(SUMMARY_KEY));
 		view = new JPanel();
 		setComplete(true);
 	}
@@ -100,13 +104,10 @@ public class MetaDataStep extends AbstractWizardStep {
 					panel.getBorder()
 				)
 			);
-            // TODO: externalize
-			JLabel fileLabel = new JLabel("Video file:");
-			JLabel fileNameLabel = new JLabel(files[i].getName(), new ImageIcon(ClassLoader.getSystemResource("icons/Movie16.gif")), SwingConstants.LEFT);
-            // TODO: externalize
-			JLabel titleLabel = new JLabel("Title:");
-            // TODO: externalize
-			JLabel descLabel = new JLabel("Description:");
+			JLabel fileLabel = new JLabel(I18n.getString(FILE_LABEL_KEY));
+			JLabel fileNameLabel = new JLabel(files[i].getName(), new ImageIcon(ClassLoader.getSystemResource(Icons.SMALL_MOVIE_ICON)), SwingConstants.LEFT);
+			JLabel titleLabel = new JLabel(I18n.getString(TITLE_LABEL_KEY));
+			JLabel descLabel = new JLabel(I18n.getString(DESC_LABEL_KEY));
 			//TODO: add this functionality
 			//JButton titleButton = new JButton("Apply title to all");
 			//JButton descButton = new JButton("Apply description to all");

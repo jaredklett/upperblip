@@ -21,7 +21,7 @@ import javax.swing.*;
 
 /**
  * @author Jared Klett
- * @version $Id: UpperBlipModel.java,v 1.3 2006/03/16 04:30:53 jklett Exp $
+ * @version $Id: UpperBlipModel.java,v 1.4 2006/03/16 22:33:23 jklett Exp $
  */
 
 public class UpperBlipModel extends StaticModel implements HelpBroker {
@@ -92,6 +92,10 @@ public class UpperBlipModel extends StaticModel implements HelpBroker {
 
     public void activateHelp(JComponent parent, WizardModel model) {
         System.out.println(parent.getClass());
+        HelpWindow window = new HelpWindow();
+        window.setSize(200, 400);
+        window.setLocationRelativeTo(null);
+        window.show();
     }
 
 } // class UpperBlipModel

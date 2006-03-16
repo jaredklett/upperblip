@@ -12,20 +12,22 @@
 
 package com.pokkari.blip.util;
 
+import com.pokkari.blip.upper.Main;
+
 import java.util.*;
 
 /**
  * This class serves as an internationalization helper.
  *
  * @author Jared Klett
- * @version $Id: I18n.java,v 1.1 2005/11/03 18:57:23 jklett Exp $
+ * @version $Id: I18n.java,v 1.2 2006/03/16 22:33:23 jklett Exp $
  */
 
 public class I18n {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.1 $";
+	public static final String CVS_REV = "$Revision: 1.2 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -35,7 +37,7 @@ public class I18n {
 
 	private static ResourceBundle getBundle() {
 		if (bundle == null)
-			bundle = ResourceBundle.getBundle("crap");
+			bundle = ResourceBundle.getBundle(Main.APP_PROPERTIES);
 			//bundle = ResourceBundle.getBundle(Constants.I18N_NAME);
 	
 		return bundle;
@@ -43,8 +45,7 @@ public class I18n {
 
 	/**
 	 *
-	 * @param key The key to the requested property.
-	 * @return The value of the requested property.
+	 * @param _bundle The key to the requested property.
 	 */
 	public static void setBundle(ResourceBundle _bundle) {
 		bundle = _bundle;
