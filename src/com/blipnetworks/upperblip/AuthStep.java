@@ -18,20 +18,23 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
-import org.pietschy.wizard.*;
+import com.pokkari.blip.util.I18n;
+
+import org.pietschy.wizard.AbstractWizardStep;
+import org.pietschy.wizard.WizardModel;
 
 /**
  * 
  * 
  * @author Jared Klett
- * @version $Id: AuthStep.java,v 1.3 2006/03/16 22:33:23 jklett Exp $
+ * @version $Id: AuthStep.java,v 1.4 2006/03/17 21:36:19 jklett Exp $
  */
 
 public class AuthStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.3 $";
+	public static final String CVS_REV = "$Revision: 1.4 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

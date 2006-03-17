@@ -19,20 +19,23 @@ import java.util.prefs.*;
 
 import javax.swing.*;
 
-import org.pietschy.wizard.*;
+import com.pokkari.blip.util.I18n;
+import org.pietschy.wizard.WizardListener;
+import org.pietschy.wizard.WizardEvent;
+import org.pietschy.wizard.Wizard;
 
 /**
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.5 2006/03/16 22:33:23 jklett Exp $
+ * @version $Id: Main.java,v 1.6 2006/03/17 21:36:19 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.5 $";
+    public static final String CVS_REV = "$Revision: 1.6 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

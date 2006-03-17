@@ -20,14 +20,14 @@ import java.util.*;
  * This class serves as an internationalization helper.
  *
  * @author Jared Klett
- * @version $Id: I18n.java,v 1.2 2006/03/16 22:33:23 jklett Exp $
+ * @version $Id: I18n.java,v 1.3 2006/03/17 21:36:19 jklett Exp $
  */
 
 public class I18n {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.2 $";
+	public static final String CVS_REV = "$Revision: 1.3 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -37,9 +37,9 @@ public class I18n {
 
 	private static ResourceBundle getBundle() {
 		if (bundle == null)
-			bundle = ResourceBundle.getBundle(Main.APP_PROPERTIES);
+            bundle = ResourceBundle.getBundle("com-pokkari-blip-upper");
 			//bundle = ResourceBundle.getBundle(Constants.I18N_NAME);
-	
+
 		return bundle;
 	}
 

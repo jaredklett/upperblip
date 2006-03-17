@@ -19,22 +19,23 @@ import java.util.*;
 import javax.swing.*;
 
 import com.pokkari.blip.util.*;
-import com.pokkari.blip.util.I18n;
 import com.pokkari.util.*;
-import org.pietschy.wizard.*;
+
+import org.pietschy.wizard.AbstractWizardStep;
+import org.pietschy.wizard.WizardModel;
 
 /**
  * 
  * 
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.5 2006/03/16 22:33:23 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.6 2006/03/17 21:36:19 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.5 $";
+	public static final String CVS_REV = "$Revision: 1.6 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

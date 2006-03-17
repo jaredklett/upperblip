@@ -30,14 +30,14 @@ import org.w3c.dom.*;
  * TODO: use a logging interface for stack traces and println's.
  * 
  * @author Jared Klett
- * @version $Id: UploadStatus.java,v 1.1 2006/03/16 04:33:18 jklett Exp $
+ * @version $Id: UploadStatus.java,v 1.2 2006/03/17 21:36:19 jklett Exp $
  */
 
 public class UploadStatus {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.1 $";
+	public static final String CVS_REV = "$Revision: 1.2 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -60,7 +60,7 @@ public class UploadStatus {
 	 */
 	public void check() {
 
-		GetMethod post = new GetMethod(url);
+		GetMethod method = new GetMethod(url);
 
 		boolean succeeded = false;
 
@@ -75,7 +75,7 @@ public class UploadStatus {
 			//if (authCookie != null)
 				//client.getState().addCookie(authCookie);
 			// Send the post request
-			int responseCode = client.executeMethod(post);
+			int responseCode = client.executeMethod(method);
 			// Check for an authorization cookie in the response
 /*
 			if (authCookie == null) {
@@ -91,17 +91,25 @@ public class UploadStatus {
 			// Check the HTTP response code
 			succeeded = responseCode < 400;
 			// Read the response
-			InputStream responseStream = post.getResponseBodyAsStream();
-			String responsePage = null;
-			StringBuffer buffer = new StringBuffer(responseStream.available());
-			BufferedReader in = new BufferedReader(new InputStreamReader(responseStream));
-			String line = in.readLine();
-			while (line != null) {
-				buffer.append(line).append("\n");
-				line = in.readLine();
-			}
-			responsePage = buffer.toString();
-			System.out.println(responsePage);
+            //InputStream responseStream = method.getResponseBodyAsStream();
+            DocumentBuilder docBuilder = null;
+            Document document = null;
+            String responsePage = method.getResponseBodyAsString();
+            try {
+                FileWriter writer = new FileWriter("C:\\response.xml");
+                writer.write(responsePage);
+                writer.flush();
+                writer.close();
+                InputStream responseStream = new FileInputStream("C:\\response.xml");
+                docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                document = docBuilder.parse(responseStream);
+                NodeList list = document.getElementsByTagName("foo");
+                list.toString();
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (SAXException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
 
 			// TODO: we should be parsing the XML here - we need to wait until we
 			// agree on a proper schema for responses from Blip.
@@ -123,7 +131,7 @@ public class UploadStatus {
 			e.printStackTrace();
 		}
 		finally {
-			post.releaseConnection();
+			method.releaseConnection();
 		}
 		//return succeeded;
 	} // method uploadFile
