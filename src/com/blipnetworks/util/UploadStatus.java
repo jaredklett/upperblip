@@ -26,103 +26,82 @@ import org.xml.sax.*;
 import org.w3c.dom.*;
 
 /**
- * A stateful class to handle uploads to Blip.
- * TODO: use a logging interface for stack traces and println's.
- * 
+ *
  * @author Jared Klett
- * @version $Id: UploadStatus.java,v 1.2 2006/03/17 21:36:19 jklett Exp $
+ * @version $Id: UploadStatus.java,v 1.3 2006/03/24 22:00:29 jklett Exp $
  */
 
 public class UploadStatus {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.2 $";
+	public static final String CVS_REV = "$Revision: 1.3 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
-	private String url;
+// Instance variables /////////////////////////////////////////////////////////
+
+    private String guid;
+    private String filename;
+    private long start;
+    private long update;
+    private int read;
+    private int total;
+    private static final String GUID_TAG = "guid";
+    private static final String FILENAME_TAG = "filename";
+    private static final String START_TAG = "start";
+    private static final String UPDATE_TAG = "update";
+    private static final String READ_TAG = "read";
+    private static final String TOTAL_TAG = "total";
 
 // Constructor ////////////////////////////////////////////////////////////////
 
-	public UploadStatus(String url) {
-		this.url = url;
-	}
+	private UploadStatus() {
+        // will never be called outside
+    }
 
-// Instance methods ///////////////////////////////////////////////////////////
+// Class methods //////////////////////////////////////////////////////////////
 
-	public void setGuid(String guid) {
-		url = url + guid;
-	}
-
-	/**
+    /**
 	 *
 	 */
-	public void check() {
+	public static UploadStatus getStatus(String url, String guid) {
 
-		GetMethod method = new GetMethod(url);
-
-		boolean succeeded = false;
-
-		try {
+		GetMethod method = new GetMethod(url + guid);
+        UploadStatus status = null;
+        try {
 			HttpClient client = new HttpClient();
 			// Set a tolerant cookie policy
 			client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
 			// Set our timeout
-			client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-			// If we had an auth cookie previously, set it in the client before
-			// we send the request
-			//if (authCookie != null)
-				//client.getState().addCookie(authCookie);
-			// Send the post request
+            // TODO: externalize
+            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
 			int responseCode = client.executeMethod(method);
-			// Check for an authorization cookie in the response
-/*
-			if (authCookie == null) {
-				Cookie[] cookies = client.getState().getCookies();
-				for (int i = 0; i < cookies.length; i++) {
-					if (cookies[i].getName().equals(AUTH_COOKIE_NAME)) {
-						authCookie = cookies[i];
-						break;
-					}
-				}
-			}
-*/
-			// Check the HTTP response code
-			succeeded = responseCode < 400;
+            if (responseCode != HttpStatus.SC_OK) {
+                // TODO: problem!
+                return null;
+            }
 			// Read the response
-            //InputStream responseStream = method.getResponseBodyAsStream();
-            DocumentBuilder docBuilder = null;
+            InputStream responseStream = method.getResponseBodyAsStream();
             Document document = null;
-            String responsePage = method.getResponseBodyAsString();
             try {
-                FileWriter writer = new FileWriter("C:\\response.xml");
-                writer.write(responsePage);
-                writer.flush();
-                writer.close();
-                InputStream responseStream = new FileInputStream("C:\\response.xml");
-                docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
                 document = docBuilder.parse(responseStream);
-                NodeList list = document.getElementsByTagName("foo");
-                list.toString();
             } catch (ParserConfigurationException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             } catch (SAXException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
 
-			// TODO: we should be parsing the XML here - we need to wait until we
-			// agree on a proper schema for responses from Blip.
-			if (responseCode == HttpStatus.SC_OK) {
-				// But instead we'll have to rely on arbitrary strings
-				// FIXME: !!!
-				if (responsePage.indexOf("You must") != -1 || responsePage.indexOf("critical error") != -1) {
-					succeeded = false;
-				}
-			} else {
-				System.out.println("Status request failed: " + HttpStatus.getStatusText(responseCode));
-				succeeded = false;
-			}
+            if (document != null) {
+                status = new UploadStatus();
+                status.setGuid(document.getElementsByTagName(GUID_TAG).item(0).getTextContent());
+                status.setFilename(document.getElementsByTagName(FILENAME_TAG).item(0).getTextContent());
+                status.setStart(Integer.parseInt(document.getElementsByTagName(START_TAG).item(0).getTextContent()));
+                status.setUpdate(Integer.parseInt(document.getElementsByTagName(UPDATE_TAG).item(0).getTextContent()));
+                status.setRead(Integer.parseInt(document.getElementsByTagName(READ_TAG).item(0).getTextContent()));
+                status.setTotal(Integer.parseInt(document.getElementsByTagName(TOTAL_TAG).item(0).getTextContent()));
+            }
 		}
 		catch (HttpException e) {
 			e.printStackTrace();
@@ -133,13 +112,57 @@ public class UploadStatus {
 		finally {
 			method.releaseConnection();
 		}
-		//return succeeded;
-	} // method uploadFile
-
-// Main method ////////////////////////////////////////////////////////////////
-
-	public static void main(String[] args) {
-		
+		return status;
 	}
+
+// Instance methods ///////////////////////////////////////////////////////////
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public long getStart() {
+        return start;
+    }
+
+    public void setStart(long start) {
+        this.start = start;
+    }
+
+    public long getUpdate() {
+        return update;
+    }
+
+    public void setUpdate(long update) {
+        this.update = update;
+    }
+
+    public int getRead() {
+        return read;
+    }
+
+    public void setRead(int read) {
+        this.read = read;
+    }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public void setTotal(int total) {
+        this.total = total;
+    }
 
 } // class UploadStatus

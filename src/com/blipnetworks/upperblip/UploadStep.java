@@ -28,14 +28,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.6 2006/03/17 21:36:19 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.7 2006/03/24 22:00:29 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.6 $";
+	public static final String CVS_REV = "$Revision: 1.7 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -62,6 +62,14 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 	private boolean running;
 	/** */
 	private int time;
+    /** */
+    private float bps;
+    /** */
+    private String statusURL;
+    /** */
+    private String filename;
+    /** */
+    private RandomGUID guid;
 	/** */
 	private JPanel view;
 	/** */
@@ -74,37 +82,43 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 	private JProgressBar progress;
 	/** */
 	private Thread thread;
-	/** */
-	private UploadStatus status;
 
 	private Runnable timer = new Runnable() {
 		public void run() {
-			status.check();
-/*
-            // TODO: externalize
-			if (time < 60) {
-				timeLabel.setText("Time remaining: less than a minute");
-			} else {
-				int minutes = time / 60;
-				while (minutes > 0 && running) {
-					if (minutes > 1)
-						timeLabel.setText("Time remaining: about " + minutes + " minutes");
-					else if (minutes > 0)
-						timeLabel.setText("Time remaining: about a minute");
-					else
-						timeLabel.setText("Time remaining: less than a minute");
-*/
-					try {
-						Thread.sleep(2000);
-					}
-					catch (Exception e) {
-						// ignore
-					}
-/*
-					minutes--;				
-				}
-			}
-*/
+            //try { Thread.sleep(5000); } catch (Exception e) { /* ignored */ }
+            while (running) {
+                try { Thread.sleep(2000); } catch (Exception e) { /* ignored */ }
+                UploadStatus status = UploadStatus.getStatus(statusURL, guid.toString());
+                long start = status.getStart();
+                long update = status.getUpdate();
+                int read = status.getRead();
+                int total = status.getTotal();
+                long delta = update - start;
+                if (delta < 1000)
+                    bps = 38400;
+                else
+                    bps = total / (delta / 1000);
+                time = (int)(total / bps);
+                String kbpstr = Float.toString(bps / 1000);
+                // TODO: externalize
+                rateLabel.setText("Uploading \"" + filename + "\" at " + kbpstr.substring(0, kbpstr.indexOf(".") + 2) + " KB/s");
+
+                String str = " (" + read + " of " + total + " uploaded)";
+                // TODO: externalize
+                if (time < 60) {
+                    timeLabel.setText("Time remaining: less than a minute" + str);
+                } else {
+                    int minutes = time / 60;
+                    while (minutes > 0 && running) {
+                        if (minutes > 1)
+                            timeLabel.setText("Time remaining: about " + minutes + " minutes" + str);
+                        else if (minutes > 0)
+                            timeLabel.setText("Time remaining: about a minute" + str);
+                        else
+                            timeLabel.setText("Time remaining: less than a minute" + str);
+                    }
+                }
+            }
 		}
 	};
 
@@ -160,12 +174,9 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 
 	public void run() {
 		setBusy(true);
-		float bps = 38400.0f;
 		String url = Main.appProperties.getProperty(PROP_BASE_URL) + "/file/post?form_cookie=";
-		String statusUrl = Main.appProperties.getProperty(PROP_BASE_URL) + "/file/upload_status?skin=xmlhttprequest&form_cookie=";
+		statusURL = Main.appProperties.getProperty(PROP_BASE_URL) + "/upload/status?skin=xmlhttprequest&form_cookie=";
 		Uploader uploader = new Uploader(url);
-		// The reference to our status object is global so the thread can access it
-		status = new UploadStatus(statusUrl);
 		File[] files = model.getFiles();
 		progress.setMinimum(0);
 		progress.setMaximum(files.length);
@@ -177,26 +188,20 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 		props.put(Uploader.USER_PARAM_KEY, model.getUsername());
 		props.put(Uploader.PASS_PARAM_KEY, model.getPassword());
 		for (int i = 0; i < files.length; i++) {
-			// Generate a new GUID
-			RandomGUID guid = new RandomGUID(false);
+            filename = files[i].getName();
+            // Generate a new GUID
+			guid = new RandomGUID(false);
 			uploader.setGuid(guid.toString());
-			status.setGuid(guid.toString());
 			// put in the current data
 			props.put(Uploader.TITLE_PARAM_KEY, titles[i]);
 			//props.put(Uploader.TAGS_PARAM_KEY, tags[i]);
 			props.put(Uploader.DESC_PARAM_KEY, descriptions[i]);
 			// calculate the approximate transfer time for the next file
-			time = (int)(files[i].length() / bps);
-			String kbpstr = Float.toString(bps / 1000);
-            // TODO: externalize
-			rateLabel.setText("Uploading \"" + files[i].getName() + "\" at " + kbpstr.substring(0, kbpstr.indexOf(".") + 2) + " KB/s");
 			// do the upload
-			long start = System.currentTimeMillis();
 			Thread thread = new Thread(timer);
 			running = true;
 			thread.start();
 			boolean success = uploader.uploadFile(files[i], props);
-			long delta = System.currentTimeMillis() - start;
 			// Halt the timer thread
 			running = false;
 			thread.interrupt();
@@ -213,7 +218,6 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 				if (choice == JOptionPane.NO_OPTION)
 					break;
 			}
-			bps = files[i].length() / (delta / 1000);
 			// take out the old data
 			props.remove(Uploader.TITLE_PARAM_KEY);
 			props.remove(Uploader.DESC_PARAM_KEY);
