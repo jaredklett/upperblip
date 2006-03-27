@@ -28,14 +28,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.7 2006/03/24 22:00:29 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.8 2006/03/27 21:57:15 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.7 $";
+	public static final String CVS_REV = "$Revision: 1.8 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -60,10 +60,6 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 
 	/** */
 	private boolean running;
-	/** */
-	private int time;
-    /** */
-    private float bps;
     /** */
     private String statusURL;
     /** */
@@ -80,47 +76,46 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 	private JLabel timeLabel;
 	/** */
 	private JProgressBar progress;
-	/** */
-	private Thread thread;
 
-	private Runnable timer = new Runnable() {
-		public void run() {
-            //try { Thread.sleep(5000); } catch (Exception e) { /* ignored */ }
+    private Runnable timer = new Runnable() {
+        public void run() {
+            progress.setMinimum(0);
+            try { Thread.sleep(5000); } catch (Exception e) { /* ignored */ }
             while (running) {
-                try { Thread.sleep(2000); } catch (Exception e) { /* ignored */ }
                 UploadStatus status = UploadStatus.getStatus(statusURL, guid.toString());
                 long start = status.getStart();
                 long update = status.getUpdate();
                 int read = status.getRead();
                 int total = status.getTotal();
+                progress.setIndeterminate(false);
+                progress.setValue(read);
+                progress.setMaximum(total);
                 long delta = update - start;
-                if (delta < 1000)
-                    bps = 38400;
-                else
-                    bps = total / (delta / 1000);
-                time = (int)(total / bps);
+                if (delta == 0)
+                    continue;
+                float bps = read / delta;
+                int time = (int) (total / bps);
                 String kbpstr = Float.toString(bps / 1000);
                 // TODO: externalize
                 rateLabel.setText("Uploading \"" + filename + "\" at " + kbpstr.substring(0, kbpstr.indexOf(".") + 2) + " KB/s");
 
-                String str = " (" + read + " of " + total + " uploaded)";
+                String str = " (" + parseSize(read) + " of " + parseSize(total) + " uploaded)";
                 // TODO: externalize
                 if (time < 60) {
                     timeLabel.setText("Time remaining: less than a minute" + str);
                 } else {
                     int minutes = time / 60;
-                    while (minutes > 0 && running) {
-                        if (minutes > 1)
-                            timeLabel.setText("Time remaining: about " + minutes + " minutes" + str);
-                        else if (minutes > 0)
-                            timeLabel.setText("Time remaining: about a minute" + str);
-                        else
-                            timeLabel.setText("Time remaining: less than a minute" + str);
-                    }
+                    if (minutes > 1)
+                        timeLabel.setText("Time remaining: about " + minutes + " minutes" + str);
+                    else if (minutes > 0)
+                        timeLabel.setText("Time remaining: about a minute" + str);
+                    else
+                        timeLabel.setText("Time remaining: less than a minute" + str);
                 }
+                try { Thread.sleep(2000); } catch (Exception e) { /* ignored */ }
             }
-		}
-	};
+        }
+    };
 
 // Constructor ////////////////////////////////////////////////////////////////
 
@@ -128,7 +123,6 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 		super(I18n.getString(TITLE_KEY), I18n.getString(SUMMARY_KEY));
 
 		// Create and layout components
-        // TODO: externalize
 		rateLabel = new JLabel(I18n.getString(RATE_LABEL_KEY));
 		timeLabel = new JLabel(I18n.getString(TIME_LABEL_KEY));
 		progress = new JProgressBar();
@@ -142,7 +136,6 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 		panel.setBorder(
 			BorderFactory.createCompoundBorder(
 				BorderFactory.createCompoundBorder(
-                        // TODO: externalize
 					BorderFactory.createTitledBorder(I18n.getString(BORDER_LABEL_KEY)),
 					BorderFactory.createEmptyBorder(5, 5, 5, 5)
 				),
@@ -178,8 +171,8 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 		statusURL = Main.appProperties.getProperty(PROP_BASE_URL) + "/upload/status?skin=xmlhttprequest&form_cookie=";
 		Uploader uploader = new Uploader(url);
 		File[] files = model.getFiles();
-		progress.setMinimum(0);
-		progress.setMaximum(files.length);
+		//progress.setMinimum(0);
+		//progress.setMaximum(files.length);
 		String[] titles = model.getTitles();
 		String[] tags = model.getTags();
 		String[] descriptions = model.getDescriptions();
@@ -221,9 +214,9 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 			// take out the old data
 			props.remove(Uploader.TITLE_PARAM_KEY);
 			props.remove(Uploader.DESC_PARAM_KEY);
-			if (progress.isIndeterminate())
-				progress.setIndeterminate(false);
-			progress.setValue(progress.getValue() + 1);
+			//if (progress.isIndeterminate())
+				//progress.setIndeterminate(false);
+			//progress.setValue(progress.getValue() + 1);
 		}
 		setBusy(false);
         // TODO: externalize
@@ -240,8 +233,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 
 	public void prepare() {
 		setView(view);
-		thread = new Thread(this);
-		thread.start();
+		new Thread(this).start();
 	}
 
 	public void applyState() {
@@ -254,10 +246,27 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 		return view.getPreferredSize();
 	}
 
-// Instance methods ///////////////////////////////////////////////////////////
+// Class methods //////////////////////////////////////////////////////////////
 
-	public static String parseTime(long time) {
-		long t = 0L;
+    public static String parseSize(int bytes) {
+        StringBuilder builder = new StringBuilder();
+        // is it smaller than 1K?
+        // TODO: externalize
+        if (bytes < 1024)
+            builder.append(bytes).append(" bytes");
+        // is it smaller than 1M?
+        else if(bytes < 1024000)
+            builder.append(bytes / 1024).append(" KB");
+        // is it smaller than 1G?
+        else if (bytes < 1024000000)
+            builder.append(bytes / 1024000).append(" MB");
+        //else if (bytes < 1024000000000)
+            //builder.append(bytes / 1024000000).append(" GB");
+        return builder.toString();
+    }
+
+    public static String parseTime(long time) {
+		long t;
 		StringBuffer buffer = new StringBuffer();
 
         // TODO: externalize
