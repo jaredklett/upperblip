@@ -12,22 +12,20 @@
 
 package com.pokkari.blip.util;
 
-import com.pokkari.blip.upper.Main;
-
-import java.util.*;
+import java.util.ResourceBundle;
 
 /**
  * This class serves as an internationalization helper.
  *
  * @author Jared Klett
- * @version $Id: I18n.java,v 1.3 2006/03/17 21:36:19 jklett Exp $
+ * @version $Id: I18n.java,v 1.4 2006/04/03 20:43:12 jklett Exp $
  */
 
 public class I18n {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.3 $";
+	public static final String CVS_REV = "$Revision: 1.4 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -38,17 +36,8 @@ public class I18n {
 	private static ResourceBundle getBundle() {
 		if (bundle == null)
             bundle = ResourceBundle.getBundle("com-pokkari-blip-upper");
-			//bundle = ResourceBundle.getBundle(Constants.I18N_NAME);
 
 		return bundle;
-	}
-
-	/**
-	 *
-	 * @param _bundle The key to the requested property.
-	 */
-	public static void setBundle(ResourceBundle _bundle) {
-		bundle = _bundle;
 	}
 
 	/**
