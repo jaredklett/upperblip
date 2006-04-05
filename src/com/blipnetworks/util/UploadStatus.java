@@ -1,7 +1,7 @@
 /* 
  * @(#)UploadStatus.java
  * 
- * Copyright (c) 2005 by Pokkari, Inc.
+ * Copyright (c) 2006 by Pokkari, Inc.
  * 117 West 25th St, Floor 2
  * New York, NY 10001
  * All rights reserved.
@@ -13,31 +13,38 @@
 package com.pokkari.blip.util;
 
 import java.io.*;
-import java.util.*;
 
 import javax.xml.parsers.*;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.cookie.*;
 import org.apache.commons.httpclient.methods.*;
-import org.apache.commons.httpclient.methods.multipart.*;
 
 import org.xml.sax.*;
 import org.w3c.dom.*;
 
 /**
+ * This class knows how to ask Otter about the status of an upload, and nothing more.
+ * It's immutable and should stay that way.
  *
  * @author Jared Klett
- * @version $Id: UploadStatus.java,v 1.3 2006/03/24 22:00:29 jklett Exp $
+ * @version $Id: UploadStatus.java,v 1.4 2006/04/05 20:10:29 jklett Exp $
  */
 
 public class UploadStatus {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.3 $";
+	public static final String CVS_REV = "$Revision: 1.4 $";
 
 // Constants //////////////////////////////////////////////////////////////////
+
+    private static final String GUID_TAG = "guid";
+    private static final String FILENAME_TAG = "filename";
+    private static final String START_TAG = "start";
+    private static final String UPDATE_TAG = "update";
+    private static final String READ_TAG = "read";
+    private static final String TOTAL_TAG = "total";
 
 // Instance variables /////////////////////////////////////////////////////////
 
@@ -47,12 +54,6 @@ public class UploadStatus {
     private long update;
     private int read;
     private int total;
-    private static final String GUID_TAG = "guid";
-    private static final String FILENAME_TAG = "filename";
-    private static final String START_TAG = "start";
-    private static final String UPDATE_TAG = "update";
-    private static final String READ_TAG = "read";
-    private static final String TOTAL_TAG = "total";
 
 // Constructor ////////////////////////////////////////////////////////////////
 
@@ -63,9 +64,12 @@ public class UploadStatus {
 // Class methods //////////////////////////////////////////////////////////////
 
     /**
-	 *
-	 */
-	public static UploadStatus getStatus(String url, String guid) {
+     * Hits the URL and attempts to read XML back from the response.
+     * @param url The URL to hit to load status information.
+     * @param guid The GUID for the upload.
+     * @return A new object containing the status data.
+     */
+    public static UploadStatus getStatus(String url, String guid) {
 
 		GetMethod method = new GetMethod(url + guid);
         UploadStatus status = null;
@@ -78,7 +82,7 @@ public class UploadStatus {
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
 			int responseCode = client.executeMethod(method);
             if (responseCode != HttpStatus.SC_OK) {
-                // TODO: problem!
+                // TODO: problem! what to do?
                 return null;
             }
 			// Read the response
@@ -88,9 +92,11 @@ public class UploadStatus {
                 DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
                 document = docBuilder.parse(responseStream);
             } catch (ParserConfigurationException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                // TODO: log this?
+                e.printStackTrace();
             } catch (SAXException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                // TODO: log this?
+                e.printStackTrace();
             }
 
             if (document != null) {
@@ -104,9 +110,11 @@ public class UploadStatus {
             }
 		}
 		catch (HttpException e) {
+            // TODO: log this?
 			e.printStackTrace();
 		}
 		catch (IOException e) {
+            // TODO: log this?
 			e.printStackTrace();
 		}
 		finally {
@@ -117,51 +125,99 @@ public class UploadStatus {
 
 // Instance methods ///////////////////////////////////////////////////////////
 
+    /**
+     * Retrieves the GUID from the XML response.
+     * @return The GUID parsed out of the XML.
+     */
     public String getGuid() {
         return guid;
     }
 
-    public void setGuid(String guid) {
+    /**
+     * Sets the GUID value in this object.
+     * @param guid The new GUID value.
+     */
+    private void setGuid(String guid) {
         this.guid = guid;
     }
 
+    /**
+     * Retrieves the file name from the XML response.
+     * @return The file name parsed out of the XML.
+     */
     public String getFilename() {
         return filename;
     }
 
-    public void setFilename(String filename) {
+    /**
+     * Sets the GUID value in this object.
+     * @param filename The new GUID value.
+     */
+    private void setFilename(String filename) {
         this.filename = filename;
     }
 
+    /**
+     * Retrieves the start time of the upload from the XML response.
+     * @return The start time of the upload parsed out of the XML.
+     */
     public long getStart() {
         return start;
     }
 
-    public void setStart(long start) {
+    /**
+     * Sets the start time of the upload in this object.
+     * @param start The new start time of the upload.
+     */
+    private void setStart(long start) {
         this.start = start;
     }
 
+    /**
+     * Retrieves the last update time from the XML response.
+     * @return The last update time parsed out of the XML.
+     */
     public long getUpdate() {
         return update;
     }
 
-    public void setUpdate(long update) {
+    /**
+     * Sets the last update time in this object.
+     * @param update The new last update time.
+     */
+    private void setUpdate(long update) {
         this.update = update;
     }
 
+    /**
+     * Retrieves the number of bytes read so far from the XML response.
+     * @return The number of bytes read so far parsed out of the XML.
+     */
     public int getRead() {
         return read;
     }
 
-    public void setRead(int read) {
+    /**
+     * Sets the number of bytes read so far in this object.
+     * @param read The number of bytes read so far parsed out of the XML.
+     */
+    private void setRead(int read) {
         this.read = read;
     }
 
+    /**
+     * Retrieves the total number of bytes from the XML response.
+     * @return The total number of bytes parsed out of the XML.
+     */
     public int getTotal() {
         return total;
     }
 
-    public void setTotal(int total) {
+    /**
+     * Sets the total number of bytes in this object.
+     * @param total The total number of bytes.
+     */
+    private void setTotal(int total) {
         this.total = total;
     }
 
