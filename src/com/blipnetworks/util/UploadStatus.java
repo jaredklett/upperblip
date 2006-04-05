@@ -28,17 +28,18 @@ import org.w3c.dom.*;
  * It's immutable and should stay that way.
  *
  * @author Jared Klett
- * @version $Id: UploadStatus.java,v 1.4 2006/04/05 20:10:29 jklett Exp $
+ * @version $Id: UploadStatus.java,v 1.5 2006/04/05 21:14:56 jklett Exp $
  */
 
 public class UploadStatus {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.4 $";
+	public static final String CVS_REV = "$Revision: 1.5 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
+    private static final int TIMEOUT = 30000;
     private static final String GUID_TAG = "guid";
     private static final String FILENAME_TAG = "filename";
     private static final String START_TAG = "start";
@@ -78,8 +79,7 @@ public class UploadStatus {
 			// Set a tolerant cookie policy
 			client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
 			// Set our timeout
-            // TODO: externalize
-            client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+            client.getHttpConnectionManager().getParams().setConnectionTimeout(TIMEOUT);
 			int responseCode = client.executeMethod(method);
             if (responseCode != HttpStatus.SC_OK) {
                 // TODO: problem! what to do?

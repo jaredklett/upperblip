@@ -1,7 +1,7 @@
 /* 
  * @(#)Uploader.java
  * 
- * Copyright (c) 2005 by Pokkari, Inc.
+ * Copyright (c) 2006 by Pokkari, Inc.
  * 117 West 25th St, Floor 2
  * New York, NY 10001
  * All rights reserved.
@@ -15,30 +15,24 @@ package com.pokkari.blip.util;
 import java.io.*;
 import java.util.*;
 
-//import javax.xml.parsers.*;
-
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.cookie.*;
 import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.methods.multipart.*;
-
-// Someday we'll parse XML responses...
-//import org.xml.sax.*;
-//import org.w3c.dom.*;
 
 /**
  * A stateful class to handle uploads to Blip.
  * TODO: use a logging interface for stack traces and println's.
  * 
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.5 2006/03/24 22:00:29 jklett Exp $
+ * @version $Id: Uploader.java,v 1.6 2006/04/05 21:14:56 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.5 $";
+	public static final String CVS_REV = "$Revision: 1.6 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -87,13 +81,18 @@ public class Uploader {
 
 	private Cookie authCookie;
 	private String url;
-	private int error;
+    private int timeout;
 
 // Constructor ////////////////////////////////////////////////////////////////
 
-	public Uploader(String url) {
+    public Uploader(String url) {
+        this(url, 30000);
+    }
+
+    public Uploader(String url, int timeout) {
 		this.url = url;
-	}
+        this.timeout = timeout;
+    }
 
 // Instance methods ///////////////////////////////////////////////////////////
 
@@ -150,7 +149,7 @@ public class Uploader {
 			// Set a tolerant cookie policy
 			client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
 			// Set our timeout
-			client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
+			client.getHttpConnectionManager().getParams().setConnectionTimeout(timeout);
 			// If we had an auth cookie previously, set it in the client before
 			// we send the request
 			if (authCookie != null)

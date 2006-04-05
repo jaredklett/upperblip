@@ -28,14 +28,14 @@ import org.pietschy.wizard.Wizard;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.6 2006/03/17 21:36:19 jklett Exp $
+ * @version $Id: Main.java,v 1.7 2006/04/05 21:14:56 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.6 $";
+    public static final String CVS_REV = "$Revision: 1.7 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -50,7 +50,7 @@ public class Main {
     private static final String FRAME_TITLE_KEY = "main.frame.title";
 
     private static boolean macintosh = System.getProperty("os.name").equals("Mac OS X");
-    public static final String APP_PROPERTIES = "com-pokkari-blip-upper.properties";
+    public static final String APP_PROPERTIES = "upperblip.properties";
 
     /** blah */
     private static final String X_KEY = "x.pos";
