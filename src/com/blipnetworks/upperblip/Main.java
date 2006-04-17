@@ -13,6 +13,8 @@
 package com.pokkari.blip.upper;
 
 import java.awt.*;
+import java.awt.event.WindowListener;
+import java.awt.event.WindowEvent;
 import java.io.*;
 import java.util.Properties;
 import java.util.prefs.*;
@@ -28,14 +30,14 @@ import org.pietschy.wizard.Wizard;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.7 2006/04/05 21:14:56 jklett Exp $
+ * @version $Id: Main.java,v 1.8 2006/04/17 21:04:45 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.7 $";
+    public static final String CVS_REV = "$Revision: 1.8 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -91,6 +93,7 @@ public class Main {
     private UpperBlipModel model;
     private Preferences prefs;
     private Properties props;
+    private Wizard wizard;
 
 // GUI elements ///////////////////////////////////////////////////////////////
 
@@ -98,7 +101,17 @@ public class Main {
 
 // Event handlers /////////////////////////////////////////////////////////////
 
-    private WizardListener wl = new WizardListener() {
+    private WindowListener wndl = new WindowListener() {
+        public void windowClosing(WindowEvent windowEvent) { wizard.close(); }
+        public void windowOpened(WindowEvent windowEvent) { /* does nothing */ }
+        public void windowIconified(WindowEvent windowEvent) { /* does nothing */ }
+        public void windowDeiconified(WindowEvent windowEvent) { /* does nothing */ }
+        public void windowActivated(WindowEvent windowEvent) { /* does nothing */ }
+        public void windowDeactivated(WindowEvent windowEvent) { /* does nothing */ }
+        public void windowClosed(WindowEvent windowEvent) { /* does nothing */ }
+    };
+
+    private WizardListener wizl = new WizardListener() {
         public void wizardCancelled(WizardEvent e) {
             //System.out.println("Wizard cancelled");
 
@@ -179,10 +192,12 @@ public class Main {
         model.add(new MetaDataStep());
         model.add(new AuthStep());
         model.add(new UploadStep());
-        Wizard wizard = new Wizard(model);
+        wizard = new Wizard(model);
         wizard.setDefaultExitMode(Wizard.EXIT_ON_FINISH);
-        wizard.addWizardListener(wl);
+        wizard.addWizardListener(wizl);
         frame = new JFrame(I18n.getString(FRAME_TITLE_KEY));
+        frame.addWindowListener(wndl);
+        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         frame.getContentPane().setLayout(new BorderLayout());
         frame.getContentPane().add(wizard, BorderLayout.CENTER);
         if (x == 0 && y == 0 && w == 0 && h == 0) {
@@ -193,8 +208,7 @@ public class Main {
         } else {
             frame.setBounds(x, y, w, h);
         }
-        // TODO: what should I use here instead?
-        frame.show();
+        frame.setVisible(true);
         Runtime.getRuntime().addShutdownHook(shutdownHook);
     }
 

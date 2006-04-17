@@ -28,14 +28,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.9 2006/04/05 21:14:56 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.10 2006/04/17 21:04:45 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.9 $";
+	public static final String CVS_REV = "$Revision: 1.10 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -65,8 +65,8 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
     private int totalUploadSamples;
     private int statusHitCount;
     private long startTime;
-    private long refreshRate;
-    private long statusHitRate;
+    private long refreshRate = 1000;
+    private long statusHitRate = 10000;
     /** */
 	private boolean running;
     /** */
@@ -97,28 +97,36 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
             long accum = 0;
             long start = 0;
             long update = 0;
+            long delta = 0;
             int read = 0;
             int total = 0;
+            float bps = 0;
             currentProgress.setMinimum(0);
             try { Thread.sleep(5000); } catch (Exception e) { /* ignored */ }
             while (running) {
-                if (accum >= statusHitRate) {
+                if (accum == 0 || accum >= statusHitRate) {
                     UploadStatus status = UploadStatus.getStatus(statusURL, guid.toString());
                     statusHitCount++;
                     start = status.getStart();
                     update = status.getUpdate();
                     read = status.getRead();
                     total = status.getTotal();
+                    bps = read / (update - start);
+                    totalUploadSamples += bps;
                     if (currentProgress.isIndeterminate())
                         currentProgress.setIndeterminate(false);
+                } else {
+                    // add the refresh sleep time
+                    update += refreshRate;
+                    // project how many bytes have been uploaded
+                    // while we were sleeping
+                    read += bps * (refreshRate / 1000);
                 }
                 currentProgress.setValue(read);
                 currentProgress.setMaximum(total);
-                long delta = update - start;
+                delta = update - start;
                 if (delta == 0)
                     continue;
-                float bps = read / delta;
-                totalUploadSamples += bps;
                 int time = (int) (total / bps);
                 String kbpstr = Float.toString(bps / 1000);
                 // TODO: externalize

@@ -1,7 +1,7 @@
 /* 
  * @(#)UpperBlipModel.java
  * 
- * Copyright (c) 2005 by Pokkari, Inc.
+ * Copyright (c) 2006 by Pokkari, Inc.
  * 117 West 25th St, Floor 2
  * New York, NY 10001
  * All rights reserved.
@@ -21,7 +21,7 @@ import javax.swing.*;
 
 /**
  * @author Jared Klett
- * @version $Id: UpperBlipModel.java,v 1.4 2006/03/16 22:33:23 jklett Exp $
+ * @version $Id: UpperBlipModel.java,v 1.5 2006/04/17 21:04:45 jklett Exp $
  */
 
 public class UpperBlipModel extends StaticModel implements HelpBroker {
@@ -95,7 +95,7 @@ public class UpperBlipModel extends StaticModel implements HelpBroker {
         HelpWindow window = new HelpWindow();
         window.setSize(200, 400);
         window.setLocationRelativeTo(null);
-        window.show();
+        window.setVisible(true);
     }
 
 } // class UpperBlipModel

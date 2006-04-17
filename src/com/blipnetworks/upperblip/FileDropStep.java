@@ -1,7 +1,7 @@
 /* 
  * @(#)FileDropStep.java
  * 
- * Copyright (c) 2005 by Pokkari, Inc.
+ * Copyright (c) 2006 by Pokkari, Inc.
  * 117 West 25th St, Floor 2
  * New York, NY 10001
  * All rights reserved.
@@ -32,14 +32,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: FileDropStep.java,v 1.5 2006/03/17 21:36:19 jklett Exp $
+ * @version $Id: FileDropStep.java,v 1.6 2006/04/17 21:04:45 jklett Exp $
  */
 
 public class FileDropStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.5 $";
+    public static final String CVS_REV = "$Revision: 1.6 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -66,10 +66,8 @@ public class FileDropStep extends AbstractWizardStep {
     private JList list;
     /** */
     private List fileList;
-    /** */
+    /** I think we have to keep a reference to this so it doesn't get garbage collected before we leave this step. */
     private FileDrop dropper;
-    /** */
-    private ListCellRenderer lcr;
     /** */
     private FileDrop.Listener fdl = new FileDrop.Listener() {
         public void filesDropped(File[] files) {
