@@ -1,16 +1,16 @@
 /* 
  * @(#)Main.java
  * 
- * Copyright (c) 2006 by Pokkari, Inc.
+ * Copyright (c) 2006 by Blip Networks, Inc.
  * 117 West 25th St, Floor 2
  * New York, NY 10001
  * All rights reserved.
  *
  * This software is the confidential and
- * proprietary information of Pokkari, Inc.
+ * proprietary information of Blip Networks, Inc.
  */
 
-package com.pokkari.blip.upper;
+package com.blipnetworks.blip.upper;
 
 import java.awt.*;
 import java.awt.event.WindowListener;
@@ -30,14 +30,14 @@ import org.pietschy.wizard.Wizard;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.8 2006/04/17 21:04:45 jklett Exp $
+ * @version $Id: Main.java,v 1.9 2006/05/06 23:56:46 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.8 $";
+    public static final String CVS_REV = "$Revision: 1.9 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

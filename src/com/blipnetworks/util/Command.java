@@ -1,29 +1,29 @@
 /* 
  * @(#)Command.java
  * 
- * Copyright (c) 2005 by Pokkari, Inc.
+ * Copyright (c) 2006 by Blip Networks, Inc.
  * 117 West 25th St, Floor 2
  * New York, NY 10001
  * All rights reserved.
  *
  * This software is the confidential and
- * proprietary information of Pokkari, Inc.
+ * proprietary information of Blip Networks, Inc.
  */
 
-package com.pokkari.blip.util;
+package com.blipnetworks.blip.util;
 
 /**
  * An interface to assist in implementing the Command design pattern.
  *
  * @author Jared Klett
- * @version	$Id: Command.java,v 1.1 2005/11/03 18:57:23 jklett Exp $
+ * @version	$Id: Command.java,v 1.2 2006/05/06 23:56:46 jklett Exp $
  */
 
 public interface Command {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.1 $";
+	public static final String CVS_REV = "$Revision: 1.2 $";
 
 // Interface methods ///////////////////////////////////////////////////////////
 

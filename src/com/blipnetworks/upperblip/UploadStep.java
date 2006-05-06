@@ -1,16 +1,16 @@
 /* 
  * @(#)UploadStep.java
  * 
- * Copyright (c) 2006 by Pokkari, Inc.
+ * Copyright (c) 2006 by Blip Networks, Inc.
  * 117 West 25th St, Floor 2
  * New York, NY 10001
  * All rights reserved.
  *
  * This software is the confidential and
- * proprietary information of Pokkari, Inc.
+ * proprietary information of Blip Networks, Inc.
  */
 
-package com.pokkari.blip.upper;
+package com.blipnetworks.blip.upper;
 
 import java.awt.*;
 import java.io.*;
@@ -28,14 +28,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.10 2006/04/17 21:04:45 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.11 2006/05/06 23:56:46 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.10 $";
+	public static final String CVS_REV = "$Revision: 1.11 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

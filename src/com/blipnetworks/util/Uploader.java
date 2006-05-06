@@ -1,16 +1,16 @@
 /* 
  * @(#)Uploader.java
  * 
- * Copyright (c) 2006 by Pokkari, Inc.
+ * Copyright (c) 2006 by Blip Networks, Inc.
  * 117 West 25th St, Floor 2
  * New York, NY 10001
  * All rights reserved.
  *
  * This software is the confidential and
- * proprietary information of Pokkari, Inc.
+ * proprietary information of Blip Networks, Inc.
  */
 
-package com.pokkari.blip.util;
+package com.blipnetworks.blip.util;
 
 import java.io.*;
 import java.util.*;
@@ -25,14 +25,14 @@ import org.apache.commons.httpclient.methods.multipart.*;
  * TODO: use a logging interface for stack traces and println's.
  * 
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.6 2006/04/05 21:14:56 jklett Exp $
+ * @version $Id: Uploader.java,v 1.7 2006/05/06 23:56:46 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.6 $";
+	public static final String CVS_REV = "$Revision: 1.7 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 

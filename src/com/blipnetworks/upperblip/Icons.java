@@ -1,4 +1,4 @@
-package com.pokkari.blip.upper;
+package com.blipnetworks.blip.upper;
 
 /**
  * Created by IntelliJ IDEA.

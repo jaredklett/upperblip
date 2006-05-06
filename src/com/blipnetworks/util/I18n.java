@@ -1,16 +1,16 @@
 /* 
  * @(#)I18n.java
  * 
- * Copyright (c) 2005 by Pokkari, Inc.
+ * Copyright (c) 2006 by Blip Networks, Inc.
  * 117 West 25th St, Floor 2
  * New York, NY 10001
  * All rights reserved.
  *
  * This software is the confidential and
- * proprietary information of Pokkari, Inc.
+ * proprietary information of Blip Networks, Inc.
  */
 
-package com.pokkari.blip.util;
+package com.blipnetworks.blip.util;
 
 import java.util.ResourceBundle;
 
@@ -18,14 +18,14 @@ import java.util.ResourceBundle;
  * This class serves as an internationalization helper.
  *
  * @author Jared Klett
- * @version $Id: I18n.java,v 1.4 2006/04/03 20:43:12 jklett Exp $
+ * @version $Id: I18n.java,v 1.5 2006/05/06 23:56:46 jklett Exp $
  */
 
 public class I18n {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.4 $";
+	public static final String CVS_REV = "$Revision: 1.5 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

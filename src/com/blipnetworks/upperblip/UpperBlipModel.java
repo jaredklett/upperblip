@@ -1,16 +1,16 @@
 /* 
  * @(#)UpperBlipModel.java
  * 
- * Copyright (c) 2006 by Pokkari, Inc.
+ * Copyright (c) 2006 by Blip Networks, Inc.
  * 117 West 25th St, Floor 2
  * New York, NY 10001
  * All rights reserved.
  *
  * This software is the confidential and
- * proprietary information of Pokkari, Inc.
+ * proprietary information of Blip Networks, Inc.
  */
 
-package com.pokkari.blip.upper;
+package com.blipnetworks.blip.upper;
 
 import java.io.*;
 
@@ -21,7 +21,7 @@ import javax.swing.*;
 
 /**
  * @author Jared Klett
- * @version $Id: UpperBlipModel.java,v 1.5 2006/04/17 21:04:45 jklett Exp $
+ * @version $Id: UpperBlipModel.java,v 1.6 2006/05/06 23:56:46 jklett Exp $
  */
 
 public class UpperBlipModel extends StaticModel implements HelpBroker {

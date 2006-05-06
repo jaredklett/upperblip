@@ -1,16 +1,16 @@
 /* 
  * @(#)FileDropStep.java
  * 
- * Copyright (c) 2006 by Pokkari, Inc.
+ * Copyright (c) 2006 by Blip Networks, Inc.
  * 117 West 25th St, Floor 2
  * New York, NY 10001
  * All rights reserved.
  *
  * This software is the confidential and
- * proprietary information of Pokkari, Inc.
+ * proprietary information of Blip Networks, Inc.
  */
 
-package com.pokkari.blip.upper;
+package com.blipnetworks.blip.upper;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -32,14 +32,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: FileDropStep.java,v 1.6 2006/04/17 21:04:45 jklett Exp $
+ * @version $Id: FileDropStep.java,v 1.7 2006/05/06 23:56:46 jklett Exp $
  */
 
 public class FileDropStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.6 $";
+    public static final String CVS_REV = "$Revision: 1.7 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

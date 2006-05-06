@@ -1,16 +1,16 @@
 /*
  * @(#)BuildNumber.java
  *
- * Copyright (c) 2006 by Pokkari, Inc.
+ * Copyright (c) 2006 by Blip Networks, Inc.
  * 117 West 25th St.
  * New York, NY 10001
  * All rights reserved.
  *
  * This software is the confidential and
- * proprietary information of Pokkari, Inc.
+ * proprietary information of Blip Networks, Inc.
  */
 
-package com.pokkari.util;
+package com.blipnetworks.util;
 
 import java.util.Properties;
 import java.io.IOException;
@@ -24,15 +24,15 @@ import java.net.URL;
  * This class is and should always be immutable.
  *
  * @author Jared Klett
- * @version $Id: BuildNumber.java,v 1.2 2006/03/16 16:23:09 jklett Exp $
+ * @version $Id: BuildNumber.java,v 1.3 2006/05/06 23:56:46 jklett Exp $
  */
 
 public class BuildNumber {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_ID = "$Id: BuildNumber.java,v 1.2 2006/03/16 16:23:09 jklett Exp $";
-    public static final String CVS_REV = "$Revision: 1.2 $";
+    public static final String CVS_ID = "$Id: BuildNumber.java,v 1.3 2006/05/06 23:56:46 jklett Exp $";
+    public static final String CVS_REV = "$Revision: 1.3 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 

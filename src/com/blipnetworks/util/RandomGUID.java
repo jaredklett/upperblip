@@ -5,7 +5,7 @@
  *
  * From www.JavaExchange.com, Open Software licensing
  *
- * 11/05/02 -- Performance enhancement from Mike Dubman.  
+ * 11/05/02 -- Performance enhancement from Mike Dubman.
  *			   Moved InetAddr.getLocal to static block.	 Mike has measured
  *			   a 10 fold improvement in run time.
  * 01/29/02 -- Bug fix: Improper seeding of nonsecure Random object
@@ -17,7 +17,7 @@
  *
  */
 
-package com.pokkari.util;
+package com.blipnetworks.util;
 
 import java.net.*;
 import java.util.*;
@@ -26,12 +26,13 @@ import java.security.*;
 /**
  * I found this class here:
  * <a href="http://www.javaexchange.com/aboutRandomGUID.html">Java Exchange</a>
- * I added it to the Pokkari utility package, otherwise this class is unchanged.
+ * I added it to the Blip utility package and made some minor corrections.
+ * Otherwise this class is unchanged from the original.
  *
- * @version $id$
+ * @version $Id: RandomGUID.java,v 1.2 2006/05/06 23:56:46 jklett Exp $
  */
 
-public class RandomGUID extends Object {
+public class RandomGUID {
 
 	public String valueBeforeMD5 = "";
 	public String valueAfterMD5 = "";
@@ -83,18 +84,20 @@ public class RandomGUID extends Object {
 	 * Method to generate the random GUID
 	 */
 	private void getRandomGUID(boolean secure) {
-		MessageDigest md5 = null;
+		MessageDigest md5;
 		StringBuffer sbValueBeforeMD5 = new StringBuffer();
 
 		try {
 			md5 = MessageDigest.getInstance("MD5");
 		} catch (NoSuchAlgorithmException e) {
 			System.out.println("Error: " + e);
-		}
+            // TODO: better solution?
+            return;
+        }
 
 		try {
 			long time = System.currentTimeMillis();
-			long rand = 0;
+			long rand;
 
 			if (secure) {
 				rand = mySecureRand.nextLong();
@@ -119,11 +122,11 @@ public class RandomGUID extends Object {
 
 			byte[] array = md5.digest();
 			StringBuffer sb = new StringBuffer();
-			for (int j = 0; j < array.length; ++j) {
-				int b = array[j] & 0xFF;
-				if (b < 0x10) sb.append('0');
-				sb.append(Integer.toHexString(b));
-			}
+            for (byte anArray : array) {
+                int b = anArray & 0xFF;
+                if (b < 0x10) sb.append('0');
+                sb.append(Integer.toHexString(b));
+            }
 
 			valueAfterMD5 = sb.toString();
 
