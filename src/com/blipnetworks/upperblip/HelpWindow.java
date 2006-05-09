@@ -1,15 +1,25 @@
-package com.blipnetworks.blip.upper;
+/*
+ * @(#)HelpWindow.java
+ *
+ * Copyright (c) 2006 by Blip Networks, Inc.
+ * 117 West 25th St, Floor 2
+ * New York, NY 10001
+ * All rights reserved.
+ *
+ * This software is the confidential and
+ * proprietary information of Blip Networks, Inc.
+ */
+
+package com.blipnetworks.upperblip;
 
 import javax.swing.*;
 import java.util.Scanner;
 import java.awt.*;
 
 /**
- * Created by IntelliJ IDEA.
- * User: jklett
- * Date: Mar 16, 2006
- * Time: 11:49:46 AM
- * To change this template use File | Settings | File Templates.
+ * Help window, yea!
+ * 
+ * @author Jared Klett
  */
 
 public class HelpWindow extends JWindow {

@@ -10,7 +10,7 @@
  * proprietary information of Blip Networks, Inc.
  */
 
-package com.blipnetworks.blip.util;
+package com.blipnetworks.util;
 
 import java.util.ResourceBundle;
 
@@ -18,14 +18,14 @@ import java.util.ResourceBundle;
  * This class serves as an internationalization helper.
  *
  * @author Jared Klett
- * @version $Id: I18n.java,v 1.5 2006/05/06 23:56:46 jklett Exp $
+ * @version $Id: I18n.java,v 1.6 2006/05/09 14:54:52 jklett Exp $
  */
 
 public class I18n {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.5 $";
+	public static final String CVS_REV = "$Revision: 1.6 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

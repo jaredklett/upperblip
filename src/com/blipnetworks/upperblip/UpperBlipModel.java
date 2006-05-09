@@ -10,7 +10,7 @@
  * proprietary information of Blip Networks, Inc.
  */
 
-package com.blipnetworks.blip.upper;
+package com.blipnetworks.upperblip;
 
 import java.io.*;
 
@@ -21,7 +21,7 @@ import javax.swing.*;
 
 /**
  * @author Jared Klett
- * @version $Id: UpperBlipModel.java,v 1.6 2006/05/06 23:56:46 jklett Exp $
+ * @version $Id: UpperBlipModel.java,v 1.7 2006/05/09 14:54:52 jklett Exp $
  */
 
 public class UpperBlipModel extends StaticModel implements HelpBroker {

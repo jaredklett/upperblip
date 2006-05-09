@@ -10,7 +10,7 @@
  * proprietary information of Blip Networks, Inc.
  */
 
-package com.blipnetworks.blip.util;
+package com.blipnetworks.util;
 
 import java.io.*;
 
@@ -28,14 +28,14 @@ import org.w3c.dom.*;
  * It's immutable and should stay that way.
  *
  * @author Jared Klett
- * @version $Id: UploadStatus.java,v 1.6 2006/05/06 23:56:46 jklett Exp $
+ * @version $Id: UploadStatus.java,v 1.7 2006/05/09 14:54:52 jklett Exp $
  */
 
 public class UploadStatus {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.6 $";
+	public static final String CVS_REV = "$Revision: 1.7 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 

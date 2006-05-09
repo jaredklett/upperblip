@@ -10,7 +10,7 @@
  * proprietary information of Blip Networks, Inc.
  */
 
-package com.blipnetworks.blip.upper;
+package com.blipnetworks.upperblip;
 
 import java.awt.*;
 import java.io.*;
@@ -18,7 +18,6 @@ import java.util.*;
 
 import javax.swing.*;
 
-import com.blipnetworks.blip.util.*;
 import com.blipnetworks.util.*;
 
 import org.pietschy.wizard.AbstractWizardStep;
@@ -28,14 +27,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.12 2006/05/09 14:46:57 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.13 2006/05/09 14:54:52 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.12 $";
+	public static final String CVS_REV = "$Revision: 1.13 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

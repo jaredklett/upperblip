@@ -10,7 +10,7 @@
  * proprietary information of Blip Networks, Inc.
  */
 
-package com.blipnetworks.blip.util;
+package com.blipnetworks.util;
 
 import java.io.*;
 import java.util.*;
@@ -25,14 +25,14 @@ import org.apache.commons.httpclient.methods.multipart.*;
  * TODO: use a logging interface for stack traces and println's.
  * 
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.7 2006/05/06 23:56:46 jklett Exp $
+ * @version $Id: Uploader.java,v 1.8 2006/05/09 14:54:52 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.7 $";
+	public static final String CVS_REV = "$Revision: 1.8 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 

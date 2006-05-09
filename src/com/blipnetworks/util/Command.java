@@ -10,20 +10,20 @@
  * proprietary information of Blip Networks, Inc.
  */
 
-package com.blipnetworks.blip.util;
+package com.blipnetworks.util;
 
 /**
  * An interface to assist in implementing the Command design pattern.
  *
  * @author Jared Klett
- * @version	$Id: Command.java,v 1.2 2006/05/06 23:56:46 jklett Exp $
+ * @version	$Id: Command.java,v 1.3 2006/05/09 14:54:52 jklett Exp $
  */
 
 public interface Command {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.2 $";
+	public static final String CVS_REV = "$Revision: 1.3 $";
 
 // Interface methods ///////////////////////////////////////////////////////////
 

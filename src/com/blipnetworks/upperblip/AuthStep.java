@@ -10,7 +10,7 @@
  * proprietary information of Blip Networks, Inc.
  */
 
-package com.blipnetworks.blip.upper;
+package com.blipnetworks.upperblip;
 
 import java.awt.*;
 
@@ -18,7 +18,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
-import com.blipnetworks.blip.util.I18n;
+import com.blipnetworks.util.I18n;
 
 import org.pietschy.wizard.AbstractWizardStep;
 import org.pietschy.wizard.WizardModel;
@@ -27,14 +27,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: AuthStep.java,v 1.6 2006/05/09 14:46:57 jklett Exp $
+ * @version $Id: AuthStep.java,v 1.7 2006/05/09 14:54:52 jklett Exp $
  */
 
 public class AuthStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.6 $";
+	public static final String CVS_REV = "$Revision: 1.7 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

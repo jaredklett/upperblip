@@ -10,7 +10,7 @@
  * proprietary information of Blip Networks, Inc.
  */
 
-package com.blipnetworks.blip.upper;
+package com.blipnetworks.upperblip;
 
 import java.awt.*;
 import java.awt.event.WindowListener;
@@ -21,7 +21,7 @@ import java.util.prefs.*;
 
 import javax.swing.*;
 
-import com.blipnetworks.blip.util.I18n;
+import com.blipnetworks.util.I18n;
 import org.pietschy.wizard.WizardListener;
 import org.pietschy.wizard.WizardEvent;
 import org.pietschy.wizard.Wizard;
@@ -30,14 +30,14 @@ import org.pietschy.wizard.Wizard;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.10 2006/05/09 14:46:57 jklett Exp $
+ * @version $Id: Main.java,v 1.11 2006/05/09 14:54:52 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.10 $";
+    public static final String CVS_REV = "$Revision: 1.11 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
