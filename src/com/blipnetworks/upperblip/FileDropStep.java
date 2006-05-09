@@ -20,7 +20,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
-import com.pokkari.blip.util.I18n;
+import com.blipnetworks.blip.util.I18n;
 
 import javax.swing.*;
 
@@ -32,14 +32,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: FileDropStep.java,v 1.7 2006/05/06 23:56:46 jklett Exp $
+ * @version $Id: FileDropStep.java,v 1.8 2006/05/09 14:46:57 jklett Exp $
  */
 
 public class FileDropStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.7 $";
+    public static final String CVS_REV = "$Revision: 1.8 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

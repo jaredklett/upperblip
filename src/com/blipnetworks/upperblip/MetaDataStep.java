@@ -13,14 +13,12 @@
 package com.blipnetworks.blip.upper;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.io.*;
-//import java.util.*;
 
 import javax.swing.*;
 import javax.swing.border.*;
 
-import com.pokkari.blip.util.I18n;
+import com.blipnetworks.blip.util.I18n;
 
 import org.pietschy.wizard.AbstractWizardStep;
 import org.pietschy.wizard.WizardModel;
@@ -29,14 +27,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.5 2006/05/06 23:56:46 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.6 2006/05/09 14:46:57 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.5 $";
+    public static final String CVS_REV = "$Revision: 1.6 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
