@@ -32,14 +32,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: FileDropStep.java,v 1.9 2006/05/09 14:54:52 jklett Exp $
+ * @version $Id: FileDropStep.java,v 1.10 2006/05/09 15:00:43 jklett Exp $
  */
 
 public class FileDropStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.9 $";
+    public static final String CVS_REV = "$Revision: 1.10 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -106,7 +106,7 @@ public class FileDropStep extends AbstractWizardStep {
                 // Remove the file object from the list
                 for (int i = 0; i < fileList.size(); i++) {
                     File f = (File)fileList.get(i);
-                    if (f.getName().equals((String)obj)) {
+                    if (f.getName().equals(obj)) {
                         fileList.remove(f);
                         break;
                     }
