@@ -18,14 +18,14 @@ import java.util.ResourceBundle;
  * This class serves as an internationalization helper.
  *
  * @author Jared Klett
- * @version $Id: I18n.java,v 1.6 2006/05/09 14:54:52 jklett Exp $
+ * @version $Id: I18n.java,v 1.7 2006/05/09 18:17:57 jklett Exp $
  */
 
 public class I18n {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.6 $";
+	public static final String CVS_REV = "$Revision: 1.7 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -35,7 +35,7 @@ public class I18n {
 
 	private static ResourceBundle getBundle() {
 		if (bundle == null)
-            bundle = ResourceBundle.getBundle("com-pokkari-blip-upper");
+            bundle = ResourceBundle.getBundle("com-blipnetworks-upperblip");
 
 		return bundle;
 	}
