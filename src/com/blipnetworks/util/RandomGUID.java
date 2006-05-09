@@ -29,7 +29,9 @@ import java.security.*;
  * I added it to the Blip utility package and made some minor corrections.
  * Otherwise this class is unchanged from the original.
  *
- * @version $Id: RandomGUID.java,v 1.2 2006/05/06 23:56:46 jklett Exp $
+ * <b>NOTE: this version of the class is for JDK 1.4.</b>
+ *
+ * @version $Id: RandomGUID.java,v 1.3 2006/05/09 15:00:20 jklett Exp $
  */
 
 public class RandomGUID {
@@ -122,7 +124,8 @@ public class RandomGUID {
 
 			byte[] array = md5.digest();
 			StringBuffer sb = new StringBuffer();
-            for (byte anArray : array) {
+            for (int i = 0; i < array.length; i++) {
+                byte anArray = array[i];
                 int b = anArray & 0xFF;
                 if (b < 0x10) sb.append('0');
                 sb.append(Integer.toHexString(b));
