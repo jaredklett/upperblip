@@ -1,10 +1,16 @@
-<!-- $Id: build.xml,v 1.4 2006/04/17 18:39:07 jklett Exp $ -->
+<!-- $Id: build.xml,v 1.5 2006/05/09 18:12:51 jklett Exp $ -->
 <project name="UpperBlip" default="build" basedir=".">
 
 	<taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen" classpath="jsmooth/lib/jsmoothgen-ant.jar" />
 	<taskdef name="jarbundler" classpath="jarbundler/lib/jarbundler.jar" classname="com.loomcom.ant.tasks.jarbundler.JarBundler" />
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+        <classpath>
+            <pathelement location="lib/ant-contrib-0.3.jar"/>
+        </classpath>
+    </taskdef>
 
-	<property name="src" value="src" />
+    <property name="appinfo" value="UpperBlip, Copyright (c) 2006 Blip Networks, Inc." />
+    <property name="src" value="src" />
 	<property name="build" value="classes" />
 	<property name="buildnumfile" value="build.number" />
 	<property name="lib" value="lib" />
@@ -19,11 +25,7 @@
 	<property name="commonjars" value="commons-*.jar" />
 	<property name="wizardjar" value="wizard*.jar" />
 	<property name="metainf" value="**/META-INF/" />
-<!--
-	<path id="classpath">
-		<pathelement path="${lib}/wizard.jar" />
-	</path>
--->
+
 	<target name="init">
 		<!-- expand library jars -->
 		<unjar dest="${build}">
@@ -87,18 +89,25 @@
 			</fileset>
 		</copy>
 		<!-- copy properties files -->
+        <!--
         <copy file="${etc}/help.html" tofile="${build}/help.html" />
+        -->
 		<copy file="${etc}/${usenprops}" tofile="${build}/${usenprops}" />
 		<copy file="${etc}/${blipprops}" tofile="${build}/${blipprops}" />
 		<copy file="${etc}/${wizardprops}" tofile="${build}/${wizardprops}" />
 		<!-- jar it up -->
-		<jar destfile="${jarfile}" basedir="${build}" manifest="${src}/MainClass" />
+		<jar destfile="${jarfile}" basedir="${build}" manifest="${etc}/MainClass" />
 		<!-- Make a Windows .exe -->
-		<jsmoothgen project="jsmooth/UpperBlipProject.jsmooth" skeletonroot="jsmooth/skeletons"/>
+        <jsmoothgen project="jsmooth/UpperBlipProject.jsmooth" skeletonroot="jsmooth/skeletons"/>
 		<!-- Make a Mac OS X .app -->
-		<delete dir="app/UpperBlip.app" />
-		<mkdir dir="app" />
-		<jarbundler dir="app" name="UpperBlip" mainclass="com.pokkari.blip.upper.Main" jars="${jarfile}" extraclasspath="$JAVAROOT/upper.jar" version="1.0 beta (build ${build.number})" infostring="UpperBlip, Copyright 2005 Pokkari, Inc." jvmversion="1.4*" icon="etc/upperbliposxicon.icns" />
+        <if>
+            <os family="mac" />
+            <then>
+                <delete dir="app/UpperBlip.app" />
+                <mkdir dir="app" />
+                <jarbundler dir="app" name="UpperBlip" mainclass="com.pokkari.blip.upper.Main" jars="${jarfile}" extraclasspath="$JAVAROOT/upper.jar" version="1.0 beta (build ${build.number})" infostring="${appinfo}" jvmversion="1.4*" icon="etc/upperbliposxicon.icns" />
+            </then>
+        </if>
 	</target>
 
 	<target name="build" depends="package" />
