@@ -32,14 +32,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: FileDropStep.java,v 1.10 2006/05/09 15:00:43 jklett Exp $
+ * @version $Id: FileDropStep.java,v 1.11 2006/05/09 18:13:52 jklett Exp $
  */
 
 public class FileDropStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.10 $";
+    public static final String CVS_REV = "$Revision: 1.11 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -66,7 +66,10 @@ public class FileDropStep extends AbstractWizardStep {
     private JList list;
     /** */
     private List fileList;
-    /** I think we have to keep a reference to this so it doesn't get garbage collected before we leave this step. */
+    /**
+     * I think we have to keep a reference to this so it doesn't get garbage
+     * collected before we leave this step.
+     */
     private FileDrop dropper;
     /** */
     private FileDrop.Listener fdl = new FileDrop.Listener() {
@@ -173,12 +176,14 @@ public class FileDropStep extends AbstractWizardStep {
     class MyCellRenderer extends JLabel implements ListCellRenderer {
         // TODO: consider loading this once in the Icons class...
         ImageIcon smallIcon = new ImageIcon(ClassLoader.getSystemResource(Icons.SMALL_MOVIE_ICON));
-        //final static ImageIcon shortIcon = new ImageIcon("short.gif");
-
         // This is the only method defined by ListCellRenderer.
         // We just reconfigure the JLabel each time we're called.
-
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList list,
+                                                      Object value,
+                                                      int index,
+                                                      boolean isSelected,
+                                                      boolean cellHasFocus)
+        {
             String s = value.toString();
             setText(s);
             setIcon(smallIcon);

@@ -27,14 +27,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.7 2006/05/09 14:54:52 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.8 2006/05/09 18:13:52 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.7 $";
+    public static final String CVS_REV = "$Revision: 1.8 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -106,7 +106,11 @@ public class MetaDataStep extends AbstractWizardStep {
                 )
             );
             JLabel fileLabel = new JLabel(I18n.getString(FILE_LABEL_KEY));
-            JLabel fileNameLabel = new JLabel(files[i].getName(), new ImageIcon(ClassLoader.getSystemResource(Icons.SMALL_MOVIE_ICON)), SwingConstants.LEFT);
+            JLabel fileNameLabel = new JLabel(
+                    files[i].getName(),
+                    new ImageIcon(ClassLoader.getSystemResource(Icons.SMALL_MOVIE_ICON)),
+                    SwingConstants.LEFT
+            );
             JLabel titleLabel = new JLabel(I18n.getString(TITLE_LABEL_KEY));
             JLabel descLabel = new JLabel(I18n.getString(DESC_LABEL_KEY));
             //TODO: add this functionality

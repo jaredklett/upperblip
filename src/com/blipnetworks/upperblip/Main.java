@@ -30,21 +30,21 @@ import org.pietschy.wizard.Wizard;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.11 2006/05/09 14:54:52 jklett Exp $
+ * @version $Id: Main.java,v 1.12 2006/05/09 18:13:52 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.11 $";
+    public static final String CVS_REV = "$Revision: 1.12 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
     // TODO: cleanup
-    private static final String PREFS_NODE = "com.pokkari.blip.upper";
+    private static final String PREFS_NODE = "com.blipnetworks.upperblip";
     private static final String PREFS_DIR = "/Library/Preferences/";
-    private static final String PROPS_FILE = "com.pokkari.UpperBlip.properties";
+    private static final String PROPS_FILE = "com.blipnetworks.upperblip.properties";
     private static final String PREFS_PROPERTIES = System.getProperty("user.home") + PREFS_DIR + PROPS_FILE;
     private static final String PREFS_NAME = "UpperBlip preferences";
     private static final String CANCEL_TITLE_KEY = "main.cancel.title";

@@ -27,14 +27,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: AuthStep.java,v 1.7 2006/05/09 14:54:52 jklett Exp $
+ * @version $Id: AuthStep.java,v 1.8 2006/05/09 18:13:52 jklett Exp $
  */
 
 public class AuthStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.7 $";
+	public static final String CVS_REV = "$Revision: 1.8 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -69,7 +69,11 @@ public class AuthStep extends AbstractWizardStep {
 	private DocumentListener dl = new DocumentListener() {
 		public void changedUpdate(DocumentEvent e) { /* ignore */ }
 		public void insertUpdate(DocumentEvent e) {
-			if (userField.getText() != null && !userField.getText().equals("") && passField.getPassword() != null && !(new String(passField.getPassword())).equals("")) {
+			if (userField.getText() != null &&
+                    !userField.getText().equals("") &&
+                    passField.getPassword() != null &&
+                    !(new String(passField.getPassword())).equals(""))
+            {
 				setComplete(true);
 			}
 		}
