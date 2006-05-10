@@ -1,11 +1,11 @@
-<!-- $Id: build.xml,v 1.5 2006/05/09 18:12:51 jklett Exp $ -->
+<!-- $Id: build.xml,v 1.6 2006/05/10 20:55:19 jklett Exp $ -->
 <project name="UpperBlip" default="build" basedir=".">
 
 	<taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen" classpath="jsmooth/lib/jsmoothgen-ant.jar" />
 	<taskdef name="jarbundler" classpath="jarbundler/lib/jarbundler.jar" classname="com.loomcom.ant.tasks.jarbundler.JarBundler" />
     <taskdef resource="net/sf/antcontrib/antcontrib.properties">
         <classpath>
-            <pathelement location="lib/ant-contrib-0.3.jar"/>
+            <pathelement location="lib/ant-contrib.jar"/>
         </classpath>
     </taskdef>
 
@@ -18,7 +18,7 @@
 	<property name="icons" value="etc/icons" />
 	<property name="now" value="" />
 	<property name="jarfile" value="upper.jar" />
-	<property name="usenprops" value="com-pokkari-blip-upper_en_US.properties" />
+	<property name="usenprops" value="com-blipnetworks-upperblip_en_US.properties" />
     <property name="blipprops" value="upperblip.properties" />
 	<property name="wizardprops" value="org-pietschy-wizard.properties" />
 	<property name="filedropjar" value="filedrop*.jar" />
@@ -52,12 +52,6 @@
 				<include name="**/${wizardjar}" />
 			</fileset>
 		</unjar>
-<!--
-		<echo message="Creating time stamp for files ..." />
-		<tstamp>
-			<format property="now" pattern="yyyyMMddHHmm" />
-		</tstamp>
--->
 	</target>
 
 	<target name="compile" depends="init">
@@ -105,7 +99,7 @@
             <then>
                 <delete dir="app/UpperBlip.app" />
                 <mkdir dir="app" />
-                <jarbundler dir="app" name="UpperBlip" mainclass="com.pokkari.blip.upper.Main" jars="${jarfile}" extraclasspath="$JAVAROOT/upper.jar" version="1.0 beta (build ${build.number})" infostring="${appinfo}" jvmversion="1.4*" icon="etc/upperbliposxicon.icns" />
+                <jarbundler dir="app" name="UpperBlip" mainclass="com.blipnetworks.upperblip.Main" jars="${jarfile}" extraclasspath="$JAVAROOT/upper.jar" version="1.0 beta (build ${build.number})" infostring="${appinfo}" jvmversion="1.4*" icon="etc/upperbliposxicon.icns" />
             </then>
         </if>
 	</target>
