@@ -10,10 +10,10 @@
 <classPath>../upper.jar</classPath>
 <embeddedJar>true</embeddedJar>
 <executableName>UpperBlip.exe</executableName>
-<iconLocation>../etc/UpperBlip-icon-2.gif</iconLocation>
+<iconLocation>../etc/UpperBlip-icon.gif</iconLocation>
 <initialMemoryHeap>-1</initialMemoryHeap>
 <jarLocation>../upper.jar</jarLocation>
-<mainClassName>com.pokkari.blip.upper.Main</mainClassName>
+<mainClassName>com.blipnetworks.upperblip.Main</mainClassName>
 <maximumMemoryHeap>-1</maximumMemoryHeap>
 <maximumVersion></maximumVersion>
 <minimumVersion>1.3.99</minimumVersion>
