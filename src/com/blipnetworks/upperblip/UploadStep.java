@@ -1,13 +1,13 @@
 /* 
  * @(#)UploadStep.java
- * 
- * Copyright (c) 2006 by Blip Networks, Inc.
+ *
+ * Copyright (c) 2006 by Pokkari, Inc.
  * 117 West 25th St, Floor 2
  * New York, NY 10001
  * All rights reserved.
  *
  * This software is the confidential and
- * proprietary information of Blip Networks, Inc.
+ * proprietary information of Pokkari, Inc.
  */
 
 package com.blipnetworks.upperblip;
@@ -24,17 +24,17 @@ import org.pietschy.wizard.AbstractWizardStep;
 import org.pietschy.wizard.WizardModel;
 
 /**
- * 
- * 
+ *
+ *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.13 2006/05/09 14:54:52 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.14 2006/06/20 21:44:53 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.13 $";
+	public static final String CVS_REV = "$Revision: 1.14 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -48,10 +48,6 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
     private static final String RATE_LABEL_KEY = "upload.rate.label";
     /** blah */
     private static final String TIME_LABEL_KEY = "upload.time.label";
-    /** blah */
-    private static final String FILE_LABEL_KEY = "upload.file.label";
-    /** blah */
-    private static final String OVERALL_TIME_LABEL_KEY = "upload.overall.time.label";
 	/** blah */
 	public static final String PROP_BASE_URL = "base.url";
 
@@ -61,12 +57,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // Instance variables //////////////////////////////////////////////////////////
 
-    private int totalUploadSamples;
-    private int statusHitCount;
-    private long startTime;
-    private long refreshRate = 1000;
-    private long statusHitRate = 10000;
-    /** */
+	/** */
 	private boolean running;
     /** */
     private String statusURL;
@@ -83,69 +74,46 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 	/** */
 	private JLabel timeLabel;
 	/** */
-	private JProgressBar currentProgress;
-    /** */
-    private JLabel fileLabel;
-    /** */
-    private JLabel overallTimeLabel;
-    /** */
-    private JProgressBar overallProgress;
+	private JProgressBar progress;
 
     private Runnable timer = new Runnable() {
         public void run() {
-            long accum = 0;
-            long start = 0;
-            long update = 0;
-            long delta = 0;
-            int read = 0;
-            int total = 0;
-            float bps = 0;
-            currentProgress.setMinimum(0);
+            progress.setMinimum(0);
             try { Thread.sleep(5000); } catch (Exception e) { /* ignored */ }
             while (running) {
-                if (accum == 0 || accum >= statusHitRate) {
-                    UploadStatus status = UploadStatus.getStatus(statusURL, guid.toString());
-                    statusHitCount++;
-                    start = status.getStart();
-                    update = status.getUpdate();
-                    read = status.getRead();
-                    total = status.getTotal();
-                    bps = read / (update - start);
-                    totalUploadSamples += bps;
-                    if (currentProgress.isIndeterminate())
-                        currentProgress.setIndeterminate(false);
-                } else {
-                    // add the refresh sleep time
-                    update += refreshRate;
-                    // project how many bytes have been uploaded
-                    // while we were sleeping
-                    read += bps * (refreshRate / 1000);
-                }
-                currentProgress.setValue(read);
-                currentProgress.setMaximum(total);
-                delta = update - start;
-                if (delta == 0)
-                    continue;
-                int time = (int) (total / bps);
-                String kbpstr = Float.toString(bps / 1000);
-                // TODO: externalize
-                rateLabel.setText("Uploading \"" + filename + "\" at " + kbpstr.substring(0, kbpstr.indexOf(".") + 2) + " KB/s");
+                UploadStatus status = UploadStatus.getStatus(statusURL, guid.toString());
+                if (status != null) {
+                    long start = status.getStart();
+                    long update = status.getUpdate();
+                    int read = status.getRead();
+                    int total = status.getTotal();
+                    progress.setIndeterminate(false);
+                    progress.setValue(read);
+                    progress.setMaximum(total);
+                    long delta = update - start;
+                    if (delta == 0)
+                        continue;
+                    float bps = read / delta;
+                    int time = (int) (total / bps);
+                    String kbpstr = Float.toString(bps / 1000);
+                    // TODO: externalize
+                    rateLabel.setText("Uploading \"" + filename + "\" at " + kbpstr.substring(0, kbpstr.indexOf(".") + 2) + " KB/s");
 
-                String str = " (" + parseSize(read) + " of " + parseSize(total) + " uploaded)";
-                // TODO: externalize
-                if (time < 60) {
-                    timeLabel.setText("Time remaining: less than a minute" + str);
-                } else {
-                    int minutes = time / 60;
-                    if (minutes > 1)
-                        timeLabel.setText("Time remaining: about " + minutes + " minutes" + str);
-                    else if (minutes > 0)
-                        timeLabel.setText("Time remaining: about a minute" + str);
-                    else
+                    String str = " (" + parseSize(read) + " of " + parseSize(total) + " uploaded)";
+                    // TODO: externalize
+                    if (time < 60) {
                         timeLabel.setText("Time remaining: less than a minute" + str);
+                    } else {
+                        int minutes = time / 60;
+                        if (minutes > 1)
+                            timeLabel.setText("Time remaining: about " + minutes + " minutes" + str);
+                        else if (minutes > 0)
+                            timeLabel.setText("Time remaining: about a minute" + str);
+                        else
+                            timeLabel.setText("Time remaining: less than a minute" + str);
+                    }
                 }
-                try { Thread.sleep(refreshRate); } catch (Exception e) { /* ignored */ }
-                accum += refreshRate;
+                try { Thread.sleep(2000); } catch (Exception e) { /* ignored */ }
             }
         }
     };
@@ -158,24 +126,9 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 		// Create and layout components
 		rateLabel = new JLabel(I18n.getString(RATE_LABEL_KEY));
 		timeLabel = new JLabel(I18n.getString(TIME_LABEL_KEY));
-		currentProgress = new JProgressBar();
-		currentProgress.setIndeterminate(true);
+		progress = new JProgressBar();
+		progress.setIndeterminate(true);
 
-        // TODO: change layout manager
-        GridBagLayout gbl = new GridBagLayout();
-        GridBagConstraints gbc = new GridBagConstraints();
-        view = new JPanel();
-        view.setLayout(gbl);
-        JPanel panel = buildPanel(rateLabel, timeLabel, currentProgress);
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbl.setConstraints(panel, gbc);
-        view.add(panel);
-    }
-
-// Instance methods ///////////////////////////////////////////////////////////
-
-    private JPanel buildPanel(JLabel topLabel, JLabel bottomLabel, JProgressBar progress) {
 		GridBagLayout gbl = new GridBagLayout();
 		GridBagConstraints gbc = new GridBagConstraints();
 		JPanel panel = new JPanel();
@@ -193,8 +146,8 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 
 		gbc.gridx = 0;
 		gbc.gridy = 0;
-		gbl.setConstraints(topLabel, gbc);
-		panel.add(topLabel);
+		gbl.setConstraints(rateLabel, gbc);
+		panel.add(rateLabel);
 
 		gbc.gridx = 0;
 		gbc.gridy = 1;
@@ -204,26 +157,28 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 
 		gbc.gridx = 0;
 		gbc.gridy = 2;
-		gbl.setConstraints(bottomLabel, gbc);
-		panel.add(bottomLabel);
+		gbl.setConstraints(timeLabel, gbc);
+		panel.add(timeLabel);
 
-        return panel;
-    }
+		view = new JPanel();
+		view.add(panel);
+	}
 
 // Runnable implementation ////////////////////////////////////////////////////
 
 	public void run() {
-        startTime = System.currentTimeMillis();
-        setBusy(true);
+		setBusy(true);
 		String url = Main.appProperties.getProperty(PROP_BASE_URL) + "/file/post?form_cookie=";
 		statusURL = Main.appProperties.getProperty(PROP_BASE_URL) + "/upload/status?skin=xmlhttprequest&form_cookie=";
-		Uploader uploader = new Uploader(url, Integer.parseInt(Main.appProperties.getProperty("http.timeout", "30000")));
+		Uploader uploader = new Uploader(url);
 		File[] files = model.getFiles();
-		//currentProgress.setMinimum(0);
-		//currentProgress.setMaximum(files.length);
+		//progress.setMinimum(0);
+		//progress.setMaximum(files.length);
 		String[] titles = model.getTitles();
 		String[] tags = model.getTags();
 		String[] descriptions = model.getDescriptions();
+        String[] licenses = model.getLicenses();
+        String[] categories = model.getCategories();
 		// Create a properties object
 		Properties props = new Properties();
 		props.put(Uploader.USER_PARAM_KEY, model.getUsername());
@@ -235,8 +190,10 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 			uploader.setGuid(guid.toString());
 			// put in the current data
 			props.put(Uploader.TITLE_PARAM_KEY, titles[i]);
-			//props.put(Uploader.TAGS_PARAM_KEY, tags[i]);
+			props.put(Uploader.TAGS_PARAM_KEY, tags[i]);
 			props.put(Uploader.DESC_PARAM_KEY, descriptions[i]);
+            props.put(Uploader.LICENSE_PARAM_KEY, licenses[i]);
+            props.put(Uploader.CAT_PARAM_KEY, categories[i]);
 			// calculate the approximate transfer time for the next file
 			// do the upload
 			Thread thread = new Thread(timer);
@@ -262,9 +219,12 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 			// take out the old data
 			props.remove(Uploader.TITLE_PARAM_KEY);
 			props.remove(Uploader.DESC_PARAM_KEY);
-			//if (currentProgress.isIndeterminate())
-				//currentProgress.setIndeterminate(false);
-			//currentProgress.setValue(currentProgress.getValue() + 1);
+            props.remove(Uploader.LICENSE_PARAM_KEY);
+            props.remove(Uploader.CAT_PARAM_KEY);
+            props.remove(Uploader.TAGS_PARAM_KEY);
+			//if (progress.isIndeterminate())
+				//progress.setIndeterminate(false);
+			//progress.setValue(progress.getValue() + 1);
 		}
 		setBusy(false);
         // TODO: externalize
@@ -280,26 +240,14 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 	}
 
 	public void prepare() {
-        if (model.getFiles().length > 1) {
-//            fileLabel = new JLabel("crap");
-//            overallTimeLabel = new JLabel("garbage");
-            fileLabel = new JLabel(I18n.getString(FILE_LABEL_KEY));
-            overallTimeLabel = new JLabel(I18n.getString(OVERALL_TIME_LABEL_KEY));
-            overallProgress = new JProgressBar();
-            GridBagLayout gbl = (GridBagLayout)view.getLayout();
-            GridBagConstraints gbc = new GridBagConstraints();
-            JPanel panel = buildPanel(fileLabel, overallTimeLabel, overallProgress);
-            gbc.gridx = 0;
-            gbc.gridy = 1;
-            gbl.setConstraints(panel, gbc);
-            view.add(panel);
-        }
-        setView(view);
+		setView(view);
 		new Thread(this).start();
 	}
 
 	public void applyState() {
 		// this is called when the user clicks "Next"
+		//FontItem fi = (FontItem)dropdown.getSelectedItem();
+		//model.setFontSize(fi.getFont().getSize());
 	}
 
 	public Dimension getPreferredSize() {

@@ -19,6 +19,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 
 import com.blipnetworks.util.I18n;
+import com.blipnetworks.util.MetadataLoader;
 
 import org.pietschy.wizard.AbstractWizardStep;
 import org.pietschy.wizard.WizardModel;
@@ -27,14 +28,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.8 2006/05/09 18:13:52 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.9 2006/06/20 21:44:53 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.8 $";
+    public static final String CVS_REV = "$Revision: 1.9 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -48,6 +49,19 @@ public class MetaDataStep extends AbstractWizardStep {
     private static final String TITLE_LABEL_KEY = "meta.titlefield.label";
     /** blah */
     private static final String DESC_LABEL_KEY = "meta.desc.label";
+    /** blah */
+    private static final String LICENSE_LABEL_KEY = "meta.license.label";
+    /** blah */
+    private static final String TAGS_LABEL_KEY = "meta.tags.label";
+    /** blah */
+    private static final String CATEGORY_LABEL_KEY = "meta.category.label";
+
+    static {
+        String url = Main.appProperties.getProperty("base.url");
+        String uri = Main.appProperties.getProperty("metadata.uri", "/liccat.xml");
+        System.out.println("About to load metadata...");
+        MetadataLoader.load(url + uri);
+    }
 
 // Enumerated types ////////////////////////////////////////////////////////////
 
@@ -61,6 +75,12 @@ public class MetaDataStep extends AbstractWizardStep {
     private JTextField[] titleList;
     /** */
     private JTextArea[] descList;
+    /** */
+    private JComboBox[] categoryList;
+    /** */
+    private JComboBox[] licenseList;
+    /** */
+    private JTextField[] tagsList;
     /** */
     private UpperBlipModel model;
 
@@ -91,6 +111,9 @@ public class MetaDataStep extends AbstractWizardStep {
         File[] files = model.getFiles();
         titleList = new JTextField[files.length];
         descList = new JTextArea[files.length];
+        categoryList = new JComboBox[files.length];
+        licenseList = new JComboBox[files.length];
+        tagsList = new JTextField[files.length];
 
         for (int i = 0; i < files.length; i++) {
             JPanel panel = new JPanel();
@@ -113,12 +136,18 @@ public class MetaDataStep extends AbstractWizardStep {
             );
             JLabel titleLabel = new JLabel(I18n.getString(TITLE_LABEL_KEY));
             JLabel descLabel = new JLabel(I18n.getString(DESC_LABEL_KEY));
+            JLabel licenseLabel = new JLabel(I18n.getString(LICENSE_LABEL_KEY));
+            JLabel tagsLabel = new JLabel(I18n.getString(TAGS_LABEL_KEY));
+            JLabel categoryLabel = new JLabel(I18n.getString(CATEGORY_LABEL_KEY));
             //TODO: add this functionality
             //JButton titleButton = new JButton("Apply title to all");
             //JButton descButton = new JButton("Apply description to all");
             //JButton removeButton = new JButton("Don't upload");
             JTextField titleField = new JTextField(20);
             JTextArea descArea = new JTextArea(10, 20);
+            JComboBox categories = new JComboBox(MetadataLoader.categories.keySet().toArray());
+            JComboBox licenses = new JComboBox(MetadataLoader.licenses.keySet().toArray());
+            JTextField tagsField = new JTextField(20);
             descArea.setLineWrap(true);
             descArea.setWrapStyleWord(true);
             JScrollPane jsp = new JScrollPane(descArea);
@@ -126,6 +155,9 @@ public class MetaDataStep extends AbstractWizardStep {
             // Track these components in lists
             titleList[i] = titleField;
             descList[i] = descArea;
+            tagsList[i] = tagsField;
+            licenseList[i] = licenses;
+            categoryList[i] = categories;
             // Layout for the internal panel
             GridBagLayout gbl2 = new GridBagLayout();
             GridBagConstraints gbc2 = new GridBagConstraints();
@@ -164,6 +196,36 @@ public class MetaDataStep extends AbstractWizardStep {
             gbc2.anchor = GridBagConstraints.NORTHWEST;
             gbl2.setConstraints(jsp, gbc2);
             panel.add(jsp);
+            gbc2.gridx = 0;
+            gbc2.gridy = 3;
+            gbc2.anchor = GridBagConstraints.NORTHEAST;
+            gbl2.setConstraints(licenseLabel, gbc2);
+            panel.add(licenseLabel);
+            gbc2.gridx = 1;
+            //gbc2.gridy = 1;
+            gbc2.anchor = GridBagConstraints.NORTHWEST;
+            gbl2.setConstraints(licenses, gbc2);
+            panel.add(licenses);
+            gbc2.gridx = 0;
+            gbc2.gridy = 4;
+            gbc2.anchor = GridBagConstraints.NORTHEAST;
+            gbl2.setConstraints(tagsLabel, gbc2);
+            panel.add(tagsLabel);
+            gbc2.gridx = 1;
+            //gbc2.gridy = 1;
+            gbc2.anchor = GridBagConstraints.NORTHWEST;
+            gbl2.setConstraints(tagsField, gbc2);
+            panel.add(tagsField);
+            gbc2.gridx = 0;
+            gbc2.gridy = 5;
+            gbc2.anchor = GridBagConstraints.NORTHEAST;
+            gbl2.setConstraints(categoryLabel, gbc2);
+            panel.add(categoryLabel);
+            gbc2.gridx = 1;
+            //gbc2.gridy = 1;
+            gbc2.anchor = GridBagConstraints.NORTHWEST;
+            gbl2.setConstraints(categories, gbc2);
+            panel.add(categories);
 
             gbc.gridx = 0;
             gbc.gridy += 1;
@@ -183,6 +245,9 @@ public class MetaDataStep extends AbstractWizardStep {
         // Create string arrays
         String[] titles = new String[titleList.length];
         String[] descriptions = new String[descList.length];
+        String[] tags = new String[descList.length];
+        String[] categories = new String[descList.length];
+        String[] licenses = new String[descList.length];
         // Loop through components and populate the arrays
         for (int i = 0; i < titleList.length; i++) {
             // If the user didn't enter a title, set it to the name of the file
@@ -194,10 +259,16 @@ public class MetaDataStep extends AbstractWizardStep {
                 titles[i] = titleList[i].getText();
             }
             descriptions[i] = descList[i].getText();
+            tags[i] = tagsList[i].getText();
+            categories[i] = (String)MetadataLoader.categories.get(categoryList[i].getSelectedItem());
+            licenses[i] = (String)MetadataLoader.licenses.get(licenseList[i].getSelectedItem());
         }
         // Put the arrays in our model
         model.setTitles(titles);
         model.setDescriptions(descriptions);
+        model.setTags(tags);
+        model.setCategories(categories);
+        model.setLicenses(licenses);
     }
 
     public Dimension getPreferredSize() {

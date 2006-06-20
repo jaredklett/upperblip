@@ -14,32 +14,27 @@ package com.blipnetworks.util;
 
 import java.io.*;
 
-import javax.xml.parsers.*;
-
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.cookie.*;
-import org.apache.commons.httpclient.methods.*;
-
-import org.xml.sax.*;
 import org.w3c.dom.*;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * This class knows how to ask Otter about the status of an upload, and nothing more.
  * It's immutable and should stay that way.
  *
  * @author Jared Klett
- * @version $Id: UploadStatus.java,v 1.7 2006/05/09 14:54:52 jklett Exp $
+ * @version $Id: UploadStatus.java,v 1.8 2006/06/20 21:44:53 jklett Exp $
  */
 
 public class UploadStatus {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.7 $";
+    public static final String CVS_REV = "$Revision: 1.8 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
-    private static final int TIMEOUT = 30000;
     private static final String GUID_TAG = "guid";
     private static final String FILENAME_TAG = "filename";
     private static final String START_TAG = "start";
@@ -58,7 +53,7 @@ public class UploadStatus {
 
 // Constructor ////////////////////////////////////////////////////////////////
 
-	private UploadStatus() {
+    private UploadStatus() {
         // will never be called outside
     }
 
@@ -72,34 +67,20 @@ public class UploadStatus {
      */
     public static UploadStatus getStatus(String url, String guid) {
 
-		GetMethod method = new GetMethod(url + guid);
         UploadStatus status = null;
+        Document document = null;
         try {
-			HttpClient client = new HttpClient();
-			// Set a tolerant cookie policy
-			client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
-			// Set our timeout
-            client.getHttpConnectionManager().getParams().setConnectionTimeout(TIMEOUT);
-			int responseCode = client.executeMethod(method);
-            if (responseCode != HttpStatus.SC_OK) {
-                // TODO: problem! what to do?
-                return null;
-            }
-			// Read the response
-            InputStream responseStream = method.getResponseBodyAsStream();
-            Document document = null;
+            document = XmlUtils.loadDocumentFromUrl(url + guid);
+            System.out.println(XmlUtils.makeStringFromDocument(document));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (SAXException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        if (document != null) {
             try {
-                DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-                document = docBuilder.parse(responseStream);
-            } catch (ParserConfigurationException e) {
-                // TODO: log this?
-                e.printStackTrace();
-            } catch (SAXException e) {
-                // TODO: log this?
-                e.printStackTrace();
-            }
-
-            if (document != null) {
                 status = new UploadStatus();
                 status.setGuid(document.getElementsByTagName(GUID_TAG).item(0).getTextContent());
                 status.setFilename(document.getElementsByTagName(FILENAME_TAG).item(0).getTextContent());
@@ -107,21 +88,13 @@ public class UploadStatus {
                 status.setUpdate(Integer.parseInt(document.getElementsByTagName(UPDATE_TAG).item(0).getTextContent()));
                 status.setRead(Integer.parseInt(document.getElementsByTagName(READ_TAG).item(0).getTextContent()));
                 status.setTotal(Integer.parseInt(document.getElementsByTagName(TOTAL_TAG).item(0).getTextContent()));
+            } catch (Exception e) {
+                // TODO: dirty hack, fix
+                return null;
             }
-		}
-		catch (HttpException e) {
-            // TODO: log this?
-			e.printStackTrace();
-		}
-		catch (IOException e) {
-            // TODO: log this?
-			e.printStackTrace();
-		}
-		finally {
-			method.releaseConnection();
-		}
-		return status;
-	}
+        }
+        return status;
+    }
 
 // Instance methods ///////////////////////////////////////////////////////////
 
