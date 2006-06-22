@@ -14,6 +14,7 @@ package com.blipnetworks.util;
 
 import java.util.Properties;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 /**
@@ -24,15 +25,15 @@ import java.net.URL;
  * This class is and should always be immutable.
  *
  * @author Jared Klett
- * @version $Id: BuildNumber.java,v 1.3 2006/05/06 23:56:46 jklett Exp $
+ * @version $Id: BuildNumber.java,v 1.4 2006/06/22 20:01:37 jklett Exp $
  */
 
 public class BuildNumber {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_ID = "$Id: BuildNumber.java,v 1.3 2006/05/06 23:56:46 jklett Exp $";
-    public static final String CVS_REV = "$Revision: 1.3 $";
+    public static final String CVS_ID = "$Id: BuildNumber.java,v 1.4 2006/06/22 20:01:37 jklett Exp $";
+    public static final String CVS_REV = "$Revision: 1.4 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -40,50 +41,6 @@ public class BuildNumber {
     private static final String DEFAULT_NUMBER = "-1";
     private static final String TAG = "cvs.tag";
     private static final String DEFAULT_TAG = "unknown";
-
-// Class variables ////////////////////////////////////////////////////////////
-
-    private static BuildNumber appBuildNumber;
-
-// Class initializer //////////////////////////////////////////////////////////
-
-    static {
-        Properties appProps = new Properties();
-        try {
-            appProps.load(ClassLoader.getSystemResourceAsStream(BUILD_NUMBER));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        int number = Integer.parseInt(appProps.getProperty(BUILD_NUMBER, DEFAULT_NUMBER));
-        String tag = appProps.getProperty(TAG, DEFAULT_TAG);
-        appBuildNumber = new BuildNumber(number, tag);
-    }
-
-// Class methods //////////////////////////////////////////////////////////////
-
-    /**
-     * Retrieves the application build number, loaded as a system resource.
-     *
-     * @return The application build number instance.
-     */
-    public static BuildNumber getAppBuildNumber() {
-        return appBuildNumber;
-    }
-
-    /**
-     * Loads build number info from the passed URL and returns a new instance.
-     *
-     * @param url The complete URL to load the info from.
-     * @return A new instance with the info from the remote source.
-     * @throws IOException If a network error occurs.
-     */
-    public static BuildNumber loadRemote(URL url) throws IOException {
-        Properties remoteProps = new Properties();
-        remoteProps.load(url.openStream());
-        int number = Integer.parseInt(remoteProps.getProperty(BUILD_NUMBER, DEFAULT_NUMBER));
-        String tag = remoteProps.getProperty(TAG, DEFAULT_TAG);
-        return new BuildNumber(number, tag);
-    }
 
 // Instance variables /////////////////////////////////////////////////////////
 
@@ -100,12 +57,60 @@ public class BuildNumber {
      * @param buildNumber The numerical ID of this build.
      * @param tag The associated tag from CVS.
      */
-    public BuildNumber(int buildNumber, String tag) {
+    protected BuildNumber(int buildNumber, String tag) {
         this.buildNumber = buildNumber;
         this.tag = tag;
     }
 
+// Class methods //////////////////////////////////////////////////////////////
+
+    /**
+     * Loads build number info from the passed URL and returns a new instance.
+     *
+     * @param url The complete URL to load the info from.
+     * @return A new instance with the info from the remote source.
+     * @throws IOException If a network error occurs.
+     */
+    public static BuildNumber loadRemote(URL url) throws IOException {
+        return load(url.openStream());
+    }
+
+    /**
+     *
+     * @return
+     * @throws IOException
+     */
+    public static BuildNumber loadLocal() throws IOException {
+        return load(ClassLoader.getSystemResourceAsStream(BUILD_NUMBER));
+    }
+
+    /**
+     *
+     * @param in
+     * @return
+     * @throws IOException
+     */
+    private static BuildNumber load(InputStream in) throws IOException {
+        Properties props = new Properties();
+        props.load(in);
+        int number = Integer.parseInt(props.getProperty(BUILD_NUMBER, DEFAULT_NUMBER));
+        String tag = props.getProperty(TAG, DEFAULT_TAG);
+        return new BuildNumber(number, tag);
+    }
+
 // Instance methods ///////////////////////////////////////////////////////////
+
+    /**
+     *
+     * @param obj
+     * @return foo
+     */
+    public boolean equals(Object obj) {
+        if (obj instanceof BuildNumber)
+            return ((BuildNumber)obj).getBuildNumber() == buildNumber;
+        else
+            return false;
+    }
 
     /**
      * Retrieves the build number for this instance.
@@ -123,6 +128,16 @@ public class BuildNumber {
      */
     public String getTag() {
         return tag;
+    }
+
+    public static void main(String[] args) {
+        try {
+            BuildNumber localBn = new BuildNumber(168, DEFAULT_TAG);
+            BuildNumber bn = BuildNumber.loadRemote(new URL(args[0]));
+            System.out.println(bn.equals(localBn));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 } // class BuildNumber

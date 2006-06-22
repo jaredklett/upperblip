@@ -18,10 +18,13 @@ import java.awt.event.WindowEvent;
 import java.io.*;
 import java.util.Properties;
 import java.util.prefs.*;
+import java.net.URL;
 
 import javax.swing.*;
 
 import com.blipnetworks.util.I18n;
+import com.blipnetworks.util.BuildNumber;
+import com.blipnetworks.util.BrowserLauncher;
 import org.pietschy.wizard.WizardListener;
 import org.pietschy.wizard.WizardEvent;
 import org.pietschy.wizard.Wizard;
@@ -30,18 +33,19 @@ import org.pietschy.wizard.Wizard;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.12 2006/05/09 18:13:52 jklett Exp $
+ * @version $Id: Main.java,v 1.13 2006/06/22 20:01:37 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.12 $";
+    public static final String CVS_REV = "$Revision: 1.13 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
     // TODO: cleanup
+    private static final String BUILD_NUMBER_URI = "/upperblip.build";
     private static final String PREFS_NODE = "com.blipnetworks.upperblip";
     private static final String PREFS_DIR = "/Library/Preferences/";
     private static final String PROPS_FILE = "com.blipnetworks.upperblip.properties";
@@ -49,6 +53,8 @@ public class Main {
     private static final String PREFS_NAME = "UpperBlip preferences";
     private static final String CANCEL_TITLE_KEY = "main.cancel.title";
     private static final String CANCEL_TEXT_KEY = "main.cancel.text";
+    private static final String UPDATE_TITLE_KEY = "main.update.title";
+    private static final String UPDATE_TEXT_KEY = "main.update.text";
     private static final String FRAME_TITLE_KEY = "main.frame.title";
 
     private static boolean macintosh = System.getProperty("os.name").equals("Mac OS X");
@@ -113,8 +119,6 @@ public class Main {
 
     private WizardListener wizl = new WizardListener() {
         public void wizardCancelled(WizardEvent e) {
-            //System.out.println("Wizard cancelled");
-
             int choice = JOptionPane.showConfirmDialog(
                     Main.getMainInstance().getMainFrame(),
                     I18n.getString(CANCEL_TEXT_KEY),
@@ -208,6 +212,24 @@ public class Main {
         } else {
             frame.setBounds(x, y, w, h);
         }
+        // Check for new version
+        try {
+            BuildNumber remoteBuild = BuildNumber.loadRemote(new URL(appProperties.getProperty("base.url") + BUILD_NUMBER_URI));
+            BuildNumber localBuild = BuildNumber.loadLocal();
+            if (!localBuild.equals(remoteBuild)) {
+                int choice = JOptionPane.showConfirmDialog(
+                        frame,
+                        I18n.getString(UPDATE_TEXT_KEY),
+                        I18n.getString(UPDATE_TITLE_KEY),
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE
+                );
+
+                if (choice == JOptionPane.YES_OPTION) {
+                    BrowserLauncher.openURL("http://blip.tv/tools");
+                }
+            }
+        } catch (Exception e) { e.printStackTrace(); /* ignored */ }
         frame.setVisible(true);
         Runtime.getRuntime().addShutdownHook(shutdownHook);
     }
