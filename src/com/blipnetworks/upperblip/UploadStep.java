@@ -27,14 +27,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.14 2006/06/20 21:44:53 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.15 2006/08/02 19:00:56 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.14 $";
+	public static final String CVS_REV = "$Revision: 1.15 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -200,22 +200,40 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 			running = true;
 			thread.start();
 			boolean success = uploader.uploadFile(files[i], props);
-			// Halt the timer thread
+            String msg = "An unknown error occurred.";
+            int err = -1;
+            if (!success) {
+                err = uploader.getErrorCode();
+                if (err == Uploader.ERROR_BAD_AUTH) {
+                    msg = "Uh-oh, it looks like you supplied a bad username and/or password.\nPlease exit and try again.";
+                } else {
+                    msg = "It seems that a problem arose while uploading.\nDo you wish to continue attempting to upload?";
+                }
+            }
+            // Halt the timer thread
 			running = false;
 			thread.interrupt();
-			if (!success) {
-				int choice = JOptionPane.showConfirmDialog(
-					Main.getMainInstance().getMainFrame(),
-                        // TODO: externalize
-					"It seems that a problem arose while uploading.\nDo you wish to continue attempting to upload?",
-					"Error occurred during upload",
-					JOptionPane.YES_NO_OPTION,
-					JOptionPane.ERROR_MESSAGE
-				);
-
-				if (choice == JOptionPane.NO_OPTION)
-					break;
-			}
+            if (!success) {
+                int choice;
+                if (err == Uploader.ERROR_UNKNOWN) {
+                    choice = JOptionPane.showConfirmDialog(
+                            Main.getMainInstance().getMainFrame(),
+                            msg, // TODO: externalize
+                            "Error occurred during upload",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                    if (choice == JOptionPane.NO_OPTION)
+                        break;
+                } else {
+                    JOptionPane.showMessageDialog(
+                            Main.getMainInstance().getMainFrame(),
+                            msg, // TODO: externalize
+                            "Error occurred during upload",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                }
+            }
 			// take out the old data
 			props.remove(Uploader.TITLE_PARAM_KEY);
 			props.remove(Uploader.DESC_PARAM_KEY);

@@ -31,14 +31,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * TODO: use a logging interface for stack traces and println's.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.9 2006/06/20 21:44:53 jklett Exp $
+ * @version $Id: Uploader.java,v 1.10 2006/08/02 19:00:56 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.9 $";
+    public static final String CVS_REV = "$Revision: 1.10 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -89,10 +89,14 @@ public class Uploader {
     /** Default: the description of the post - this should be supplied. */
     public static final String DESC_PARAM_DEF = "Working description.";
 
+    public static final int ERROR_UNKNOWN = 0;
+    public static final int ERROR_BAD_AUTH = 1;
+
     private Cookie authCookie;
     private String url;
     private String urlWithGuid;
     private int timeout;
+    private int errorCode;
 
 // Constructor ////////////////////////////////////////////////////////////////
 
@@ -200,6 +204,8 @@ public class Uploader {
                 if (document != null) {
                     // attempt to discern the status from the respose
                     String responseText = document.getElementsByTagName("response").item(0).getTextContent();
+                    if (responseText.indexOf("couldn't find an account") != -1)
+                        errorCode = ERROR_BAD_AUTH;
                     return responseText.indexOf("has been successfully posted") != -1;
 /*
                     "username and password combination";
@@ -222,6 +228,10 @@ public class Uploader {
         }
         return succeeded;
     } // method uploadFile
+
+    public int getErrorCode() {
+        return errorCode;
+    }
 
 // Main method ////////////////////////////////////////////////////////////////
 
