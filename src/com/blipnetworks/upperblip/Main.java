@@ -33,14 +33,14 @@ import org.pietschy.wizard.Wizard;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.13 2006/06/22 20:01:37 jklett Exp $
+ * @version $Id: Main.java,v 1.14 2006/08/02 18:06:37 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.13 $";
+    public static final String CVS_REV = "$Revision: 1.14 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -59,6 +59,7 @@ public class Main {
 
     private static boolean macintosh = System.getProperty("os.name").equals("Mac OS X");
     public static final String APP_PROPERTIES = "upperblip.properties";
+    public static final String PROPERTY_BASE_URL = "base.url";
 
     /** blah */
     private static final String X_KEY = "x.pos";
@@ -214,7 +215,7 @@ public class Main {
         }
         // Check for new version
         try {
-            BuildNumber remoteBuild = BuildNumber.loadRemote(new URL(appProperties.getProperty("base.url") + BUILD_NUMBER_URI));
+            BuildNumber remoteBuild = BuildNumber.loadRemote(new URL(appProperties.getProperty(PROPERTY_BASE_URL) + BUILD_NUMBER_URI));
             BuildNumber localBuild = BuildNumber.loadLocal();
             if (!localBuild.equals(remoteBuild)) {
                 int choice = JOptionPane.showConfirmDialog(
@@ -226,7 +227,7 @@ public class Main {
                 );
 
                 if (choice == JOptionPane.YES_OPTION) {
-                    BrowserLauncher.openURL("http://blip.tv/tools");
+                    BrowserLauncher.openURL(appProperties.getProperty(PROPERTY_BASE_URL) + "/tools");
                 }
             }
         } catch (Exception e) { e.printStackTrace(); /* ignored */ }
