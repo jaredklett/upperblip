@@ -25,22 +25,22 @@ import java.net.URL;
  * This class is and should always be immutable.
  *
  * @author Jared Klett
- * @version $Id: BuildNumber.java,v 1.4 2006/06/22 20:01:37 jklett Exp $
+ * @version $Id: BuildNumber.java,v 1.5 2006/08/02 18:06:00 jklett Exp $
  */
 
 public class BuildNumber {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_ID = "$Id: BuildNumber.java,v 1.4 2006/06/22 20:01:37 jklett Exp $";
-    public static final String CVS_REV = "$Revision: 1.4 $";
+    public static final String CVS_ID = "$Id: BuildNumber.java,v 1.5 2006/08/02 18:06:00 jklett Exp $";
+    public static final String CVS_REV = "$Revision: 1.5 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
     private static final String BUILD_NUMBER = "build.number";
-    private static final String DEFAULT_NUMBER = "-1";
+    private static final String DEFAULT_NUMBER = "0";
     private static final String TAG = "cvs.tag";
-    private static final String DEFAULT_TAG = "unknown";
+    private static final String DEFAULT_TAG = "none";
 
 // Instance variables /////////////////////////////////////////////////////////
 
