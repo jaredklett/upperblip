@@ -1,4 +1,4 @@
-<!-- $Id: build.xml,v 1.6 2006/05/10 20:55:19 jklett Exp $ -->
+<!-- $Id: build.xml,v 1.7 2006/08/02 18:02:45 jklett Exp $ -->
 <project name="UpperBlip" default="build" basedir=".">
 
 	<taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen" classpath="jsmooth/lib/jsmoothgen-ant.jar" />
@@ -23,6 +23,7 @@
 	<property name="wizardprops" value="org-pietschy-wizard.properties" />
 	<property name="filedropjar" value="filedrop*.jar" />
 	<property name="commonjars" value="commons-*.jar" />
+    <property name="xercesjar" value="xerces*.jar" />
 	<property name="wizardjar" value="wizard*.jar" />
 	<property name="metainf" value="**/META-INF/" />
 
@@ -52,6 +53,14 @@
 				<include name="**/${wizardjar}" />
 			</fileset>
 		</unjar>
+        <unjar dest="${build}">
+            <patternset>
+                <exclude name="${metainf}" />
+            </patternset>
+            <fileset dir="${lib}">
+                <include name="**/${xercesjar}" />
+            </fileset>
+        </unjar>
 	</target>
 
 	<target name="compile" depends="init">
