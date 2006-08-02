@@ -1,4 +1,4 @@
-<!-- $Id: build.xml,v 1.7 2006/08/02 18:02:45 jklett Exp $ -->
+<!-- $Id: build.xml,v 1.8 2006/08/02 18:17:44 jklett Exp $ -->
 <project name="UpperBlip" default="build" basedir=".">
 
 	<taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen" classpath="jsmooth/lib/jsmoothgen-ant.jar" />
@@ -108,7 +108,7 @@
             <then>
                 <delete dir="app/UpperBlip.app" />
                 <mkdir dir="app" />
-                <jarbundler dir="app" name="UpperBlip" mainclass="com.blipnetworks.upperblip.Main" jars="${jarfile}" extraclasspath="$JAVAROOT/upper.jar" version="1.0 beta (build ${build.number})" infostring="${appinfo}" jvmversion="1.4*" icon="etc/upperbliposxicon.icns" />
+                <jarbundler dir="app" name="UpperBlip" mainclass="com.blipnetworks.upperblip.Main" jars="${jarfile}" extraclasspath="$JAVAROOT/upper.jar" version="1.1 beta (build ${build.number})" infostring="${appinfo}" jvmversion="1.5*" icon="etc/upperbliposxicon.icns" />
             </then>
         </if>
 	</target>
