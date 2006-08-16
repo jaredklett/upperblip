@@ -33,14 +33,14 @@ import org.pietschy.wizard.Wizard;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.15 2006/08/02 18:19:52 jklett Exp $
+ * @version $Id: Main.java,v 1.16 2006/08/16 23:16:51 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.15 $";
+    public static final String CVS_REV = "$Revision: 1.16 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -214,7 +214,6 @@ public class Main {
             frame.setBounds(x, y, w, h);
         }
         // Check for new version
-/*
         try {
             BuildNumber remoteBuild = BuildNumber.loadRemote(new URL(appProperties.getProperty(PROPERTY_BASE_URL) + BUILD_NUMBER_URI));
             BuildNumber localBuild = BuildNumber.loadLocal();
@@ -231,8 +230,7 @@ public class Main {
                     BrowserLauncher.openURL(appProperties.getProperty(PROPERTY_BASE_URL) + "/tools");
                 }
             }
-*/
-//        } catch (Exception e) { e.printStackTrace(); /* ignored */ }
+        } catch (Exception e) { e.printStackTrace(); /* ignored */ }
         frame.setVisible(true);
         Runtime.getRuntime().addShutdownHook(shutdownHook);
     }
