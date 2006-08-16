@@ -1,4 +1,4 @@
-<!-- $Id: build.xml,v 1.8 2006/08/02 18:17:44 jklett Exp $ -->
+<!-- $Id: build.xml,v 1.9 2006/08/16 22:04:50 jklett Exp $ -->
 <project name="UpperBlip" default="build" basedir=".">
 
 	<taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen" classpath="jsmooth/lib/jsmoothgen-ant.jar" />
@@ -77,13 +77,16 @@
 	</target>
 
 	<target name="package" depends="compile">
-        <!--
-		<cvs command="edit ${buildnumfile}" />
-        -->
-		<buildnumber />
-        <!--
-		<cvs command="commit -m Updated ${buildnumfile}" />
-        -->
+        <cvs command="edit build.number"/>
+        <buildnumber/>
+        <cvs>
+            <commandline>
+                <argument value="commit"/>
+                <argument value="-m"/>
+                <argument value="newbuild"/>
+                <argument value="build.number"/>
+            </commandline>
+        </cvs>
 		<copy file="${buildnumfile}" tofile="${build}/${buildnumfile}" />
 		<!-- copy icons dir -->
 		<copy todir="${build}/icons">
