@@ -27,16 +27,20 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.15 2006/08/02 19:00:56 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.16 2006/08/16 22:02:14 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.15 $";
+	public static final String CVS_REV = "$Revision: 1.16 $";
 
 // Static variables ////////////////////////////////////////////////////////////
+
+    private static final int INIT_INTERVAL = 5000;
+    private static final int STATUS_INTERVAL = 3000;
+    private static final int WAIT_INTERVAL = STATUS_INTERVAL * 2;
 
 	/** blah */
 	private static final String TITLE_KEY = "upload.title";
@@ -79,7 +83,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
     private Runnable timer = new Runnable() {
         public void run() {
             progress.setMinimum(0);
-            try { Thread.sleep(5000); } catch (Exception e) { /* ignored */ }
+            try { Thread.sleep(INIT_INTERVAL); } catch (Exception e) { /* ignored */ }
             while (running) {
                 UploadStatus status = UploadStatus.getStatus(statusURL, guid.toString());
                 if (status != null) {
@@ -113,7 +117,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
                             timeLabel.setText("Time remaining: less than a minute" + str);
                     }
                 }
-                try { Thread.sleep(2000); } catch (Exception e) { /* ignored */ }
+                try { Thread.sleep(STATUS_INTERVAL); } catch (Exception e) { /* ignored */ }
             }
         }
     };
@@ -213,6 +217,12 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
             // Halt the timer thread
 			running = false;
 			thread.interrupt();
+            try {
+                thread.join(WAIT_INTERVAL);
+            }
+            catch (InterruptedException e) {
+                //thread.stop();
+            }
             if (!success) {
                 int choice;
                 if (err == Uploader.ERROR_UNKNOWN) {
