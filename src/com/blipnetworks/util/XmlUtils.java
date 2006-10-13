@@ -31,15 +31,15 @@ import java.io.*;
  * This is a placeholder description of this class.
  *
  * @author Jared Klett
- * @version $Id: XmlUtils.java,v 1.1 2006/06/20 21:44:53 jklett Exp $
+ * @version $Id: XmlUtils.java,v 1.2 2006/10/13 23:23:02 jklett Exp $
  */
 
 public class XmlUtils {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_ID = "$Id: XmlUtils.java,v 1.1 2006/06/20 21:44:53 jklett Exp $";
-    public static final String CVS_REV = "$Revision: 1.1 $";
+    public static final String CVS_ID = "$Id: XmlUtils.java,v 1.2 2006/10/13 23:23:02 jklett Exp $";
+    public static final String CVS_REV = "$Revision: 1.2 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -69,8 +69,21 @@ public class XmlUtils {
             if (responseCode == HttpStatus.SC_OK) {
                 // Read the response
                 InputStream responseStream = method.getResponseBodyAsStream();
+/*
+                BufferedReader in = new BufferedReader(new InputStreamReader(responseStream));
+                String line = in.readLine();
+                StringBuilder sb = new StringBuilder(5000);
+                while (line != null) {
+                    sb.append(line.trim());
+                    line = in.readLine();
+                }
+                in.close();
+                System.out.println(sb.toString());
+*/
+
                 DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
                 document = docBuilder.parse(responseStream);
+                //document = docBuilder.parse(new ByteArrayInputStream(sb.toString().getBytes()));
             }
         }
         finally {
