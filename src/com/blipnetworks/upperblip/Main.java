@@ -33,14 +33,14 @@ import org.pietschy.wizard.Wizard;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.16 2006/08/16 23:16:51 jklett Exp $
+ * @version $Id: Main.java,v 1.17 2006/10/16 19:19:02 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.16 $";
+    public static final String CVS_REV = "$Revision: 1.17 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -217,7 +217,7 @@ public class Main {
         try {
             BuildNumber remoteBuild = BuildNumber.loadRemote(new URL(appProperties.getProperty(PROPERTY_BASE_URL) + BUILD_NUMBER_URI));
             BuildNumber localBuild = BuildNumber.loadLocal();
-            if (!localBuild.equals(remoteBuild)) {
+            if (remoteBuild.getBuildNumber() > localBuild.getBuildNumber()) {
                 int choice = JOptionPane.showConfirmDialog(
                         frame,
                         I18n.getString(UPDATE_TEXT_KEY),
