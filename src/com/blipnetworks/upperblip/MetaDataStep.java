@@ -28,14 +28,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.9 2006/06/20 21:44:53 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.10 2006/10/16 19:24:07 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.9 $";
+    public static final String CVS_REV = "$Revision: 1.10 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -59,7 +59,6 @@ public class MetaDataStep extends AbstractWizardStep {
     static {
         String url = Main.appProperties.getProperty("base.url");
         String uri = Main.appProperties.getProperty("metadata.uri", "/liccat.xml");
-        System.out.println("About to load metadata...");
         MetadataLoader.load(url + uri);
     }
 
