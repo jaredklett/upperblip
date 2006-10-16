@@ -1,4 +1,4 @@
-<!-- $Id: build.xml,v 1.9 2006/08/16 22:04:50 jklett Exp $ -->
+<!-- $Id: build.xml,v 1.10 2006/10/16 19:18:32 jklett Exp $ -->
 <project name="UpperBlip" default="build" basedir=".">
 
 	<taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen" classpath="jsmooth/lib/jsmoothgen-ant.jar" />
@@ -53,14 +53,6 @@
 				<include name="**/${wizardjar}" />
 			</fileset>
 		</unjar>
-        <unjar dest="${build}">
-            <patternset>
-                <exclude name="${metainf}" />
-            </patternset>
-            <fileset dir="${lib}">
-                <include name="**/${xercesjar}" />
-            </fileset>
-        </unjar>
 	</target>
 
 	<target name="compile" depends="init">
@@ -69,7 +61,7 @@
 		<mkdir dir="${build}" />
 
 		<!-- Compile the java code from ${src} into ${build} -->
-		<javac srcdir="${src}" destdir="${build}" debug="on" deprecation="on" />
+		<javac srcdir="${src}" destdir="${build}" debug="on" deprecation="on" target="1.4" source="1.4" />
 <!--
 			<classpath refid="classpath" />
 		</javac>
@@ -77,6 +69,7 @@
 	</target>
 
 	<target name="package" depends="compile">
+<!--
         <cvs command="edit build.number"/>
         <buildnumber/>
         <cvs>
@@ -87,6 +80,7 @@
                 <argument value="build.number"/>
             </commandline>
         </cvs>
+-->
 		<copy file="${buildnumfile}" tofile="${build}/${buildnumfile}" />
 		<!-- copy icons dir -->
 		<copy todir="${build}/icons">
@@ -111,7 +105,7 @@
             <then>
                 <delete dir="app/UpperBlip.app" />
                 <mkdir dir="app" />
-                <jarbundler dir="app" name="UpperBlip" mainclass="com.blipnetworks.upperblip.Main" jars="${jarfile}" extraclasspath="$JAVAROOT/upper.jar" version="1.1 beta (build ${build.number})" infostring="${appinfo}" jvmversion="1.5*" icon="etc/upperbliposxicon.icns" />
+                <jarbundler dir="app" name="UpperBlip" mainclass="com.blipnetworks.upperblip.Main" jars="${jarfile}" extraclasspath="$JAVAROOT/upper.jar" version="1.1 beta (build ${build.number})" infostring="${appinfo}" jvmversion="1.4+" icon="etc/upperbliposxicon.icns" />
             </then>
         </if>
 	</target>
