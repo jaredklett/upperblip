@@ -33,14 +33,14 @@ import org.pietschy.wizard.Wizard;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.17 2006/10/16 19:19:02 jklett Exp $
+ * @version $Id: Main.java,v 1.18 2006/10/19 15:20:17 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.17 $";
+    public static final String CVS_REV = "$Revision: 1.18 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -193,9 +193,9 @@ public class Main {
         model.setUsername(username);
         model.setPassword(password);
         model.setRemembered(remembered);
+        model.add(new AuthStep());
         model.add(new FileDropStep());
         model.add(new MetaDataStep());
-        model.add(new AuthStep());
         model.add(new UploadStep());
         wizard = new Wizard(model);
         wizard.setDefaultExitMode(Wizard.EXIT_ON_FINISH);
