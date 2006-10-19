@@ -26,15 +26,15 @@ import java.io.IOException;
  * This is a placeholder description of this class.
  *
  * @author Jared Klett
- * @version $Id: MetadataLoader.java,v 1.2 2006/10/13 23:23:02 jklett Exp $
+ * @version $Id: MetadataLoader.java,v 1.3 2006/10/19 15:18:21 jklett Exp $
  */
 
 public class MetadataLoader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_ID = "$Id: MetadataLoader.java,v 1.2 2006/10/13 23:23:02 jklett Exp $";
-    public static final String CVS_REV = "$Revision: 1.2 $";
+    public static final String CVS_ID = "$Id: MetadataLoader.java,v 1.3 2006/10/19 15:18:21 jklett Exp $";
+    public static final String CVS_REV = "$Revision: 1.3 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -60,7 +60,7 @@ public class MetadataLoader {
             categories = new TreeMap();
             Document document = null;
             try {
-                document = XmlUtils.loadDocumentFromUrl(url);
+                document = XmlUtils.loadDocumentFromURL(url);
                 // TODO: better handling!
             } catch (IOException e) {
                 e.printStackTrace();
