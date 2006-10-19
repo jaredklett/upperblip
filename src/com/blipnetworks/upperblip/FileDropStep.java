@@ -2,7 +2,7 @@
  * @(#)FileDropStep.java
  * 
  * Copyright (c) 2006 by Blip Networks, Inc.
- * 117 West 25th St, Floor 2
+ * 239 Centre St, 3rd Floor
  * New York, NY 10001
  * All rights reserved.
  *
@@ -32,14 +32,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: FileDropStep.java,v 1.11 2006/05/09 18:13:52 jklett Exp $
+ * @version $Id: FileDropStep.java,v 1.12 2006/10/19 15:26:34 jklett Exp $
  */
 
 public class FileDropStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.11 $";
+    public static final String CVS_REV = "$Revision: 1.12 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

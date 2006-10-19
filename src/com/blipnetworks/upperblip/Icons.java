@@ -2,7 +2,7 @@
  * @(#)Icons.java
  *
  * Copyright (c) 2006 by Blip Networks, Inc.
- * 117 West 25th St, Floor 2
+ * 239 Centre St, 3rd Floor
  * New York, NY 10001
  * All rights reserved.
  *

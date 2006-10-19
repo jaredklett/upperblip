@@ -2,7 +2,7 @@
  * @(#)Authenticator.java
  *
  * Copyright (c) 2006 by Blip Networks, Inc.
- * 117 West 25th St.
+ * 239 Centre St, 3rd Floor
  * New York, NY 10001
  * All rights reserved.
  *
@@ -25,14 +25,14 @@ import java.io.IOException;
  *
  *
  * @author Jared Klett
- * @version $Id: Authenticator.java,v 1.1 2006/10/19 15:17:08 jklett Exp $
+ * @version $Id: Authenticator.java,v 1.2 2006/10/19 15:26:34 jklett Exp $
  */
 
 public class Authenticator {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.1 $";
+    public static final String CVS_REV = "$Revision: 1.2 $";
 
 // Class variables ////////////////////////////////////////////////////////////
 

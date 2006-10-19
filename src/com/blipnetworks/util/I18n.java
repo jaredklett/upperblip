@@ -2,7 +2,7 @@
  * @(#)I18n.java
  * 
  * Copyright (c) 2006 by Blip Networks, Inc.
- * 117 West 25th St, Floor 2
+ * 239 Centre St, 3rd Floor
  * New York, NY 10001
  * All rights reserved.
  *
@@ -18,14 +18,14 @@ import java.util.ResourceBundle;
  * This class serves as an internationalization helper.
  *
  * @author Jared Klett
- * @version $Id: I18n.java,v 1.7 2006/05/09 18:17:57 jklett Exp $
+ * @version $Id: I18n.java,v 1.8 2006/10/19 15:26:34 jklett Exp $
  */
 
 public class I18n {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.7 $";
+	public static final String CVS_REV = "$Revision: 1.8 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

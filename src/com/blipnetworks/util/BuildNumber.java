@@ -2,7 +2,7 @@
  * @(#)BuildNumber.java
  *
  * Copyright (c) 2006 by Blip Networks, Inc.
- * 117 West 25th St.
+ * 239 Centre St, 3rd Floor
  * New York, NY 10001
  * All rights reserved.
  *
@@ -25,15 +25,15 @@ import java.net.URL;
  * This class is and should always be immutable.
  *
  * @author Jared Klett
- * @version $Id: BuildNumber.java,v 1.5 2006/08/02 18:06:00 jklett Exp $
+ * @version $Id: BuildNumber.java,v 1.6 2006/10/19 15:26:34 jklett Exp $
  */
 
 public class BuildNumber {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_ID = "$Id: BuildNumber.java,v 1.5 2006/08/02 18:06:00 jklett Exp $";
-    public static final String CVS_REV = "$Revision: 1.5 $";
+    public static final String CVS_ID = "$Id: BuildNumber.java,v 1.6 2006/10/19 15:26:34 jklett Exp $";
+    public static final String CVS_REV = "$Revision: 1.6 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 

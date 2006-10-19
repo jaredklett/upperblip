@@ -2,7 +2,7 @@
  * @(#)UploadStatus.java
  * 
  * Copyright (c) 2006 by Blip Networks, Inc.
- * 117 West 25th St, Floor 2
+ * 239 Centre St, 3rd Floor
  * New York, NY 10001
  * All rights reserved.
  *
@@ -24,14 +24,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * It's immutable and should stay that way.
  *
  * @author Jared Klett
- * @version $Id: UploadStatus.java,v 1.8 2006/06/20 21:44:53 jklett Exp $
+ * @version $Id: UploadStatus.java,v 1.9 2006/10/19 15:26:34 jklett Exp $
  */
 
 public class UploadStatus {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.8 $";
+    public static final String CVS_REV = "$Revision: 1.9 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -70,7 +70,7 @@ public class UploadStatus {
         UploadStatus status = null;
         Document document = null;
         try {
-            document = XmlUtils.loadDocumentFromUrl(url + guid);
+            document = XmlUtils.loadDocumentFromURL(url + guid);
             System.out.println(XmlUtils.makeStringFromDocument(document));
         } catch (IOException e) {
             e.printStackTrace();

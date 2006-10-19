@@ -2,7 +2,7 @@
  * @(#)Command.java
  * 
  * Copyright (c) 2006 by Blip Networks, Inc.
- * 117 West 25th St, Floor 2
+ * 239 Centre St, 3rd Floor
  * New York, NY 10001
  * All rights reserved.
  *
@@ -16,14 +16,14 @@ package com.blipnetworks.util;
  * An interface to assist in implementing the Command design pattern.
  *
  * @author Jared Klett
- * @version	$Id: Command.java,v 1.3 2006/05/09 14:54:52 jklett Exp $
+ * @version	$Id: Command.java,v 1.4 2006/10/19 15:26:34 jklett Exp $
  */
 
 public interface Command {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.3 $";
+	public static final String CVS_REV = "$Revision: 1.4 $";
 
 // Interface methods ///////////////////////////////////////////////////////////
 

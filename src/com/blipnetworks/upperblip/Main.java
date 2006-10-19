@@ -2,7 +2,7 @@
  * @(#)Main.java
  * 
  * Copyright (c) 2006 by Blip Networks, Inc.
- * 117 West 25th St, Floor 2
+ * 239 Centre St, 3rd Floor
  * New York, NY 10001
  * All rights reserved.
  *
@@ -33,14 +33,14 @@ import org.pietschy.wizard.Wizard;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.18 2006/10/19 15:20:17 jklett Exp $
+ * @version $Id: Main.java,v 1.19 2006/10/19 15:26:34 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.18 $";
+    public static final String CVS_REV = "$Revision: 1.19 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

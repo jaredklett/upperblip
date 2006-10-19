@@ -2,7 +2,7 @@
  * @(#)MetadataLoader.java
  * 
  * Copyright (c) 2006 by Blip Networks, Inc.
- * 117 West 25th St.
+ * 239 Centre St, 3rd Floor
  * New York, NY 10001
  * All rights reserved.
  *
@@ -26,15 +26,15 @@ import java.io.IOException;
  * This is a placeholder description of this class.
  *
  * @author Jared Klett
- * @version $Id: MetadataLoader.java,v 1.3 2006/10/19 15:18:21 jklett Exp $
+ * @version $Id: MetadataLoader.java,v 1.4 2006/10/19 15:26:34 jklett Exp $
  */
 
 public class MetadataLoader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_ID = "$Id: MetadataLoader.java,v 1.3 2006/10/19 15:18:21 jklett Exp $";
-    public static final String CVS_REV = "$Revision: 1.3 $";
+    public static final String CVS_ID = "$Id: MetadataLoader.java,v 1.4 2006/10/19 15:26:34 jklett Exp $";
+    public static final String CVS_REV = "$Revision: 1.4 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 

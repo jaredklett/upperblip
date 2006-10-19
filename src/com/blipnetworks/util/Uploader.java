@@ -2,7 +2,7 @@
  * @(#)Uploader.java
  * 
  * Copyright (c) 2006 by Blip Networks, Inc.
- * 117 West 25th St, Floor 2
+ * 239 Centre St, 3rd Floor
  * New York, NY 10001
  * All rights reserved.
  *
@@ -31,14 +31,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * TODO: use a logging interface for stack traces and println's.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.11 2006/10/19 15:20:00 jklett Exp $
+ * @version $Id: Uploader.java,v 1.12 2006/10/19 15:26:34 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.11 $";
+    public static final String CVS_REV = "$Revision: 1.12 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 

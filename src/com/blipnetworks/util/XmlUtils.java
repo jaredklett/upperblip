@@ -2,7 +2,7 @@
  * @(#)XmlUtils.java
  * 
  * Copyright (c) 2006 by Blip Networks, Inc.
- * 117 West 25th St.
+ * 239 Centre St, 3rd Floor
  * New York, NY 10001
  * All rights reserved.
  *
@@ -32,14 +32,14 @@ import java.io.*;
  * This is a placeholder description of this class.
  *
  * @author Jared Klett
- * @version $Id: XmlUtils.java,v 1.3 2006/10/19 15:20:57 jklett Exp $
+ * @version $Id: XmlUtils.java,v 1.4 2006/10/19 15:26:34 jklett Exp $
  */
 
 public class XmlUtils {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.3 $";
+    public static final String CVS_REV = "$Revision: 1.4 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
