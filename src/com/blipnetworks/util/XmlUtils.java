@@ -15,6 +15,7 @@ package com.blipnetworks.util;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
@@ -31,15 +32,14 @@ import java.io.*;
  * This is a placeholder description of this class.
  *
  * @author Jared Klett
- * @version $Id: XmlUtils.java,v 1.2 2006/10/13 23:23:02 jklett Exp $
+ * @version $Id: XmlUtils.java,v 1.3 2006/10/19 15:20:57 jklett Exp $
  */
 
 public class XmlUtils {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_ID = "$Id: XmlUtils.java,v 1.2 2006/10/13 23:23:02 jklett Exp $";
-    public static final String CVS_REV = "$Revision: 1.2 $";
+    public static final String CVS_REV = "$Revision: 1.3 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -56,7 +56,20 @@ public class XmlUtils {
      * @return
      * @throws IOException
      */
-    public static Document loadDocumentFromUrl(String url) throws IOException, ParserConfigurationException, SAXException {
+    public static Document loadDocumentFromURL(String url) throws IOException, ParserConfigurationException, SAXException {
+        return loadDocumentFromURL(url, null);
+    }
+
+    /**
+     *
+     * @param url
+     * @param authCookie
+     * @return
+     * @throws IOException
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     */
+    public static Document loadDocumentFromURL(String url, Cookie authCookie) throws IOException, ParserConfigurationException, SAXException {
         Document document = null;
         GetMethod method = new GetMethod(url);
         try {
@@ -65,25 +78,14 @@ public class XmlUtils {
             client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
             // Set our timeout
             client.getHttpConnectionManager().getParams().setConnectionTimeout(TIMEOUT);
+            if (authCookie != null)
+                client.getState().addCookie(authCookie);
             int responseCode = client.executeMethod(method);
             if (responseCode == HttpStatus.SC_OK) {
                 // Read the response
                 InputStream responseStream = method.getResponseBodyAsStream();
-/*
-                BufferedReader in = new BufferedReader(new InputStreamReader(responseStream));
-                String line = in.readLine();
-                StringBuilder sb = new StringBuilder(5000);
-                while (line != null) {
-                    sb.append(line.trim());
-                    line = in.readLine();
-                }
-                in.close();
-                System.out.println(sb.toString());
-*/
-
                 DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
                 document = docBuilder.parse(responseStream);
-                //document = docBuilder.parse(new ByteArrayInputStream(sb.toString().getBytes()));
             }
         }
         finally {
