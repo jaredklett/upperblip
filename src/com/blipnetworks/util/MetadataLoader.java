@@ -3,7 +3,7 @@
  * 
  * Copyright (c) 2006 by Blip Networks, Inc.
  * 239 Centre St, 3rd Floor
- * New York, NY 10001
+ * New York, NY 10013
  * All rights reserved.
  *
  * This software is the confidential and
@@ -26,15 +26,15 @@ import java.io.IOException;
  * This is a placeholder description of this class.
  *
  * @author Jared Klett
- * @version $Id: MetadataLoader.java,v 1.4 2006/10/19 15:26:34 jklett Exp $
+ * @version $Id: MetadataLoader.java,v 1.5 2006/10/19 22:49:11 jklett Exp $
  */
 
 public class MetadataLoader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_ID = "$Id: MetadataLoader.java,v 1.4 2006/10/19 15:26:34 jklett Exp $";
-    public static final String CVS_REV = "$Revision: 1.4 $";
+    public static final String CVS_ID = "$Id: MetadataLoader.java,v 1.5 2006/10/19 22:49:11 jklett Exp $";
+    public static final String CVS_REV = "$Revision: 1.5 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -60,7 +60,7 @@ public class MetadataLoader {
             categories = new TreeMap();
             Document document = null;
             try {
-                document = XmlUtils.loadDocumentFromURL(url);
+                document = XmlUtils.loadDocumentFromURL(url, Authenticator.authCookie);
                 // TODO: better handling!
             } catch (IOException e) {
                 e.printStackTrace();
