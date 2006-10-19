@@ -27,14 +27,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.16 2006/08/16 22:02:14 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.17 2006/10/19 15:19:28 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.16 $";
+	public static final String CVS_REV = "$Revision: 1.17 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -175,7 +175,9 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 		String url = Main.appProperties.getProperty(PROP_BASE_URL) + "/file/post?form_cookie=";
 		statusURL = Main.appProperties.getProperty(PROP_BASE_URL) + "/upload/status?skin=xmlhttprequest&form_cookie=";
 		Uploader uploader = new Uploader(url);
-		File[] files = model.getFiles();
+        // TODO: safeguards?
+        uploader.setAuthCookie(Authenticator.authCookie);
+        File[] files = model.getFiles();
 		//progress.setMinimum(0);
 		//progress.setMaximum(files.length);
 		String[] titles = model.getTitles();
