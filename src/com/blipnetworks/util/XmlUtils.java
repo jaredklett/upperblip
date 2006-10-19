@@ -3,7 +3,7 @@
  * 
  * Copyright (c) 2006 by Blip Networks, Inc.
  * 239 Centre St, 3rd Floor
- * New York, NY 10001
+ * New York, NY 10013
  * All rights reserved.
  *
  * This software is the confidential and
@@ -16,6 +16,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.Cookie;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
@@ -28,18 +29,20 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 
+import com.blipnetworks.upperblip.Main;
+
 /**
  * This is a placeholder description of this class.
  *
  * @author Jared Klett
- * @version $Id: XmlUtils.java,v 1.4 2006/10/19 15:26:34 jklett Exp $
+ * @version $Id: XmlUtils.java,v 1.5 2006/10/19 18:12:17 jklett Exp $
  */
 
 public class XmlUtils {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.4 $";
+    public static final String CVS_REV = "$Revision: 1.5 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -76,6 +79,7 @@ public class XmlUtils {
             HttpClient client = new HttpClient();
             // Set a tolerant cookie policy
             client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+            client.getParams().setParameter(HttpMethodParams.USER_AGENT, Main.UA);
             // Set our timeout
             client.getHttpConnectionManager().getParams().setConnectionTimeout(TIMEOUT);
             if (authCookie != null)
