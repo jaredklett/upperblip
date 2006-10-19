@@ -3,7 +3,7 @@
  * 
  * Copyright (c) 2006 by Blip Networks, Inc.
  * 239 Centre St, 3rd Floor
- * New York, NY 10001
+ * New York, NY 10013
  * All rights reserved.
  *
  * This software is the confidential and
@@ -16,6 +16,7 @@ import java.io.*;
 import java.util.*;
 
 import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.cookie.*;
 import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.methods.multipart.*;
@@ -26,19 +27,21 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.blipnetworks.upperblip.Main;
+
 /**
  * A stateful class to handle uploads to Blip.
  * TODO: use a logging interface for stack traces and println's.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.12 2006/10/19 15:26:34 jklett Exp $
+ * @version $Id: Uploader.java,v 1.13 2006/10/19 18:10:12 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.12 $";
+    public static final String CVS_REV = "$Revision: 1.13 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -69,6 +72,8 @@ public class Uploader {
     public static final String DESC_PARAM_KEY = "description";
     /** The hash key to the form cookie GUID parameter. */
     public static final String GUID_PARAM_KEY = "form_cookie";
+    /** TODO. */
+    public static final String INGEST_PARAM_KEY = "ingest_method";
 
     /** Default: the title of the post, if none is supplied. */
     public static final String TITLE_PARAM_DEF = "Working title";
@@ -88,6 +93,8 @@ public class Uploader {
     public static final String SKIN_PARAM_DEF = "xmlhttprequest";
     /** Default: the description of the post - this should be supplied. */
     public static final String DESC_PARAM_DEF = "Working description.";
+    /** Default: TODO. */
+    public static final String INGEST_PARAM_DEF = "upperblip";
 
     public static final int ERROR_UNKNOWN = 0;
     public static final int ERROR_BAD_AUTH = 1;
@@ -139,7 +146,8 @@ public class Uploader {
                     new StringPart(USER_PARAM_KEY, parameters.getProperty(USER_PARAM_KEY, USER_PARAM_DEF)),
                     new StringPart(PASS_PARAM_KEY, parameters.getProperty(PASS_PARAM_KEY, PASS_PARAM_DEF)),
                     new StringPart(SKIN_PARAM_KEY, parameters.getProperty(SKIN_PARAM_KEY, SKIN_PARAM_DEF)),
-                    new StringPart(DESC_PARAM_KEY, parameters.getProperty(DESC_PARAM_KEY, DESC_PARAM_DEF))
+                    new StringPart(DESC_PARAM_KEY, parameters.getProperty(DESC_PARAM_KEY, DESC_PARAM_DEF)),
+                    new StringPart(INGEST_PARAM_KEY, parameters.getProperty(DESC_PARAM_KEY, INGEST_PARAM_DEF))
             };
         else
             parts = new Part[] {
@@ -150,7 +158,8 @@ public class Uploader {
                     new StringPart(TAGS_PARAM_KEY, parameters.getProperty(TAGS_PARAM_KEY, TAGS_PARAM_DEF)),
                     new StringPart(LICENSE_PARAM_KEY, parameters.getProperty(LICENSE_PARAM_KEY, LICENSE_PARAM_DEF)),
                     new StringPart(SKIN_PARAM_KEY, parameters.getProperty(SKIN_PARAM_KEY, SKIN_PARAM_DEF)),
-                    new StringPart(DESC_PARAM_KEY, parameters.getProperty(DESC_PARAM_KEY, DESC_PARAM_DEF))
+                    new StringPart(DESC_PARAM_KEY, parameters.getProperty(DESC_PARAM_KEY, DESC_PARAM_DEF)),
+                    new StringPart(INGEST_PARAM_KEY, parameters.getProperty(INGEST_PARAM_KEY, INGEST_PARAM_DEF))
             };
 
         post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
@@ -161,6 +170,7 @@ public class Uploader {
             HttpClient client = new HttpClient();
             // Set a tolerant cookie policy
             client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+            client.getParams().setParameter(HttpMethodParams.USER_AGENT, Main.UA);
             // Set our timeout
             client.getHttpConnectionManager().getParams().setConnectionTimeout(timeout);
             // If we had an auth cookie previously, set it in the client before
