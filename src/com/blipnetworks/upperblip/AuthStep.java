@@ -19,22 +19,25 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 
 import com.blipnetworks.util.I18n;
+import com.blipnetworks.util.Authenticator;
 
 import org.pietschy.wizard.AbstractWizardStep;
 import org.pietschy.wizard.WizardModel;
+import org.pietschy.wizard.InvalidStateException;
 
 /**
- * 
- * 
+ * The first step in the upload process - takes a username and password from
+ * the user and authenticates to the site.
+ *
  * @author Jared Klett
- * @version $Id: AuthStep.java,v 1.8 2006/05/09 18:13:52 jklett Exp $
+ * @version $Id: AuthStep.java,v 1.9 2006/10/19 15:16:51 jklett Exp $
  */
 
 public class AuthStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.8 $";
+	public static final String CVS_REV = "$Revision: 1.9 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -174,9 +177,18 @@ public class AuthStep extends AbstractWizardStep {
 		setComplete(remBox.isSelected());
 	}
 
-	public void applyState() {
+	public void applyState() throws InvalidStateException {
 		// this is called when the user clicks "Next"
-		model.setUsername(userField.getText());
+        setBusy(true);
+        boolean success = Authenticator.authenticate(userField.getText(), new String(passField.getPassword()));
+        setBusy(false);
+        if (!success) {
+            setComplete(false);
+            // TODO: better message here
+            throw new InvalidStateException("Bad username/password");
+        }
+        setComplete(true);
+        model.setUsername(userField.getText());
 		model.setPassword(new String(passField.getPassword()));
 		model.setRemembered(remBox.isSelected());
 	}
