@@ -31,14 +31,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * TODO: use a logging interface for stack traces and println's.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.10 2006/08/02 19:00:56 jklett Exp $
+ * @version $Id: Uploader.java,v 1.11 2006/10/19 15:20:00 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.10 $";
+    public static final String CVS_REV = "$Revision: 1.11 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -110,10 +110,6 @@ public class Uploader {
     }
 
 // Instance methods ///////////////////////////////////////////////////////////
-
-    public void setGuid(String guid) {
-        urlWithGuid = url + guid;
-    }
 
     /**
      *
@@ -229,8 +225,20 @@ public class Uploader {
         return succeeded;
     } // method uploadFile
 
+// Accessors //////////////////////////////////////////////////////////////////
+
     public int getErrorCode() {
         return errorCode;
+    }
+
+// Mutators ///////////////////////////////////////////////////////////////////
+
+    public void setGuid(String guid) {
+        urlWithGuid = url + guid;
+    }
+
+    public void setAuthCookie(Cookie authCookie) {
+        this.authCookie = authCookie;
     }
 
 // Main method ////////////////////////////////////////////////////////////////
