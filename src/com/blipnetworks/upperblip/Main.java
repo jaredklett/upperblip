@@ -3,7 +3,7 @@
  * 
  * Copyright (c) 2006 by Blip Networks, Inc.
  * 239 Centre St, 3rd Floor
- * New York, NY 10001
+ * New York, NY 10013
  * All rights reserved.
  *
  * This software is the confidential and
@@ -33,14 +33,14 @@ import org.pietschy.wizard.Wizard;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.19 2006/10/19 15:26:34 jklett Exp $
+ * @version $Id: Main.java,v 1.20 2006/10/20 17:35:37 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.19 $";
+    public static final String CVS_REV = "$Revision: 1.20 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -57,6 +57,8 @@ public class Main {
     private static final String UPDATE_TEXT_KEY = "main.update.text";
     private static final String FRAME_TITLE_KEY = "main.frame.title";
 
+    // TODO: fix
+    public static final String UA = "UpperBlip/1.1 beta (" + System.getProperty("os.name") + " " + System.getProperty("os.version") + "; http://blip.tv)";
     private static boolean macintosh = System.getProperty("os.name").equals("Mac OS X");
     public static final String APP_PROPERTIES = "upperblip.properties";
     public static final String PROPERTY_BASE_URL = "base.url";
