@@ -3,7 +3,7 @@
  * 
  * Copyright (c) 2005 by Blip Networks, Inc.
  * 239 Centre St, 3rd Floor
- * New York, NY 10001
+ * New York, NY 10013
  * All rights reserved.
  *
  * This software is the confidential and
@@ -28,14 +28,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.11 2006/10/19 15:26:34 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.12 2006/10/20 17:16:56 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.11 $";
+    public static final String CVS_REV = "$Revision: 1.12 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -55,12 +55,6 @@ public class MetaDataStep extends AbstractWizardStep {
     private static final String TAGS_LABEL_KEY = "meta.tags.label";
     /** blah */
     private static final String CATEGORY_LABEL_KEY = "meta.category.label";
-
-    static {
-        String url = Main.appProperties.getProperty("base.url");
-        String uri = Main.appProperties.getProperty("metadata.uri", "/liccat.xml");
-        MetadataLoader.load(url + uri);
-    }
 
 // Enumerated types ////////////////////////////////////////////////////////////
 
