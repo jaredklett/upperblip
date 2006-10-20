@@ -3,7 +3,7 @@
  * 
  * Copyright (c) 2006 by Blip Networks, Inc.
  * 239 Centre St, 3rd Floor
- * New York, NY 10001
+ * New York, NY 10013
  * All rights reserved.
  *
  * This software is the confidential and
@@ -19,7 +19,6 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 
 import com.blipnetworks.util.I18n;
-import com.blipnetworks.util.Authenticator;
 
 import org.pietschy.wizard.AbstractWizardStep;
 import org.pietschy.wizard.WizardModel;
@@ -30,14 +29,14 @@ import org.pietschy.wizard.InvalidStateException;
  * the user and authenticates to the site.
  *
  * @author Jared Klett
- * @version $Id: AuthStep.java,v 1.10 2006/10/19 15:26:34 jklett Exp $
+ * @version $Id: AuthStep.java,v 1.11 2006/10/20 17:15:48 jklett Exp $
  */
 
 public class AuthStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.10 $";
+	public static final String CVS_REV = "$Revision: 1.11 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -157,7 +156,6 @@ public class AuthStep extends AbstractWizardStep {
 		view = new JPanel();
 		//view.setLayout(new BorderLayout());
 		view.add(panel);
-		//setComplete(true);
 	}
 
 	public void init(WizardModel model) {
@@ -166,7 +164,6 @@ public class AuthStep extends AbstractWizardStep {
 		if (this.model.isRemembered()) {
 			passField.setText(this.model.getPassword());
 			remBox.setSelected(true);
-			//setComplete(true);
 		}
 		userField.getDocument().addDocumentListener(dl);
 		passField.getDocument().addDocumentListener(dl);
@@ -180,9 +177,14 @@ public class AuthStep extends AbstractWizardStep {
 	public void applyState() throws InvalidStateException {
 		// this is called when the user clicks "Next"
         setBusy(true);
-        boolean success = Authenticator.authenticate(userField.getText(), new String(passField.getPassword()));
+        AuthDialog ad = new AuthDialog(userField.getText(), new String(passField.getPassword()));
+        ad.pack();
+        ad.setLocationRelativeTo(Main.getMainInstance().getMainFrame());
+        Thread thread = new Thread(ad);
+        thread.start();
+        ad.setVisible(true);
         setBusy(false);
-        if (!success) {
+        if (!ad.wasSuccessful()) {
             setComplete(false);
             // TODO: better message here
             throw new InvalidStateException("Bad username/password");
