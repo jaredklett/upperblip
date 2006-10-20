@@ -3,7 +3,7 @@
  * 
  * Copyright (c) 2006 by Blip Networks, Inc.
  * 239 Centre St, 3rd Floor
- * New York, NY 10001
+ * New York, NY 10013
  * All rights reserved.
  *
  * This software is the confidential and
@@ -32,14 +32,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: FileDropStep.java,v 1.12 2006/10/19 15:26:34 jklett Exp $
+ * @version $Id: FileDropStep.java,v 1.13 2006/10/20 17:26:11 jklett Exp $
  */
 
 public class FileDropStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.12 $";
+    public static final String CVS_REV = "$Revision: 1.13 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

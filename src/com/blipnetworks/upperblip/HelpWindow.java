@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2006 by Blip Networks, Inc.
  * 239 Centre St, 3rd Floor
- * New York, NY 10001
+ * New York, NY 10013
  * All rights reserved.
  *
  * This software is the confidential and

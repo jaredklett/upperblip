@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2006 by Pokkari, Inc.
  * 239 Centre St, 3rd Floor
- * New York, NY 10001
+ * New York, NY 10013
  * All rights reserved.
  *
  * This software is the confidential and
@@ -27,14 +27,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.18 2006/10/19 15:26:34 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.19 2006/10/20 17:26:11 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.18 $";
+	public static final String CVS_REV = "$Revision: 1.19 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

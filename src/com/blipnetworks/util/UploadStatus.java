@@ -3,7 +3,7 @@
  * 
  * Copyright (c) 2006 by Blip Networks, Inc.
  * 239 Centre St, 3rd Floor
- * New York, NY 10001
+ * New York, NY 10013
  * All rights reserved.
  *
  * This software is the confidential and
@@ -24,14 +24,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * It's immutable and should stay that way.
  *
  * @author Jared Klett
- * @version $Id: UploadStatus.java,v 1.9 2006/10/19 15:26:34 jklett Exp $
+ * @version $Id: UploadStatus.java,v 1.10 2006/10/20 17:26:46 jklett Exp $
  */
 
 public class UploadStatus {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.9 $";
+    public static final String CVS_REV = "$Revision: 1.10 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 

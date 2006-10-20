@@ -3,7 +3,7 @@
  * 
  * Copyright (c) 2006 by Blip Networks, Inc.
  * 239 Centre St, 3rd Floor
- * New York, NY 10001
+ * New York, NY 10013
  * All rights reserved.
  *
  * This software is the confidential and
@@ -16,14 +16,14 @@ package com.blipnetworks.util;
  * An interface to assist in implementing the Command design pattern.
  *
  * @author Jared Klett
- * @version	$Id: Command.java,v 1.4 2006/10/19 15:26:34 jklett Exp $
+ * @version	$Id: Command.java,v 1.5 2006/10/20 17:26:46 jklett Exp $
  */
 
 public interface Command {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.4 $";
+	public static final String CVS_REV = "$Revision: 1.5 $";
 
 // Interface methods ///////////////////////////////////////////////////////////
 
