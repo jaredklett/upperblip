@@ -21,20 +21,24 @@ import org.apache.commons.httpclient.methods.PostMethod;
 
 import java.io.IOException;
 
+import com.blipnetworks.upperblip.Main;
+
 /**
  *
  *
  * @author Jared Klett
- * @version $Id: Authenticator.java,v 1.3 2006/10/20 17:26:46 jklett Exp $
+ * @version $Id: Authenticator.java,v 1.4 2006/10/20 17:34:45 jklett Exp $
  */
 
 public class Authenticator {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.3 $";
+    public static final String CVS_REV = "$Revision: 1.4 $";
 
 // Class variables ////////////////////////////////////////////////////////////
+
+    public static final String PROPERTY_LOGIN_URI = "login.uri";
 
     public static Cookie authCookie;
 
@@ -46,14 +50,21 @@ public class Authenticator {
 
 // Class methods //////////////////////////////////////////////////////////////
 
+    /**
+     *
+     * @param username
+     * @param password
+     * @return True we got an auth cookie, false otherwise.
+     */
     public static boolean authenticate(String username, String password) {
         boolean okay = false;
-        // TODO: clean up these strings
-        PostMethod post = new PostMethod("http://blip.tv/posts");
+        String url = Main.appProperties.getProperty(Main.PROPERTY_BASE_URL);
+        String uri = Main.appProperties.getProperty(PROPERTY_LOGIN_URI);
+        PostMethod post = new PostMethod(url + uri);
         NameValuePair[] nvp = {
-                new NameValuePair("userlogin", username),
-                new NameValuePair("password", password),
-                new NameValuePair("skin", "xmlhttprequest")
+                new NameValuePair(Uploader.USER_PARAM_KEY, username),
+                new NameValuePair(Uploader.PASS_PARAM_KEY, password),
+                new NameValuePair(Uploader.SKIN_PARAM_KEY, Uploader.SKIN_PARAM_DEF)
         };
         post.setRequestBody(nvp);
         try {
@@ -70,7 +81,7 @@ public class Authenticator {
             Cookie[] cookies = client.getState().getCookies();
             Cookie myCookie = null;
             for (int i = 0; i < cookies.length; i++) {
-                if (cookies[i].getName().equals("otter_auth")) {
+                if (cookies[i].getName().equals(Uploader.AUTH_COOKIE_NAME)) {
                     myCookie = cookies[i];
                     break;
                 }
