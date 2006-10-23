@@ -28,14 +28,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.12 2006/10/20 17:16:56 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.13 2006/10/23 20:49:03 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.12 $";
+    public static final String CVS_REV = "$Revision: 1.13 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -73,6 +73,8 @@ public class MetaDataStep extends AbstractWizardStep {
     /** */
     private JComboBox[] licenseList;
     /** */
+    //private JCheckBox[] blogCheckboxList;
+    /** */
     private JTextField[] tagsList;
     /** */
     private UpperBlipModel model;
@@ -107,6 +109,7 @@ public class MetaDataStep extends AbstractWizardStep {
         categoryList = new JComboBox[files.length];
         licenseList = new JComboBox[files.length];
         tagsList = new JTextField[files.length];
+        //blogCheckboxList = new JCheckBox[files.length];
 
         for (int i = 0; i < files.length; i++) {
             JPanel panel = new JPanel();
@@ -177,21 +180,25 @@ public class MetaDataStep extends AbstractWizardStep {
             gbc2.gridx = 1;
             //gbc2.gridy = 0;
             gbc2.anchor = GridBagConstraints.NORTHWEST;
+            gbc2.fill = GridBagConstraints.HORIZONTAL;
             gbl2.setConstraints(titleField, gbc2);
             panel.add(titleField);
             gbc2.gridx = 0;
             gbc2.gridy = 2;
             gbc2.anchor = GridBagConstraints.NORTHEAST;
+            gbc2.fill = GridBagConstraints.NONE;
             gbl2.setConstraints(descLabel, gbc2);
             panel.add(descLabel);
             gbc2.gridx = 1;
             //gbc2.gridy = 1;
             gbc2.anchor = GridBagConstraints.NORTHWEST;
+            gbc2.fill = GridBagConstraints.HORIZONTAL;
             gbl2.setConstraints(jsp, gbc2);
             panel.add(jsp);
             gbc2.gridx = 0;
             gbc2.gridy = 3;
             gbc2.anchor = GridBagConstraints.NORTHEAST;
+            gbc2.fill = GridBagConstraints.NONE;
             gbl2.setConstraints(licenseLabel, gbc2);
             panel.add(licenseLabel);
             gbc2.gridx = 1;
@@ -207,11 +214,13 @@ public class MetaDataStep extends AbstractWizardStep {
             gbc2.gridx = 1;
             //gbc2.gridy = 1;
             gbc2.anchor = GridBagConstraints.NORTHWEST;
+            gbc2.fill = GridBagConstraints.HORIZONTAL;
             gbl2.setConstraints(tagsField, gbc2);
             panel.add(tagsField);
             gbc2.gridx = 0;
             gbc2.gridy = 5;
             gbc2.anchor = GridBagConstraints.NORTHEAST;
+            gbc2.fill = GridBagConstraints.NONE;
             gbl2.setConstraints(categoryLabel, gbc2);
             panel.add(categoryLabel);
             gbc2.gridx = 1;
@@ -222,6 +231,7 @@ public class MetaDataStep extends AbstractWizardStep {
 
             gbc.gridx = 0;
             gbc.gridy += 1;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
             overall.add(panel, gbc);
         }
 
