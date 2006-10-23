@@ -24,14 +24,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * It's immutable and should stay that way.
  *
  * @author Jared Klett
- * @version $Id: UploadStatus.java,v 1.10 2006/10/20 17:26:46 jklett Exp $
+ * @version $Id: UploadStatus.java,v 1.11 2006/10/23 20:48:08 jklett Exp $
  */
 
 public class UploadStatus {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.10 $";
+    public static final String CVS_REV = "$Revision: 1.11 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -70,7 +70,7 @@ public class UploadStatus {
         UploadStatus status = null;
         Document document = null;
         try {
-            document = XmlUtils.loadDocumentFromURL(url + guid);
+            document = XmlUtils.loadDocumentFromURL(url + guid, Authenticator.authCookie);
             System.out.println(XmlUtils.makeStringFromDocument(document));
         } catch (IOException e) {
             e.printStackTrace();
