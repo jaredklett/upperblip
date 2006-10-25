@@ -32,14 +32,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: FileDropStep.java,v 1.13 2006/10/20 17:26:11 jklett Exp $
+ * @version $Id: FileDropStep.java,v 1.14 2006/10/25 17:49:26 jklett Exp $
  */
 
 public class FileDropStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.13 $";
+    public static final String CVS_REV = "$Revision: 1.14 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -138,10 +138,10 @@ public class FileDropStep extends AbstractWizardStep {
 
         JPanel panel = new JPanel();
         ((FlowLayout)panel.getLayout()).setAlignment(FlowLayout.LEFT);
-        JButton addButton = new JButton(new ImageIcon(ClassLoader.getSystemResource(Icons.SMALL_ADD_ICON)));
+        JButton addButton = new JButton(new ImageIcon(ClassLoader.getSystemResource(Icons.ADD_ICON_PATH)));
         addButton.addActionListener(adder);
         addButton.setToolTipText(I18n.getString(ADD_TOOLTIP_KEY));
-        JButton removeButton = new JButton(new ImageIcon(ClassLoader.getSystemResource(Icons.SMALL_REMOVE_ICON)));
+        JButton removeButton = new JButton(new ImageIcon(ClassLoader.getSystemResource(Icons.DELETE_ICON_PATH)));
         removeButton.addActionListener(remover);
         removeButton.setToolTipText(I18n.getString(REMOVE_TOOLTIP_KEY));
         panel.add(addButton);
@@ -174,8 +174,6 @@ public class FileDropStep extends AbstractWizardStep {
     }
 
     class MyCellRenderer extends JLabel implements ListCellRenderer {
-        // TODO: consider loading this once in the Icons class...
-        ImageIcon smallIcon = new ImageIcon(ClassLoader.getSystemResource(Icons.SMALL_MOVIE_ICON));
         // This is the only method defined by ListCellRenderer.
         // We just reconfigure the JLabel each time we're called.
         public Component getListCellRendererComponent(JList list,
@@ -186,7 +184,7 @@ public class FileDropStep extends AbstractWizardStep {
         {
             String s = value.toString();
             setText(s);
-            setIcon(smallIcon);
+            setIcon(Icons.getIconForFilename(s));
             if (isSelected) {
                 setBackground(list.getSelectionBackground());
                 setForeground(list.getSelectionForeground());
