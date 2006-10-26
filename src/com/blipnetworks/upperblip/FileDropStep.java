@@ -32,14 +32,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: FileDropStep.java,v 1.14 2006/10/25 17:49:26 jklett Exp $
+ * @version $Id: FileDropStep.java,v 1.15 2006/10/26 00:11:08 jklett Exp $
  */
 
 public class FileDropStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.14 $";
+    public static final String CVS_REV = "$Revision: 1.15 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -164,9 +164,19 @@ public class FileDropStep extends AbstractWizardStep {
     public void applyState() {
         // this is called when the user clicks "Next"
         // Create an empty type array
-        File[] filetyper = new File[1];
+        File[] filetyper = new File[0];
         // Transform and cast the list to an array
-        model.setFiles((File[])fileList.toArray(filetyper));
+        File[] files = (File[])fileList.toArray(filetyper);
+        List imageList = new ArrayList();
+        List list = new ArrayList();
+        for (int i = 0; i < files.length; i++) {
+            if (Icons.isImage(files[i].getName()))
+                imageList.add(files[i]);
+            else
+                list.add(files[i]);
+        }
+        model.setFiles((File[])list.toArray(filetyper));
+        model.setImageFiles((File[])imageList.toArray(filetyper));
     }
 
     public Dimension getPreferredSize() {

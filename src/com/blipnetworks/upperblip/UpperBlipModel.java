@@ -13,6 +13,9 @@
 package com.blipnetworks.upperblip;
 
 import java.io.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.awt.*;
 
 import org.pietschy.wizard.*;
 import org.pietschy.wizard.models.*;
@@ -21,12 +24,15 @@ import javax.swing.*;
 
 /**
  * @author Jared Klett
- * @version $Id: UpperBlipModel.java,v 1.10 2006/10/20 17:26:11 jklett Exp $
+ * @version $Id: UpperBlipModel.java,v 1.11 2006/10/26 00:11:08 jklett Exp $
  */
 
-public class UpperBlipModel extends StaticModel implements HelpBroker {
+public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
 
     private File[] files;
+    private File[] imageFiles;
+    public String[] imageFilesAsStrings;
+    public Map imageIconMap;
     private String[] titles;
     private String[] descriptions;
     private String[] tags;
@@ -50,6 +56,10 @@ public class UpperBlipModel extends StaticModel implements HelpBroker {
 
     public File[] getFiles() {
         return files;
+    }
+
+    public File[] getImageFiles() {
+        return imageFiles;
     }
 
     public String[] getTitles() {
@@ -86,6 +96,32 @@ public class UpperBlipModel extends StaticModel implements HelpBroker {
 
     public void setFiles(File[] files) {
         this.files = files;
+    }
+
+    public void setImageFiles(File[] imageFiles) {
+        this.imageFiles = imageFiles;
+        if (imageIconMap != null)
+            imageIconMap.clear();
+        imageIconMap = new HashMap(imageFiles.length);
+        imageFilesAsStrings = new String[imageFiles.length];
+        int targetWidth = 40;
+        for (int i = 0; i < imageFiles.length; i++) {
+            imageFilesAsStrings[i] = imageFiles[i].getName();
+            try {
+                ImageIcon ii = new ImageIcon(imageFiles[i].toURL());
+                while (ii.getImageLoadStatus() != MediaTracker.COMPLETE) {
+                    try { Thread.sleep(10); } catch (InterruptedException e) { /* ignore */ }
+                }
+                int w = ii.getIconWidth();
+                int h = ii.getIconHeight();
+                int targetHeight = (h * targetWidth) / w;
+                ii.setImage(ii.getImage().getScaledInstance(targetWidth, targetHeight, Image.SCALE_DEFAULT));
+                imageIconMap.put(imageFiles[i].getName(), ii);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void setTitles(String[] titles) {

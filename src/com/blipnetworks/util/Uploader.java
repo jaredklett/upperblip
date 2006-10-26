@@ -34,14 +34,14 @@ import com.blipnetworks.upperblip.Main;
  * TODO: use a logging interface for stack traces and println's.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.13 2006/10/19 18:10:12 jklett Exp $
+ * @version $Id: Uploader.java,v 1.14 2006/10/26 00:11:08 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.13 $";
+    public static final String CVS_REV = "$Revision: 1.14 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -50,6 +50,8 @@ public class Uploader {
 
     /** The hash key to the file parameter. */
     public static final String FILE_PARAM_KEY = "file";
+    /** The hash key to the file parameter. */
+    public static final String THUMB_PARAM_KEY = "thumbnail";
     /** The hash key to the title parameter. */
     public static final String TITLE_PARAM_KEY = "title";
     /** The hash key to the post ID parameter. */

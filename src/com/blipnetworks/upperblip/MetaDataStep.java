@@ -14,6 +14,7 @@ package com.blipnetworks.upperblip;
 
 import java.awt.*;
 import java.io.*;
+import java.util.Arrays;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -28,14 +29,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.14 2006/10/25 18:51:14 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.15 2006/10/26 00:11:08 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.14 $";
+    public static final String CVS_REV = "$Revision: 1.15 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -49,6 +50,8 @@ public class MetaDataStep extends AbstractWizardStep {
     private static final String TITLE_LABEL_KEY = "meta.titlefield.label";
     /** blah */
     private static final String DESC_LABEL_KEY = "meta.desc.label";
+    /** blah */
+    private static final String THUMB_LABEL_KEY = "meta.thumb.label";
     /** blah */
     private static final String LICENSE_LABEL_KEY = "meta.license.label";
     /** blah */
@@ -68,6 +71,8 @@ public class MetaDataStep extends AbstractWizardStep {
     private JTextField[] titleList;
     /** */
     private JTextArea[] descList;
+    /** */
+    private JComboBox[] thumbList;
     /** */
     private JComboBox[] categoryList;
     /** */
@@ -106,6 +111,7 @@ public class MetaDataStep extends AbstractWizardStep {
         File[] files = model.getFiles();
         titleList = new JTextField[files.length];
         descList = new JTextArea[files.length];
+        thumbList = new JComboBox[files.length];
         categoryList = new JComboBox[files.length];
         licenseList = new JComboBox[files.length];
         tagsList = new JTextField[files.length];
@@ -132,6 +138,7 @@ public class MetaDataStep extends AbstractWizardStep {
             );
             JLabel titleLabel = new JLabel(I18n.getString(TITLE_LABEL_KEY));
             JLabel descLabel = new JLabel(I18n.getString(DESC_LABEL_KEY));
+            JLabel thumbLabel = new JLabel(I18n.getString(THUMB_LABEL_KEY));
             JLabel licenseLabel = new JLabel(I18n.getString(LICENSE_LABEL_KEY));
             JLabel tagsLabel = new JLabel(I18n.getString(TAGS_LABEL_KEY));
             JLabel categoryLabel = new JLabel(I18n.getString(CATEGORY_LABEL_KEY));
@@ -141,6 +148,7 @@ public class MetaDataStep extends AbstractWizardStep {
             //JButton removeButton = new JButton("Don't upload");
             JTextField titleField = new JTextField(20);
             JTextArea descArea = new JTextArea(10, 20);
+            JComboBox thumbnails = new JComboBox(model.imageFilesAsStrings);
             JComboBox categories = new JComboBox(MetadataLoader.categories.keySet().toArray());
             JComboBox licenses = new JComboBox(MetadataLoader.licenses.keySet().toArray());
             JTextField tagsField = new JTextField(20);
@@ -148,9 +156,11 @@ public class MetaDataStep extends AbstractWizardStep {
             descArea.setWrapStyleWord(true);
             JScrollPane jsp = new JScrollPane(descArea);
             jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            thumbnails.setRenderer(new MyCellRenderer());
             // Track these components in lists
             titleList[i] = titleField;
             descList[i] = descArea;
+            thumbList[i] = thumbnails;
             tagsList[i] = tagsField;
             licenseList[i] = licenses;
             categoryList[i] = categories;
@@ -197,17 +207,28 @@ public class MetaDataStep extends AbstractWizardStep {
             panel.add(jsp);
             gbc2.gridx = 0;
             gbc2.gridy = 3;
-            gbc2.anchor = GridBagConstraints.NORTHEAST;
+            gbc2.anchor = GridBagConstraints.EAST;
+            gbc2.fill = GridBagConstraints.NONE;
+            gbl2.setConstraints(thumbLabel, gbc2);
+            panel.add(thumbLabel);
+            gbc2.gridx = 1;
+            //gbc2.gridy = 1;
+            gbc2.anchor = GridBagConstraints.WEST;
+            gbl2.setConstraints(thumbnails, gbc2);
+            panel.add(thumbnails);
+            gbc2.gridx = 0;
+            gbc2.gridy = 4;
+            gbc2.anchor = GridBagConstraints.EAST;
             gbc2.fill = GridBagConstraints.NONE;
             gbl2.setConstraints(licenseLabel, gbc2);
             panel.add(licenseLabel);
             gbc2.gridx = 1;
             //gbc2.gridy = 1;
-            gbc2.anchor = GridBagConstraints.NORTHWEST;
+            gbc2.anchor = GridBagConstraints.WEST;
             gbl2.setConstraints(licenses, gbc2);
             panel.add(licenses);
             gbc2.gridx = 0;
-            gbc2.gridy = 4;
+            gbc2.gridy = 5;
             gbc2.anchor = GridBagConstraints.NORTHEAST;
             gbl2.setConstraints(tagsLabel, gbc2);
             panel.add(tagsLabel);
@@ -218,14 +239,14 @@ public class MetaDataStep extends AbstractWizardStep {
             gbl2.setConstraints(tagsField, gbc2);
             panel.add(tagsField);
             gbc2.gridx = 0;
-            gbc2.gridy = 5;
-            gbc2.anchor = GridBagConstraints.NORTHEAST;
+            gbc2.gridy = 6;
+            gbc2.anchor = GridBagConstraints.EAST;
             gbc2.fill = GridBagConstraints.NONE;
             gbl2.setConstraints(categoryLabel, gbc2);
             panel.add(categoryLabel);
             gbc2.gridx = 1;
             //gbc2.gridy = 1;
-            gbc2.anchor = GridBagConstraints.NORTHWEST;
+            gbc2.anchor = GridBagConstraints.WEST;
             gbl2.setConstraints(categories, gbc2);
             panel.add(categories);
 
@@ -276,6 +297,34 @@ public class MetaDataStep extends AbstractWizardStep {
 
     public Dimension getPreferredSize() {
         return view.getPreferredSize();
+    }
+
+    class MyCellRenderer extends JLabel implements ListCellRenderer {
+        // This is the only method defined by ListCellRenderer.
+        // We just reconfigure the JLabel each time we're called.
+        public Component getListCellRendererComponent(JList list,
+                                                      Object value,
+                                                      int index,
+                                                      boolean isSelected,
+                                                      boolean cellHasFocus)
+        {
+            String s = value.toString();
+            setText(s);
+            if (isSelected) {
+                setIcon((ImageIcon)model.imageIconMap.get(s));
+                setBackground(list.getSelectionBackground());
+                setForeground(list.getSelectionForeground());
+            } else {
+                setIcon(null);
+                setBackground(list.getBackground());
+                setForeground(list.getForeground());
+            }
+            this.validateTree();
+            setEnabled(list.isEnabled());
+            setFont(list.getFont());
+            setOpaque(true);
+            return this;
+        }
     }
 
 } // class MetaDataStep
