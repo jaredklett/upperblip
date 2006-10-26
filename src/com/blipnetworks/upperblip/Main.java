@@ -33,14 +33,14 @@ import org.pietschy.wizard.Wizard;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.20 2006/10/20 17:35:37 jklett Exp $
+ * @version $Id: Main.java,v 1.21 2006/10/26 00:10:38 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.20 $";
+    public static final String CVS_REV = "$Revision: 1.21 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -205,6 +205,7 @@ public class Main {
         frame = new JFrame(I18n.getString(FRAME_TITLE_KEY));
         frame.addWindowListener(wndl);
         frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        frame.setIconImage(Icons.frameIcon.getImage());
         frame.getContentPane().setLayout(new BorderLayout());
         frame.getContentPane().add(wizard, BorderLayout.CENTER);
         if (x == 0 && y == 0 && w == 0 && h == 0) {
