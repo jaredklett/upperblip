@@ -19,24 +19,24 @@ import java.util.*;
  * Icons, yea!
  *
  * @author Jared Klett
- * @version $Id: Icons.java,v 1.7 2006/10/26 00:11:08 jklett Exp $
+ * @version $Id: Icons.java,v 1.8 2006/10/30 04:03:06 jklett Exp $
  */
 
 public class Icons {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.7 $";
+    public static final String CVS_REV = "$Revision: 1.8 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
-    public static final String ADD_ICON_PATH = "icons/new/add.png";
-    public static final String DELETE_ICON_PATH = "icons/new/delete.png";
-    public static final String IMAGE_ICON_PATH = "icons/new/image.png";
-    public static final String SOUND_ICON_PATH = "icons/new/sound.png";
-    public static final String VIDEO_ICON_PATH = "icons/new/film.png";
-    public static final String UNKNOWN_ICON_PATH = "icons/new/page.png";
-    public static final String FRAME_ICON_PATH = "icons/new/upperblip.png";
+    public static final String ADD_ICON_PATH = "icons/add.png";
+    public static final String DELETE_ICON_PATH = "icons/delete.png";
+    public static final String IMAGE_ICON_PATH = "icons/image.png";
+    public static final String SOUND_ICON_PATH = "icons/sound.png";
+    public static final String VIDEO_ICON_PATH = "icons/film.png";
+    public static final String UNKNOWN_ICON_PATH = "icons/page.png";
+    public static final String FRAME_ICON_PATH = "icons/upperblip.png";
 
     public static final ImageIcon imageIcon = new ImageIcon(ClassLoader.getSystemResource(IMAGE_ICON_PATH));
     public static final ImageIcon soundIcon = new ImageIcon(ClassLoader.getSystemResource(SOUND_ICON_PATH));
