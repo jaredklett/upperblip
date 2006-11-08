@@ -21,7 +21,7 @@ import javax.swing.*;
 
 /**
  * @author Jared Klett
- * @version $Id: UpperBlipModel.java,v 1.12 2006/11/08 21:15:21 jklett Exp $
+ * @version $Id: UpperBlipModel.java,v 1.13 2006/11/08 21:21:21 jklett Exp $
  */
 
 public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
@@ -100,9 +100,11 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
 
     public void setImageFiles(File[] imageFiles) {
         this.imageFiles = imageFiles;
-        imageFilenames = new String[imageFiles.length];
+        imageFilenames = new String[imageFiles.length + 1];
+        // TODO: externalize
+        imageFilenames[0] = "None";
         for (int i = 0; i < imageFiles.length; i++)
-            imageFilenames[i] = imageFiles[i].getName();
+            imageFilenames[i + 1] = imageFiles[i].getName();
     }
 
     public void setTitles(String[] titles) {
