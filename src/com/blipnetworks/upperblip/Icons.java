@@ -19,14 +19,14 @@ import java.util.*;
  * Icons, yea!
  *
  * @author Jared Klett
- * @version $Id: Icons.java,v 1.8 2006/10/30 04:03:06 jklett Exp $
+ * @version $Id: Icons.java,v 1.9 2006/11/08 21:14:31 jklett Exp $
  */
 
 public class Icons {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.8 $";
+    public static final String CVS_REV = "$Revision: 1.9 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -105,6 +105,12 @@ public class Icons {
 
 // Class methods //////////////////////////////////////////////////////////////
 
+    /**
+     * foo
+     *
+     * @param filename The name of the file to be checked.
+     * @return True if the passed filename is that of an image, false otherwise.
+     */
     public static boolean isImage(String filename) {
         String extension = extractExtension(filename);
         List list = Arrays.asList(imageFormats);
@@ -115,7 +121,7 @@ public class Icons {
      * Looks up dot-extension for the passed filename and returns an
      * appropriate icon for the file type.
      *
-     * @param filename The filename of a candidate for icon-ing.
+     * @param filename The name of a candidate for icon-ing.
      * @return An icon suitable for use in Swing.
      * @throws IllegalArgumentException If the passed filename has no dot-extension.
      */
@@ -130,6 +136,12 @@ public class Icons {
         return retval;
     }
 
+    /**
+     * Takes a substring of the passed filename.
+     *
+     * @param filename The name of the file to be worked on.
+     * @return The filename extension which usually holds the key to the type.
+     */
     private static String extractExtension(String filename) {
         int dotIndex = filename.lastIndexOf(".");
         if (dotIndex == -1)
