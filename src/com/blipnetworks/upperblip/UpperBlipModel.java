@@ -13,6 +13,8 @@
 package com.blipnetworks.upperblip;
 
 import java.io.*;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.pietschy.wizard.*;
 import org.pietschy.wizard.models.*;
@@ -21,13 +23,14 @@ import javax.swing.*;
 
 /**
  * @author Jared Klett
- * @version $Id: UpperBlipModel.java,v 1.13 2006/11/08 21:21:21 jklett Exp $
+ * @version $Id: UpperBlipModel.java,v 1.14 2006/11/09 17:59:14 jklett Exp $
  */
 
 public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
 
     private File[] files;
     private File[] imageFiles;
+    private File[] thumbnails;
     private String[] imageFilenames;
     private String[] titles;
     private String[] descriptions;
@@ -37,6 +40,7 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
     private String username;
     private String password;
     private boolean remember;
+    public Map thumbnailFileLookup;
 
     public boolean isRemembered() {
         return remember;
@@ -82,6 +86,10 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
         return descriptions;
     }
 
+    public File[] getThumbnails() {
+        return thumbnails;
+    }
+
     public void setRemembered(boolean remember) {
         this.remember = remember;
     }
@@ -101,10 +109,13 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
     public void setImageFiles(File[] imageFiles) {
         this.imageFiles = imageFiles;
         imageFilenames = new String[imageFiles.length + 1];
+        thumbnailFileLookup = new HashMap();
         // TODO: externalize
         imageFilenames[0] = "None";
-        for (int i = 0; i < imageFiles.length; i++)
+        for (int i = 0; i < imageFiles.length; i++) {
             imageFilenames[i + 1] = imageFiles[i].getName();
+            thumbnailFileLookup.put(imageFiles[i].getName(), imageFiles[i]);
+        }
     }
 
     public void setTitles(String[] titles) {
@@ -125,6 +136,10 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
 
     public void setDescriptions(String[] descriptions) {
         this.descriptions = descriptions;
+    }
+
+    public void setThumbnails(File[] thumbnails) {
+        this.thumbnails = thumbnails;
     }
 
     public void activateHelp(JComponent parent, WizardModel model) {

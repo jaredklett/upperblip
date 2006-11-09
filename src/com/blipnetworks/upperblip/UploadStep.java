@@ -27,14 +27,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.19 2006/10/20 17:26:11 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.20 2006/11/09 17:59:14 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.19 $";
+	public static final String CVS_REV = "$Revision: 1.20 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -185,7 +185,8 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 		String[] descriptions = model.getDescriptions();
         String[] licenses = model.getLicenses();
         String[] categories = model.getCategories();
-		// Create a properties object
+        File[] thumbnails = model.getThumbnails();
+        // Create a properties object
 		Properties props = new Properties();
 		props.put(Uploader.USER_PARAM_KEY, model.getUsername());
 		props.put(Uploader.PASS_PARAM_KEY, model.getPassword());
@@ -205,7 +206,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 			Thread thread = new Thread(timer);
 			running = true;
 			thread.start();
-			boolean success = uploader.uploadFile(files[i], props);
+			boolean success = uploader.uploadFile(files[i], thumbnails[i], props);
             String msg = "An unknown error occurred.";
             int err = -1;
             if (!success) {

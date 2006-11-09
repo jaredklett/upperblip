@@ -26,17 +26,17 @@ import org.pietschy.wizard.AbstractWizardStep;
 import org.pietschy.wizard.WizardModel;
 
 /**
- * 
- * 
+ *
+ *
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.16 2006/11/08 23:10:16 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.17 2006/11/09 17:59:14 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.16 $";
+    public static final String CVS_REV = "$Revision: 1.17 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -342,7 +342,7 @@ public class MetaDataStep extends AbstractWizardStep {
         String[] tags = new String[descList.length];
         String[] categories = new String[descList.length];
         String[] licenses = new String[descList.length];
-        //String[]
+        File[] thumbnails = new File[descList.length];
         // Loop through components and populate the arrays
         for (int i = 0; i < titleList.length; i++) {
             // If the user didn't enter a title, set it to the name of the file
@@ -357,6 +357,13 @@ public class MetaDataStep extends AbstractWizardStep {
             tags[i] = tagsList[i].getText();
             categories[i] = (String)MetadataLoader.categories.get(categoryList[i].getSelectedItem());
             licenses[i] = (String)MetadataLoader.licenses.get(licenseList[i].getSelectedItem());
+            thumbnails[i] = null;
+            if (thumbList[i].getSelectedIndex() != 0) {
+                String filename = (String)thumbList[i].getSelectedItem();
+                Object obj = model.thumbnailFileLookup.get(filename);
+                if (obj != null)
+                    thumbnails[i] = (File)obj;
+            }
         }
         // Put the arrays in our model
         model.setTitles(titles);
@@ -364,6 +371,7 @@ public class MetaDataStep extends AbstractWizardStep {
         model.setTags(tags);
         model.setCategories(categories);
         model.setLicenses(licenses);
+        model.setThumbnails(thumbnails);
     }
 
     public Dimension getPreferredSize() {

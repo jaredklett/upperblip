@@ -34,14 +34,14 @@ import com.blipnetworks.upperblip.Main;
  * TODO: use a logging interface for stack traces and println's.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.14 2006/10/26 00:11:08 jklett Exp $
+ * @version $Id: Uploader.java,v 1.15 2006/11/09 17:59:14 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.14 $";
+    public static final String CVS_REV = "$Revision: 1.15 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -120,49 +120,53 @@ public class Uploader {
 
 // Instance methods ///////////////////////////////////////////////////////////
 
+    public boolean uploadFile(File file, Properties parameters) {
+        return uploadFile(file, null, parameters);
+    }
+
     /**
      *
      */
-    public boolean uploadFile(File file, Properties parameters) {
-
+    public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters) {
         PostMethod post = new PostMethod(urlWithGuid);
-        FilePart fp;
+        FilePart videoFilePart;
         try {
-            fp = new FilePart(FILE_PARAM_KEY, file);
-        }
-        catch (FileNotFoundException fnfe) {
+            videoFilePart = new FilePart(FILE_PARAM_KEY, videoFile);
+        } catch (FileNotFoundException fnfe) {
             fnfe.printStackTrace();
             return false;
         }
 
+        FilePart thumbnailFilePart = null;
+        if (thumbnailFile != null) {
+            try {
+                thumbnailFilePart = new FilePart(THUMB_PARAM_KEY, thumbnailFile);
+            } catch (FileNotFoundException fnfe) {
+                fnfe.printStackTrace();
+                return false;
+            }
+        }
+
         Part[] parts;
+        Part[] typeArray = new Part[0];
+        List list = new ArrayList();
+        list.add(videoFilePart);
+        if (thumbnailFilePart != null)
+            list.add(thumbnailFilePart);
+        list.add(new StringPart(TITLE_PARAM_KEY, parameters.getProperty(TITLE_PARAM_KEY, TITLE_PARAM_DEF)));
+        list.add(new StringPart(POST_PARAM_KEY, parameters.getProperty(POST_PARAM_KEY, POST_PARAM_DEF)));
+        list.add(new StringPart(CAT_PARAM_KEY, parameters.getProperty(CAT_PARAM_KEY, CAT_PARAM_DEF)));
+        list.add(new StringPart(TAGS_PARAM_KEY, parameters.getProperty(TAGS_PARAM_KEY, TAGS_PARAM_DEF)));
+        list.add(new StringPart(LICENSE_PARAM_KEY, parameters.getProperty(LICENSE_PARAM_KEY, LICENSE_PARAM_DEF)));
+        list.add(new StringPart(SKIN_PARAM_KEY, parameters.getProperty(SKIN_PARAM_KEY, SKIN_PARAM_DEF)));
+        list.add(new StringPart(DESC_PARAM_KEY, parameters.getProperty(DESC_PARAM_KEY, DESC_PARAM_DEF)));
+        list.add(new StringPart(INGEST_PARAM_KEY, parameters.getProperty(DESC_PARAM_KEY, INGEST_PARAM_DEF)));
         // We want to omit the un/pw parts if we have an auth cookie
-        if (authCookie == null)
-            parts = new Part[] {
-                    fp,
-                    new StringPart(TITLE_PARAM_KEY, parameters.getProperty(TITLE_PARAM_KEY, TITLE_PARAM_DEF)),
-                    new StringPart(POST_PARAM_KEY, parameters.getProperty(POST_PARAM_KEY, POST_PARAM_DEF)),
-                    new StringPart(CAT_PARAM_KEY, parameters.getProperty(CAT_PARAM_KEY, CAT_PARAM_DEF)),
-                    new StringPart(TAGS_PARAM_KEY, parameters.getProperty(TAGS_PARAM_KEY, TAGS_PARAM_DEF)),
-                    new StringPart(LICENSE_PARAM_KEY, parameters.getProperty(LICENSE_PARAM_KEY, LICENSE_PARAM_DEF)),
-                    new StringPart(USER_PARAM_KEY, parameters.getProperty(USER_PARAM_KEY, USER_PARAM_DEF)),
-                    new StringPart(PASS_PARAM_KEY, parameters.getProperty(PASS_PARAM_KEY, PASS_PARAM_DEF)),
-                    new StringPart(SKIN_PARAM_KEY, parameters.getProperty(SKIN_PARAM_KEY, SKIN_PARAM_DEF)),
-                    new StringPart(DESC_PARAM_KEY, parameters.getProperty(DESC_PARAM_KEY, DESC_PARAM_DEF)),
-                    new StringPart(INGEST_PARAM_KEY, parameters.getProperty(DESC_PARAM_KEY, INGEST_PARAM_DEF))
-            };
-        else
-            parts = new Part[] {
-                    fp,
-                    new StringPart(TITLE_PARAM_KEY, parameters.getProperty(TITLE_PARAM_KEY, TITLE_PARAM_DEF)),
-                    new StringPart(POST_PARAM_KEY, parameters.getProperty(POST_PARAM_KEY, POST_PARAM_DEF)),
-                    new StringPart(CAT_PARAM_KEY, parameters.getProperty(CAT_PARAM_KEY, CAT_PARAM_DEF)),
-                    new StringPart(TAGS_PARAM_KEY, parameters.getProperty(TAGS_PARAM_KEY, TAGS_PARAM_DEF)),
-                    new StringPart(LICENSE_PARAM_KEY, parameters.getProperty(LICENSE_PARAM_KEY, LICENSE_PARAM_DEF)),
-                    new StringPart(SKIN_PARAM_KEY, parameters.getProperty(SKIN_PARAM_KEY, SKIN_PARAM_DEF)),
-                    new StringPart(DESC_PARAM_KEY, parameters.getProperty(DESC_PARAM_KEY, DESC_PARAM_DEF)),
-                    new StringPart(INGEST_PARAM_KEY, parameters.getProperty(INGEST_PARAM_KEY, INGEST_PARAM_DEF))
-            };
+        if (authCookie == null) {
+            list.add(new StringPart(USER_PARAM_KEY, parameters.getProperty(USER_PARAM_KEY, USER_PARAM_DEF)));
+            list.add(new StringPart(PASS_PARAM_KEY, parameters.getProperty(PASS_PARAM_KEY, PASS_PARAM_DEF)));
+        }
+        parts = (Part[])list.toArray(typeArray);
 
         post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
 
