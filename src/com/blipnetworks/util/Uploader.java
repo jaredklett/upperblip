@@ -34,14 +34,14 @@ import com.blipnetworks.upperblip.Main;
  * TODO: use a logging interface for stack traces and println's.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.15 2006/11/09 17:59:14 jklett Exp $
+ * @version $Id: Uploader.java,v 1.16 2006/11/09 19:46:52 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.15 $";
+    public static final String CVS_REV = "$Revision: 1.16 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -160,7 +160,7 @@ public class Uploader {
         list.add(new StringPart(LICENSE_PARAM_KEY, parameters.getProperty(LICENSE_PARAM_KEY, LICENSE_PARAM_DEF)));
         list.add(new StringPart(SKIN_PARAM_KEY, parameters.getProperty(SKIN_PARAM_KEY, SKIN_PARAM_DEF)));
         list.add(new StringPart(DESC_PARAM_KEY, parameters.getProperty(DESC_PARAM_KEY, DESC_PARAM_DEF)));
-        list.add(new StringPart(INGEST_PARAM_KEY, parameters.getProperty(DESC_PARAM_KEY, INGEST_PARAM_DEF)));
+        list.add(new StringPart(INGEST_PARAM_KEY, parameters.getProperty(INGEST_PARAM_KEY, INGEST_PARAM_DEF)));
         // We want to omit the un/pw parts if we have an auth cookie
         if (authCookie == null) {
             list.add(new StringPart(USER_PARAM_KEY, parameters.getProperty(USER_PARAM_KEY, USER_PARAM_DEF)));
