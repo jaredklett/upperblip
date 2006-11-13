@@ -19,66 +19,46 @@ import java.util.*;
  * Icons, yea!
  *
  * @author Jared Klett
- * @version $Id: Icons.java,v 1.9 2006/11/08 21:14:31 jklett Exp $
+ * @version $Id: Icons.java,v 1.10 2006/11/13 19:33:21 jklett Exp $
  */
 
 public class Icons {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.9 $";
+    public static final String CVS_REV = "$Revision: 1.10 $";
 
 // Constants //////////////////////////////////////////////////////////////////
+
+    private static final String IMAGE_FORMATS_KEY = "image.formats";
+    private static final String SOUND_FORMATS_KEY = "sound.formats";
+    private static final String VIDEO_FORMATS_KEY = "video.formats";
+    private static final String DISALLOWED_FORMATS_KEY = "disallowed.formats";
 
     public static final String ADD_ICON_PATH = "icons/add.png";
     public static final String DELETE_ICON_PATH = "icons/delete.png";
     public static final String IMAGE_ICON_PATH = "icons/image.png";
     public static final String SOUND_ICON_PATH = "icons/sound.png";
     public static final String VIDEO_ICON_PATH = "icons/film.png";
-    public static final String UNKNOWN_ICON_PATH = "icons/page.png";
+    public static final String UNKNOWN_ICON_PATH = "icons/error.png";
+    public static final String DISALLOWED_ICON_PATH = "icons/stop.png";
     public static final String FRAME_ICON_PATH = "icons/upperblip.png";
+    public static final String OK_ICON_PATH = "icons/accept.png";
+    public static final String ERROR_ICON_PATH = "icons/exclamation.png";
 
     public static final ImageIcon imageIcon = new ImageIcon(ClassLoader.getSystemResource(IMAGE_ICON_PATH));
     public static final ImageIcon soundIcon = new ImageIcon(ClassLoader.getSystemResource(SOUND_ICON_PATH));
     public static final ImageIcon videoIcon = new ImageIcon(ClassLoader.getSystemResource(VIDEO_ICON_PATH));
     public static final ImageIcon unknownIcon = new ImageIcon(ClassLoader.getSystemResource(UNKNOWN_ICON_PATH));
     public static final ImageIcon frameIcon = new ImageIcon(ClassLoader.getSystemResource(FRAME_ICON_PATH));
+    public static final ImageIcon okIcon = new ImageIcon(ClassLoader.getSystemResource(OK_ICON_PATH));
+    public static final ImageIcon errorIcon = new ImageIcon(ClassLoader.getSystemResource(ERROR_ICON_PATH));
+    public static final ImageIcon disallowedIcon = new ImageIcon(ClassLoader.getSystemResource(DISALLOWED_ICON_PATH));
 
-    public static final String[] imageFormats = {
-            "gif",
-            "jpg",
-            "jpe",
-            "jpeg",
-            "png",
-            "tiff",
-            "tif",
-            "bmp"
-    };
-
-    public static final String[] soundFormats = {
-            "aif",
-            "aiff",
-            "mp3",
-            "wav",
-            "wma",
-            "m4a"
-    };
-
-    public static final String[] videoFormats = {
-            "mov",
-            "wmv",
-            "mpg",
-            "mpe",
-            "mpeg",
-            "avi",
-            "rmvb",
-            "qt",
-            "3gp",
-            "3g2",
-            "flv",
-            "mp4",
-            "m4v"
-    };
+    public static String[] imageFormats;
+    public static String[] soundFormats;
+    public static String[] videoFormats;
+    public static String[] disallowedFormats;
 
 // Class variables ////////////////////////////////////////////////////////////
 
@@ -87,14 +67,31 @@ public class Icons {
 // Class initializer //////////////////////////////////////////////////////////
 
     static {
-        for (int i = 0; i < imageFormats.length; i++)
-            iconMap.put(imageFormats[i], imageIcon);
-
-        for (int i = 0; i < soundFormats.length; i++)
-            iconMap.put(soundFormats[i], soundIcon);
-
-        for (int i = 0; i < videoFormats.length; i++)
-            iconMap.put(videoFormats[i], videoIcon);
+        // TODO: use a default here?
+        String property = Main.appProperties.getProperty(IMAGE_FORMATS_KEY);
+        if (property != null) {
+            imageFormats = property.split(",");
+            for (int i = 0; i < imageFormats.length; i++)
+                iconMap.put(imageFormats[i], imageIcon);
+        }
+        property = Main.appProperties.getProperty(SOUND_FORMATS_KEY);
+        if (property != null) {
+            soundFormats = property.split(",");
+            for (int i = 0; i < soundFormats.length; i++)
+                iconMap.put(soundFormats[i], soundIcon);
+        }
+        property = Main.appProperties.getProperty(VIDEO_FORMATS_KEY);
+        if (property != null) {
+            videoFormats = property.split(",");
+            for (int i = 0; i < videoFormats.length; i++)
+                iconMap.put(videoFormats[i], videoIcon);
+        }
+        property = Main.appProperties.getProperty(DISALLOWED_FORMATS_KEY);
+        if (property != null) {
+            disallowedFormats = property.split(",");
+            for (int i = 0; i < disallowedFormats.length; i++)
+                iconMap.put(disallowedFormats[i], disallowedIcon);
+        }
     }
 
 // Constructor ////////////////////////////////////////////////////////////////
@@ -112,8 +109,16 @@ public class Icons {
      * @return True if the passed filename is that of an image, false otherwise.
      */
     public static boolean isImage(String filename) {
+        return check(filename, imageFormats);
+    }
+
+    public static boolean isDisallowed(String filename) {
+        return check(filename, disallowedFormats);
+    }
+
+    private static boolean check(String filename, String[] array) {
         String extension = extractExtension(filename);
-        List list = Arrays.asList(imageFormats);
+        List list = Arrays.asList(array);
         return list.contains(extension);
     }
 
