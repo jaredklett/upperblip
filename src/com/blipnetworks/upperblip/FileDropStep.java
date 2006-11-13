@@ -32,14 +32,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: FileDropStep.java,v 1.16 2006/11/13 19:34:13 jklett Exp $
+ * @version $Id: FileDropStep.java,v 1.17 2006/11/13 22:27:08 jklett Exp $
  */
 
 public class FileDropStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.16 $";
+    public static final String CVS_REV = "$Revision: 1.17 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -153,6 +153,7 @@ public class FileDropStep extends AbstractWizardStep {
     public FileDropStep() {
         super(I18n.getString(TITLE_KEY), I18n.getString(SUMMARY_KEY));
 
+        setIcon(new ImageIcon(ClassLoader.getSystemResource("icons/list-add.png")));
         // Create and layout components
         list = new JList(new DefaultListModel());
         list.setDragEnabled(true);

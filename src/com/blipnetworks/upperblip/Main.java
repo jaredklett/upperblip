@@ -33,14 +33,14 @@ import org.pietschy.wizard.Wizard;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.22 2006/11/13 19:33:39 jklett Exp $
+ * @version $Id: Main.java,v 1.23 2006/11/13 22:27:08 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.22 $";
+    public static final String CVS_REV = "$Revision: 1.23 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

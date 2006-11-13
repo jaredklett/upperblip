@@ -29,14 +29,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.19 2006/11/13 19:33:54 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.20 2006/11/13 22:27:08 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.19 $";
+    public static final String CVS_REV = "$Revision: 1.20 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -58,6 +58,8 @@ public class MetaDataStep extends AbstractWizardStep {
     private static final String TAGS_LABEL_KEY = "meta.tags.label";
     /** blah */
     private static final String CATEGORY_LABEL_KEY = "meta.category.label";
+    /** blah */
+    private static final String APPLY_LABEL_KEY = "meta.apply.label";
 
 // Instance variables //////////////////////////////////////////////////////////
 
@@ -85,6 +87,7 @@ public class MetaDataStep extends AbstractWizardStep {
     public MetaDataStep() {
         super(I18n.getString(TITLE_KEY), I18n.getString(SUMMARY_KEY));
         view = new JPanel();
+        setIcon(new ImageIcon(ClassLoader.getSystemResource("icons/accessories-text-editor.png")));
         setComplete(true);
     }
 
@@ -139,8 +142,8 @@ public class MetaDataStep extends AbstractWizardStep {
             JLabel tagsLabel = new JLabel(I18n.getString(TAGS_LABEL_KEY));
             JLabel categoryLabel = new JLabel(I18n.getString(CATEGORY_LABEL_KEY));
             final JTextField titleField = new JTextField(10);
-            ApplyLabel applyTitleLabel = new ApplyLabel(
-                    "Apply to all",
+            LinkLabel applyTitleLabel = new LinkLabel(
+                    I18n.getString(APPLY_LABEL_KEY),
                     new Command() {
                         public void execute() {
                             String title = titleField.getText();
@@ -150,8 +153,8 @@ public class MetaDataStep extends AbstractWizardStep {
                     }
             );
             final JTextArea descArea = new JTextArea(10, 10);
-            ApplyLabel applyDescLabel = new ApplyLabel(
-                    "Apply to all",
+            LinkLabel applyDescLabel = new LinkLabel(
+                    I18n.getString(APPLY_LABEL_KEY),
                     new Command() {
                         public void execute() {
                             String desc = descArea.getText();
@@ -161,8 +164,8 @@ public class MetaDataStep extends AbstractWizardStep {
                     }
             );
             final JComboBox thumbnails = new JComboBox(model.getImageFilenames());
-            ApplyLabel applyThumbnailLabel = new ApplyLabel(
-                    "Apply to all",
+            LinkLabel applyThumbnailLabel = new LinkLabel(
+                    I18n.getString(APPLY_LABEL_KEY),
                     new Command() {
                         public void execute() {
                             int index = thumbnails.getSelectedIndex();
@@ -172,8 +175,8 @@ public class MetaDataStep extends AbstractWizardStep {
                     }
             );
             final JComboBox categories = new JComboBox(MetadataLoader.categories.keySet().toArray());
-            ApplyLabel applyCatLabel = new ApplyLabel(
-                    "Apply to all",
+            LinkLabel applyCatLabel = new LinkLabel(
+                    I18n.getString(APPLY_LABEL_KEY),
                     new Command() {
                         public void execute() {
                             int index = categories.getSelectedIndex();
@@ -183,8 +186,8 @@ public class MetaDataStep extends AbstractWizardStep {
                     }
             );
             final JComboBox licenses = new JComboBox(MetadataLoader.licenses.keySet().toArray());
-            ApplyLabel applyLicenseLabel = new ApplyLabel(
-                    "Apply to all",
+            LinkLabel applyLicenseLabel = new LinkLabel(
+                    I18n.getString(APPLY_LABEL_KEY),
                     new Command() {
                         public void execute() {
                             int index = licenses.getSelectedIndex();
@@ -194,8 +197,8 @@ public class MetaDataStep extends AbstractWizardStep {
                     }
             );
             final JTextField tagsField = new JTextField(10);
-            ApplyLabel applyTagsLabel = new ApplyLabel(
-                    "Apply to all",
+            LinkLabel applyTagsLabel = new LinkLabel(
+                    I18n.getString(APPLY_LABEL_KEY),
                     new Command() {
                         public void execute() {
                             String tags = tagsField.getText();

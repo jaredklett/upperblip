@@ -23,7 +23,7 @@ import javax.swing.*;
 
 /**
  * @author Jared Klett
- * @version $Id: UpperBlipModel.java,v 1.14 2006/11/09 17:59:14 jklett Exp $
+ * @version $Id: UpperBlipModel.java,v 1.15 2006/11/13 22:27:08 jklett Exp $
  */
 
 public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
@@ -37,6 +37,7 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
     private String[] tags;
     private String[] categories;
     private String[] licenses;
+    private String[] postURLs;
     private String username;
     private String password;
     private boolean remember;
@@ -90,6 +91,10 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
         return thumbnails;
     }
 
+    public String[] getPostURLs() {
+        return postURLs;
+    }
+
     public void setRemembered(boolean remember) {
         this.remember = remember;
     }
@@ -140,6 +145,10 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
 
     public void setThumbnails(File[] thumbnails) {
         this.thumbnails = thumbnails;
+    }
+
+    public void setPostURLs(String[] postURLs) {
+        this.postURLs = postURLs;
     }
 
     public void activateHelp(JComponent parent, WizardModel model) {

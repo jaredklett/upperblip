@@ -28,14 +28,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.21 2006/11/13 15:44:14 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.22 2006/11/13 22:27:08 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.21 $";
+	public static final String CVS_REV = "$Revision: 1.22 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -129,6 +129,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 	public UploadStep() {
 		super(I18n.getString(TITLE_KEY), I18n.getString(SUMMARY_KEY));
 
+        setIcon(new ImageIcon(ClassLoader.getSystemResource("icons/go-up.png")));
         postList = new ArrayList();
         // Create and layout components
 		rateLabel = new JLabel(I18n.getString(RATE_LABEL_KEY));
@@ -263,12 +264,9 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 			//progress.setValue(progress.getValue() + 1);
 		}
 		setBusy(false);
-        // TODO: externalize
-		rateLabel.setText("All uploads complete!");
-		timeLabel.setText("");
 		setComplete(true);
-        for (int i = 0; i < postList.size(); i++)
-            System.out.println(postList.get(i));
+        model.setPostURLs((String[])postList.toArray(new String[0]));
+        model.nextStep();
     }
 
 // WizardStep implementation //////////////////////////////////////////////////
