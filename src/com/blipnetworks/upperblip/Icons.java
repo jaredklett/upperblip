@@ -19,14 +19,14 @@ import java.util.*;
  * Icons, yea!
  *
  * @author Jared Klett
- * @version $Id: Icons.java,v 1.10 2006/11/13 19:33:21 jklett Exp $
+ * @version $Id: Icons.java,v 1.11 2006/11/13 22:27:29 jklett Exp $
  */
 
 public class Icons {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.10 $";
+    public static final String CVS_REV = "$Revision: 1.11 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -43,7 +43,7 @@ public class Icons {
     public static final String UNKNOWN_ICON_PATH = "icons/error.png";
     public static final String DISALLOWED_ICON_PATH = "icons/stop.png";
     public static final String FRAME_ICON_PATH = "icons/upperblip.png";
-    public static final String OK_ICON_PATH = "icons/accept.png";
+    public static final String SUCCESS_ICON_PATH = "icons/accept.png";
     public static final String ERROR_ICON_PATH = "icons/exclamation.png";
 
     public static final ImageIcon imageIcon = new ImageIcon(ClassLoader.getSystemResource(IMAGE_ICON_PATH));
@@ -51,7 +51,7 @@ public class Icons {
     public static final ImageIcon videoIcon = new ImageIcon(ClassLoader.getSystemResource(VIDEO_ICON_PATH));
     public static final ImageIcon unknownIcon = new ImageIcon(ClassLoader.getSystemResource(UNKNOWN_ICON_PATH));
     public static final ImageIcon frameIcon = new ImageIcon(ClassLoader.getSystemResource(FRAME_ICON_PATH));
-    public static final ImageIcon okIcon = new ImageIcon(ClassLoader.getSystemResource(OK_ICON_PATH));
+    public static final ImageIcon successIcon = new ImageIcon(ClassLoader.getSystemResource(SUCCESS_ICON_PATH));
     public static final ImageIcon errorIcon = new ImageIcon(ClassLoader.getSystemResource(ERROR_ICON_PATH));
     public static final ImageIcon disallowedIcon = new ImageIcon(ClassLoader.getSystemResource(DISALLOWED_ICON_PATH));
 
