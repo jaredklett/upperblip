@@ -14,6 +14,7 @@ package com.blipnetworks.util;
 
 import java.io.*;
 import java.util.*;
+import java.net.URL;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.params.HttpMethodParams;
@@ -34,14 +35,14 @@ import com.blipnetworks.upperblip.Main;
  * TODO: use a logging interface for stack traces and println's.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.16 2006/11/09 19:46:52 jklett Exp $
+ * @version $Id: Uploader.java,v 1.17 2006/11/13 15:44:14 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.16 $";
+    public static final String CVS_REV = "$Revision: 1.17 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -104,6 +105,7 @@ public class Uploader {
     private Cookie authCookie;
     private String url;
     private String urlWithGuid;
+    private String postURL;
     private int timeout;
     private int errorCode;
 
@@ -216,6 +218,16 @@ public class Uploader {
                 if (document != null) {
                     // attempt to discern the status from the respose
                     String responseText = document.getElementsByTagName("response").item(0).getTextContent();
+                    String[] lines = responseText.trim().split("\n");
+                    if (lines.length >= 2) {
+                        try {
+                            URL testURL = new URL(lines[1]);
+                            postURL = testURL.toString();
+                        } catch (Exception e) {
+                            // TODO: log message
+                            System.out.println("Couldn't find valid URL in response text:\n" + responseText);
+                        }
+                    }
                     if (responseText.indexOf("couldn't find an account") != -1)
                         errorCode = ERROR_BAD_AUTH;
                     return responseText.indexOf("has been successfully posted") != -1;
@@ -245,6 +257,10 @@ public class Uploader {
 
     public int getErrorCode() {
         return errorCode;
+    }
+
+    public String getPostURL() {
+        return postURL;
     }
 
 // Mutators ///////////////////////////////////////////////////////////////////

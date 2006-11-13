@@ -29,14 +29,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.17 2006/11/09 17:59:14 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.18 2006/11/13 15:44:14 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.17 $";
+    public static final String CVS_REV = "$Revision: 1.18 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -138,7 +138,7 @@ public class MetaDataStep extends AbstractWizardStep {
             JLabel licenseLabel = new JLabel(I18n.getString(LICENSE_LABEL_KEY));
             JLabel tagsLabel = new JLabel(I18n.getString(TAGS_LABEL_KEY));
             JLabel categoryLabel = new JLabel(I18n.getString(CATEGORY_LABEL_KEY));
-            final JTextField titleField = new JTextField(20);
+            final JTextField titleField = new JTextField(10);
             ApplyLabel applyTitleLabel = new ApplyLabel(
                     "Apply to all",
                     new Command() {
@@ -193,7 +193,7 @@ public class MetaDataStep extends AbstractWizardStep {
                         }
                     }
             );
-            final JTextField tagsField = new JTextField(20);
+            final JTextField tagsField = new JTextField(10);
             ApplyLabel applyTagsLabel = new ApplyLabel(
                     "Apply to all",
                     new Command() {

@@ -15,6 +15,7 @@ package com.blipnetworks.upperblip;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 import javax.swing.*;
 
@@ -27,14 +28,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.20 2006/11/09 17:59:14 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.21 2006/11/13 15:44:14 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.20 $";
+	public static final String CVS_REV = "$Revision: 1.21 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -79,6 +80,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 	private JLabel timeLabel;
 	/** */
 	private JProgressBar progress;
+    private List postList;
 
     private Runnable timer = new Runnable() {
         public void run() {
@@ -127,7 +129,8 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 	public UploadStep() {
 		super(I18n.getString(TITLE_KEY), I18n.getString(SUMMARY_KEY));
 
-		// Create and layout components
+        postList = new ArrayList();
+        // Create and layout components
 		rateLabel = new JLabel(I18n.getString(RATE_LABEL_KEY));
 		timeLabel = new JLabel(I18n.getString(TIME_LABEL_KEY));
 		progress = new JProgressBar();
@@ -226,7 +229,9 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
             catch (InterruptedException e) {
                 //thread.stop();
             }
-            if (!success) {
+            if (success) {
+                postList.add(uploader.getPostURL());
+            } else {
                 int choice;
                 if (err == Uploader.ERROR_UNKNOWN) {
                     choice = JOptionPane.showConfirmDialog(
@@ -262,7 +267,9 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 		rateLabel.setText("All uploads complete!");
 		timeLabel.setText("");
 		setComplete(true);
-	}
+        for (int i = 0; i < postList.size(); i++)
+            System.out.println(postList.get(i));
+    }
 
 // WizardStep implementation //////////////////////////////////////////////////
 
