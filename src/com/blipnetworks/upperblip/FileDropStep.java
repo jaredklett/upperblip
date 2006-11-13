@@ -32,14 +32,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: FileDropStep.java,v 1.15 2006/10/26 00:11:08 jklett Exp $
+ * @version $Id: FileDropStep.java,v 1.16 2006/11/13 19:34:13 jklett Exp $
  */
 
 public class FileDropStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.15 $";
+    public static final String CVS_REV = "$Revision: 1.16 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -51,6 +51,10 @@ public class FileDropStep extends AbstractWizardStep {
     private static final String ADD_TOOLTIP_KEY = "filedrop.add.tooltip";
     /** blah */
     private static final String REMOVE_TOOLTIP_KEY = "filedrop.remove.tooltip";
+    /** blah */
+    private static final String DISALLOWED_TITLE_KEY = "filedrop.disallowed.title";
+    /** blah */
+    private static final String DISALLOWED_MESSAGE_KEY = "filedrop.disallowed.message";
 
 // Enumerated types ////////////////////////////////////////////////////////////
 
@@ -82,7 +86,17 @@ public class FileDropStep extends AbstractWizardStep {
             DefaultListModel dlm = (DefaultListModel)list.getModel();
             for (int i = 0; i < files.length; i++)
                 dlm.addElement(files[i].getName());
-            setComplete(true);
+            if (isDisallowedPresent()) {
+                JOptionPane.showMessageDialog(
+                        Main.getMainInstance().getMainFrame(),
+                        I18n.getString(DISALLOWED_MESSAGE_KEY),
+                        I18n.getString(DISALLOWED_TITLE_KEY),
+                        JOptionPane.WARNING_MESSAGE
+                );
+                setComplete(false);
+            } else {
+                setComplete(true);
+            }
         }
     };
 
@@ -96,7 +110,17 @@ public class FileDropStep extends AbstractWizardStep {
                     fileList = new ArrayList();
                 fileList.add(file);
                 ((DefaultListModel)list.getModel()).addElement(file.getName());
-                setComplete(true);
+                if (isDisallowedPresent()) {
+                    JOptionPane.showMessageDialog(
+                            Main.getMainInstance().getMainFrame(),
+                            I18n.getString(DISALLOWED_MESSAGE_KEY),
+                            I18n.getString(DISALLOWED_TITLE_KEY),
+                            JOptionPane.WARNING_MESSAGE
+                    );
+                    setComplete(false);
+                } else {
+                    setComplete(true);
+                }
             }
         }
     };
@@ -116,6 +140,10 @@ public class FileDropStep extends AbstractWizardStep {
                 }
                 if (list.getModel().getSize() == 0)
                     setComplete(false);
+                else if (isDisallowedPresent())
+                    setComplete(false);
+                else
+                    setComplete(true);
             }
         }
     };
@@ -181,6 +209,18 @@ public class FileDropStep extends AbstractWizardStep {
 
     public Dimension getPreferredSize() {
         return view.getPreferredSize();
+    }
+
+    private boolean isDisallowedPresent() {
+        boolean retval = false;
+        for (int i = 0; i < fileList.size(); i++) {
+            File file = (File)fileList.get(i);
+            if (Icons.isDisallowed(file.getName())) {
+                retval = true;
+                break;
+            }
+        }
+        return retval;
     }
 
     class MyCellRenderer extends JLabel implements ListCellRenderer {
