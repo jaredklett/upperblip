@@ -19,14 +19,14 @@ import java.util.*;
  * Icons, yea!
  *
  * @author Jared Klett
- * @version $Id: Icons.java,v 1.11 2006/11/13 22:27:29 jklett Exp $
+ * @version $Id: Icons.java,v 1.12 2006/11/14 20:14:42 jklett Exp $
  */
 
 public class Icons {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.11 $";
+    public static final String CVS_REV = "$Revision: 1.12 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -45,6 +45,8 @@ public class Icons {
     public static final String FRAME_ICON_PATH = "icons/upperblip.png";
     public static final String SUCCESS_ICON_PATH = "icons/accept.png";
     public static final String ERROR_ICON_PATH = "icons/exclamation.png";
+    public static final String EXPANDED_ICON_PATH = "icons/expanded.png";
+    public static final String COLLAPSED_ICON_PATH = "icons/collapsed.png";
 
     public static final ImageIcon imageIcon = new ImageIcon(ClassLoader.getSystemResource(IMAGE_ICON_PATH));
     public static final ImageIcon soundIcon = new ImageIcon(ClassLoader.getSystemResource(SOUND_ICON_PATH));
@@ -54,6 +56,8 @@ public class Icons {
     public static final ImageIcon successIcon = new ImageIcon(ClassLoader.getSystemResource(SUCCESS_ICON_PATH));
     public static final ImageIcon errorIcon = new ImageIcon(ClassLoader.getSystemResource(ERROR_ICON_PATH));
     public static final ImageIcon disallowedIcon = new ImageIcon(ClassLoader.getSystemResource(DISALLOWED_ICON_PATH));
+    public static final ImageIcon expandedIcon = new ImageIcon(ClassLoader.getSystemResource(EXPANDED_ICON_PATH));
+    public static final ImageIcon collapsedIcon = new ImageIcon(ClassLoader.getSystemResource(COLLAPSED_ICON_PATH));
 
     public static String[] imageFormats;
     public static String[] soundFormats;
