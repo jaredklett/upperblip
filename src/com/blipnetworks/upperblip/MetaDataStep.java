@@ -13,6 +13,8 @@
 package com.blipnetworks.upperblip;
 
 import java.awt.*;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
 import java.io.*;
 
 import javax.swing.*;
@@ -29,14 +31,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.21 2006/11/14 00:43:30 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.22 2006/11/14 20:15:09 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.21 $";
+    public static final String CVS_REV = "$Revision: 1.22 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -144,7 +146,6 @@ public class MetaDataStep extends AbstractWizardStep {
             JLabel licenseLabel = new JLabel(I18n.getString(LICENSE_LABEL_KEY));
             JLabel tagsLabel = new JLabel(I18n.getString(TAGS_LABEL_KEY));
             JLabel categoryLabel = new JLabel(I18n.getString(CATEGORY_LABEL_KEY));
-            JLabel blogLabel = new JLabel(I18n.getString(BLOG_LABEL_KEY));
             final JTextField titleField = new JTextField(10);
             LinkLabel applyTitleLabel = new LinkLabel(
                     I18n.getString(APPLY_LABEL_KEY),
@@ -329,14 +330,28 @@ public class MetaDataStep extends AbstractWizardStep {
             gbc2.gridx = 2;
             gbl2.setConstraints(applyCatLabel, gbc2);
             panel.add(applyCatLabel);
+            final JPanel blogPanel = new JPanel();
+            final JLabel blogLabel = new JLabel(I18n.getString(BLOG_LABEL_KEY), Icons.expandedIcon, JLabel.HORIZONTAL);
+            blogLabel.addMouseListener(
+                    new MouseListener() {
+                        public void mouseClicked(MouseEvent e) {
+                            blogPanel.setVisible(!blogPanel.isVisible());
+                            blogLabel.setIcon(blogLabel.getIcon().equals(Icons.collapsedIcon) ? Icons.expandedIcon : Icons.collapsedIcon);
+                        }
+                        public void mousePressed(MouseEvent e) { /* ignored */ }
+                        public void mouseReleased(MouseEvent e) { /* ignored */ }
+                        public void mouseEntered(MouseEvent e) { /* ignored */ }
+                        public void mouseExited(MouseEvent e) { /* ignored */ }
+                    }
+            );
             gbc2.gridx = 0;
             gbc2.gridy = 7;
             gbc2.anchor = GridBagConstraints.NORTHEAST;
             gbl2.setConstraints(blogLabel, gbc2);
             panel.add(blogLabel);
-            JPanel blogPanel = new JPanel();
-            GridBagLayout gbl3 = new GridBagLayout();
-            GridBagConstraints gbc3 = new GridBagConstraints();
+            int mod = blogCheckboxList[i].length % 2;
+            int div = blogCheckboxList[i].length / 2;
+            blogPanel.setLayout(new GridLayout(mod == 0 ? div : div + 1, 2));
             for (int j = 0; j < blogCheckboxList[i].length; j++) {
                 blogPanel.add(blogCheckboxList[i][j]);
             }
