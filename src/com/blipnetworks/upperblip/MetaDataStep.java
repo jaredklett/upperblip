@@ -29,14 +29,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.20 2006/11/13 22:27:08 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.21 2006/11/14 00:43:30 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.20 $";
+    public static final String CVS_REV = "$Revision: 1.21 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -60,6 +60,8 @@ public class MetaDataStep extends AbstractWizardStep {
     private static final String CATEGORY_LABEL_KEY = "meta.category.label";
     /** blah */
     private static final String APPLY_LABEL_KEY = "meta.apply.label";
+    /** blah */
+    private static final String BLOG_LABEL_KEY = "meta.blog.label";
 
 // Instance variables //////////////////////////////////////////////////////////
 
@@ -76,7 +78,7 @@ public class MetaDataStep extends AbstractWizardStep {
     /** */
     private JComboBox[] licenseList;
     /** */
-    //private JCheckBox[] blogCheckboxList;
+    private JCheckBox[][] blogCheckboxList;
     /** */
     private JTextField[] tagsList;
     /** */
@@ -114,7 +116,8 @@ public class MetaDataStep extends AbstractWizardStep {
         categoryList = new JComboBox[files.length];
         licenseList = new JComboBox[files.length];
         tagsList = new JTextField[files.length];
-        //blogCheckboxList = new JCheckBox[files.length];
+        String[] blogNames = (String[])MetadataLoader.blogs.keySet().toArray(new String[0]);
+        blogCheckboxList = new JCheckBox[files.length][blogNames.length];
 
         for (int i = 0; i < files.length; i++) {
             JPanel panel = new JPanel();
@@ -141,6 +144,7 @@ public class MetaDataStep extends AbstractWizardStep {
             JLabel licenseLabel = new JLabel(I18n.getString(LICENSE_LABEL_KEY));
             JLabel tagsLabel = new JLabel(I18n.getString(TAGS_LABEL_KEY));
             JLabel categoryLabel = new JLabel(I18n.getString(CATEGORY_LABEL_KEY));
+            JLabel blogLabel = new JLabel(I18n.getString(BLOG_LABEL_KEY));
             final JTextField titleField = new JTextField(10);
             LinkLabel applyTitleLabel = new LinkLabel(
                     I18n.getString(APPLY_LABEL_KEY),
@@ -207,6 +211,9 @@ public class MetaDataStep extends AbstractWizardStep {
                         }
                     }
             );
+            for (int j = 0; j < blogCheckboxList[i].length; j++) {
+                blogCheckboxList[i][j] = new JCheckBox(blogNames[j], false);
+            }
             descArea.setLineWrap(true);
             descArea.setWrapStyleWord(true);
             JScrollPane jsp = new JScrollPane(descArea);
@@ -322,6 +329,21 @@ public class MetaDataStep extends AbstractWizardStep {
             gbc2.gridx = 2;
             gbl2.setConstraints(applyCatLabel, gbc2);
             panel.add(applyCatLabel);
+            gbc2.gridx = 0;
+            gbc2.gridy = 7;
+            gbc2.anchor = GridBagConstraints.NORTHEAST;
+            gbl2.setConstraints(blogLabel, gbc2);
+            panel.add(blogLabel);
+            JPanel blogPanel = new JPanel();
+            GridBagLayout gbl3 = new GridBagLayout();
+            GridBagConstraints gbc3 = new GridBagConstraints();
+            for (int j = 0; j < blogCheckboxList[i].length; j++) {
+                blogPanel.add(blogCheckboxList[i][j]);
+            }
+            gbc2.gridx = 1;
+            gbc2.anchor = GridBagConstraints.WEST;
+            gbl2.setConstraints(blogPanel, gbc2);
+            panel.add(blogPanel);
 
             gbc.gridx = 0;
             gbc.gridy += 1;
