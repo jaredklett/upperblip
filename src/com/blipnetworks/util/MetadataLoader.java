@@ -29,15 +29,15 @@ import java.net.URLDecoder;
  * This is a placeholder description of this class.
  *
  * @author Jared Klett
- * @version $Id: MetadataLoader.java,v 1.7 2006/11/16 17:52:32 jklett Exp $
+ * @version $Id: MetadataLoader.java,v 1.8 2006/11/16 23:30:08 jklett Exp $
  */
 
 public class MetadataLoader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_ID = "$Id: MetadataLoader.java,v 1.7 2006/11/16 17:52:32 jklett Exp $";
-    public static final String CVS_REV = "$Revision: 1.7 $";
+    public static final String CVS_ID = "$Id: MetadataLoader.java,v 1.8 2006/11/16 23:30:08 jklett Exp $";
+    public static final String CVS_REV = "$Revision: 1.8 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -46,6 +46,7 @@ public class MetadataLoader {
     private static final String BLOG_TAG = "blog";
     private static final String LANGUAGE_TAG = "language";
     private static final String RATING_TAG = "rating";
+    private static final String XUPLOADS_TAG = "crossupload";
 
 // Class variables ////////////////////////////////////////////////////////////
 
@@ -54,6 +55,7 @@ public class MetadataLoader {
     public static Map blogs;
     public static Map languages;
     public static Map ratings;
+    public static Map crossuploads;
 
 // Constructor ////////////////////////////////////////////////////////////////
 
@@ -70,6 +72,7 @@ public class MetadataLoader {
             blogs = new TreeMap();
             languages = new TreeMap();
             ratings = new TreeMap();
+            crossuploads = new TreeMap();
             Document document = null;
             try {
                 document = XmlUtils.loadDocumentFromURL(url, authCookie);
@@ -87,6 +90,7 @@ public class MetadataLoader {
                 addToMap(document, BLOG_TAG, blogs);
                 addToMap(document, LANGUAGE_TAG, languages);
                 addToMap(document, RATING_TAG, ratings);
+                addToMap(document, XUPLOADS_TAG, crossuploads);
             }
         }
     }

@@ -31,14 +31,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.23 2006/11/16 17:52:32 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.24 2006/11/16 23:30:08 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.23 $";
+    public static final String CVS_REV = "$Revision: 1.24 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -67,7 +67,11 @@ public class MetaDataStep extends AbstractWizardStep {
     /** blah */
     private static final String APPLY_LABEL_KEY = "meta.apply.label";
     /** blah */
-    private static final String BLOG_LABEL_KEY = "meta.blog.label";
+    private static final String DIST_LABEL_KEY = "meta.dist.label";
+    /** blah */
+    private static final String BLOGS_LABEL_KEY = "meta.blogs.label";
+    /** blah */
+    private static final String XUPLOADS_LABEL_KEY = "meta.xuploads.label";
 
 // Instance variables //////////////////////////////////////////////////////////
 
@@ -89,6 +93,8 @@ public class MetaDataStep extends AbstractWizardStep {
     private JComboBox[] ratingList;
     /** */
     private JCheckBox[][] blogCheckboxList;
+    /** */
+    private JCheckBox[][] destCheckboxList;
     /** */
     private JTextField[] tagsList;
     /** */
@@ -128,8 +134,11 @@ public class MetaDataStep extends AbstractWizardStep {
         ratingList = new JComboBox[files.length];
         languageList = new JComboBox[files.length];
         tagsList = new JTextField[files.length];
+        // TODO: break type array out
         String[] blogNames = (String[])MetadataLoader.blogs.keySet().toArray(new String[0]);
+        String[] destinations = (String[])MetadataLoader.crossuploads.keySet().toArray(new String[0]);
         blogCheckboxList = new JCheckBox[files.length][blogNames.length];
+        destCheckboxList = new JCheckBox[files.length][destinations.length];
 
         for (int i = 0; i < files.length; i++) {
             JPanel panel = new JPanel();
@@ -247,9 +256,10 @@ public class MetaDataStep extends AbstractWizardStep {
                         }
                     }
             );
-            for (int j = 0; j < blogCheckboxList[i].length; j++) {
+            for (int j = 0; j < blogCheckboxList[i].length; j++)
                 blogCheckboxList[i][j] = new JCheckBox(blogNames[j], false);
-            }
+            for (int j = 0; j < destCheckboxList[i].length; j++)
+                destCheckboxList[i][j] = new JCheckBox(destinations[j], false);
             descArea.setLineWrap(true);
             descArea.setWrapStyleWord(true);
             JScrollPane jsp = new JScrollPane(descArea);
@@ -397,14 +407,16 @@ public class MetaDataStep extends AbstractWizardStep {
             gbl2.setConstraints(applyLanguageLabel, gbc2);
             panel.add(applyLanguageLabel);
 
-            if (blogNames.length != 0) {
-                final JPanel blogPanel = new JPanel();
-                final JLabel blogLabel = new JLabel(I18n.getString(BLOG_LABEL_KEY), Icons.collapsedIcon, JLabel.HORIZONTAL);
-                blogLabel.addMouseListener(
+            boolean noBlogs = blogNames.length == 0;
+            boolean noDests = destinations.length == 0;
+            if (!noBlogs || !noDests) {
+                final JPanel distPanel = new JPanel();
+                final JLabel distLabel = new JLabel(I18n.getString(DIST_LABEL_KEY), Icons.collapsedIcon, JLabel.HORIZONTAL);
+                distLabel.addMouseListener(
                         new MouseListener() {
                             public void mouseClicked(MouseEvent e) {
-                                blogPanel.setVisible(!blogPanel.isVisible());
-                                blogLabel.setIcon(blogLabel.getIcon().equals(Icons.collapsedIcon) ? Icons.expandedIcon : Icons.collapsedIcon);
+                                distPanel.setVisible(!distPanel.isVisible());
+                                distLabel.setIcon(distLabel.getIcon().equals(Icons.collapsedIcon) ? Icons.expandedIcon : Icons.collapsedIcon);
                             }
                             public void mousePressed(MouseEvent e) { /* ignored */ }
                             public void mouseReleased(MouseEvent e) { /* ignored */ }
@@ -412,22 +424,71 @@ public class MetaDataStep extends AbstractWizardStep {
                             public void mouseExited(MouseEvent e) { /* ignored */ }
                         }
                 );
+/*
+                GridBagLayout gbl3 = new GridBagLayout();
+                GridBagConstraints gbc3 = new GridBagConstraints();
+*/
+                distPanel.setLayout(new GridLayout(noBlogs || noDests ? 1 : 2, 1));
+                if (!noBlogs) {
+                    JPanel blogPanel = new JPanel();
+                    blogPanel.setBorder(
+                            BorderFactory.createCompoundBorder(
+                                    BorderFactory.createCompoundBorder(
+                                            BorderFactory.createTitledBorder(I18n.getString(BLOGS_LABEL_KEY)),
+                                            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+                                    ),
+                                    blogPanel.getBorder()
+                            )
+                    );
+                    int mod = blogCheckboxList[i].length % 2;
+                    int div = blogCheckboxList[i].length / 2;
+                    blogPanel.setLayout(new GridLayout(mod == 0 ? div : div + 1, 2));
+                    for (int j = 0; j < blogCheckboxList[i].length; j++) {
+                        blogPanel.add(blogCheckboxList[i][j]);
+                    }
+/*
+                    gbc3.gridx = 0;
+                    gbc3.gridy = 0;
+                    gbl3.setConstraints(blogPanel, gbc3);
+*/
+                    distPanel.add(blogPanel);
+                }
+                if (!noDests) {
+                    JPanel uploadPanel = new JPanel();
+                    uploadPanel.setBorder(
+                            BorderFactory.createCompoundBorder(
+                                    BorderFactory.createCompoundBorder(
+                                            BorderFactory.createTitledBorder(I18n.getString(XUPLOADS_LABEL_KEY)),
+                                            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+                                    ),
+                                    uploadPanel.getBorder()
+                            )
+                    );
+                    int mod = destCheckboxList[i].length % 2;
+                    int div = destCheckboxList[i].length / 2;
+                    uploadPanel.setLayout(new GridLayout(mod == 0 ? div : div + 1, 2));
+                    for (int j = 0; j < destCheckboxList[i].length; j++) {
+                        uploadPanel.add(destCheckboxList[i][j]);
+                    }
+/*
+                    gbc3.gridx = 0;
+                    gbc3.gridy = 1;
+                    gbl3.setConstraints(uploadPanel, gbc3);
+*/
+                    distPanel.add(uploadPanel);
+                }
+
+                // add to overall layout
                 gbc2.gridx = 0;
                 gbc2.gridy = 9;
                 gbc2.anchor = GridBagConstraints.NORTHEAST;
-                gbl2.setConstraints(blogLabel, gbc2);
-                panel.add(blogLabel);
-                int mod = blogCheckboxList[i].length % 2;
-                int div = blogCheckboxList[i].length / 2;
-                blogPanel.setLayout(new GridLayout(mod == 0 ? div : div + 1, 2));
-                for (int j = 0; j < blogCheckboxList[i].length; j++) {
-                    blogPanel.add(blogCheckboxList[i][j]);
-                }
+                gbl2.setConstraints(distLabel, gbc2);
+                panel.add(distLabel);
                 gbc2.gridx = 1;
                 gbc2.anchor = GridBagConstraints.WEST;
-                gbl2.setConstraints(blogPanel, gbc2);
-                panel.add(blogPanel);
-                blogPanel.setVisible(false);
+                gbl2.setConstraints(distPanel, gbc2);
+                panel.add(distPanel);
+                distPanel.setVisible(false);
             }
 
             gbc.gridx = 0;
