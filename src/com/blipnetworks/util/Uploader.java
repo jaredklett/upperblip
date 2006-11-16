@@ -35,14 +35,14 @@ import com.blipnetworks.upperblip.Main;
  * TODO: use a logging interface for stack traces and println's.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.17 2006/11/13 15:44:14 jklett Exp $
+ * @version $Id: Uploader.java,v 1.18 2006/11/16 17:52:32 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.17 $";
+    public static final String CVS_REV = "$Revision: 1.18 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -77,6 +77,10 @@ public class Uploader {
     public static final String GUID_PARAM_KEY = "form_cookie";
     /** TODO. */
     public static final String INGEST_PARAM_KEY = "ingest_method";
+    /** TODO */
+    public static final String CROSSPOST_PARAM_KEY = "crosspost";
+    /** TODO */
+    public static final String IA_PARAM_KEY = "crossupload_archiveorg";
 
     /** Default: the title of the post, if none is supplied. */
     public static final String TITLE_PARAM_DEF = "Working title";
@@ -130,6 +134,10 @@ public class Uploader {
      *
      */
     public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters) {
+        return uploadFile(videoFile, thumbnailFile, parameters, null);
+    }
+
+    public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters, List crossposts) {
         PostMethod post = new PostMethod(urlWithGuid);
         FilePart videoFilePart;
         try {
@@ -163,6 +171,10 @@ public class Uploader {
         list.add(new StringPart(SKIN_PARAM_KEY, parameters.getProperty(SKIN_PARAM_KEY, SKIN_PARAM_DEF)));
         list.add(new StringPart(DESC_PARAM_KEY, parameters.getProperty(DESC_PARAM_KEY, DESC_PARAM_DEF)));
         list.add(new StringPart(INGEST_PARAM_KEY, parameters.getProperty(INGEST_PARAM_KEY, INGEST_PARAM_DEF)));
+        if (crossposts != null) {
+            for (int i = 0; i < crossposts.size(); i++)
+                list.add(new StringPart(CROSSPOST_PARAM_KEY, (String)crossposts.get(i)));
+        }
         // We want to omit the un/pw parts if we have an auth cookie
         if (authCookie == null) {
             list.add(new StringPart(USER_PARAM_KEY, parameters.getProperty(USER_PARAM_KEY, USER_PARAM_DEF)));

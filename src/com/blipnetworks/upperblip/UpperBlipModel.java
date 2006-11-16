@@ -23,7 +23,7 @@ import javax.swing.*;
 
 /**
  * @author Jared Klett
- * @version $Id: UpperBlipModel.java,v 1.15 2006/11/13 22:27:08 jklett Exp $
+ * @version $Id: UpperBlipModel.java,v 1.16 2006/11/16 17:52:32 jklett Exp $
  */
 
 public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
@@ -37,6 +37,9 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
     private String[] tags;
     private String[] categories;
     private String[] licenses;
+    private String[] languages;
+    private String[] ratings;
+    private String[][] crossposts;
     private String[] postURLs;
     private String username;
     private String password;
@@ -89,6 +92,18 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
 
     public File[] getThumbnails() {
         return thumbnails;
+    }
+
+    public String[] getLanguages() {
+        return languages;
+    }
+
+    public String[] getRatings() {
+        return ratings;
+    }
+
+    public String[][] getCrossposts() {
+        return crossposts;
     }
 
     public String[] getPostURLs() {
@@ -145,6 +160,18 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
 
     public void setThumbnails(File[] thumbnails) {
         this.thumbnails = thumbnails;
+    }
+
+    public void setLanguages(String[] languages) {
+        this.languages = languages;
+    }
+
+    public void setRatings(String[] ratings) {
+        this.ratings = ratings;
+    }
+
+    public void setCrossposts(String[][] crossposts) {
+        this.crossposts = crossposts;
     }
 
     public void setPostURLs(String[] postURLs) {

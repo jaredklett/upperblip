@@ -31,14 +31,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.22 2006/11/14 20:15:09 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.23 2006/11/16 17:52:32 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.22 $";
+    public static final String CVS_REV = "$Revision: 1.23 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -56,6 +56,10 @@ public class MetaDataStep extends AbstractWizardStep {
     private static final String THUMB_LABEL_KEY = "meta.thumb.label";
     /** blah */
     private static final String LICENSE_LABEL_KEY = "meta.license.label";
+    /** blah */
+    private static final String RATING_LABEL_KEY = "meta.rating.label";
+    /** blah */
+    private static final String LANGUAGE_LABEL_KEY = "meta.language.label";
     /** blah */
     private static final String TAGS_LABEL_KEY = "meta.tags.label";
     /** blah */
@@ -79,6 +83,10 @@ public class MetaDataStep extends AbstractWizardStep {
     private JComboBox[] categoryList;
     /** */
     private JComboBox[] licenseList;
+    /** */
+    private JComboBox[] languageList;
+    /** */
+    private JComboBox[] ratingList;
     /** */
     private JCheckBox[][] blogCheckboxList;
     /** */
@@ -117,6 +125,8 @@ public class MetaDataStep extends AbstractWizardStep {
         thumbList = new JComboBox[files.length];
         categoryList = new JComboBox[files.length];
         licenseList = new JComboBox[files.length];
+        ratingList = new JComboBox[files.length];
+        languageList = new JComboBox[files.length];
         tagsList = new JTextField[files.length];
         String[] blogNames = (String[])MetadataLoader.blogs.keySet().toArray(new String[0]);
         blogCheckboxList = new JCheckBox[files.length][blogNames.length];
@@ -144,6 +154,8 @@ public class MetaDataStep extends AbstractWizardStep {
             JLabel descLabel = new JLabel(I18n.getString(DESC_LABEL_KEY));
             JLabel thumbLabel = new JLabel(I18n.getString(THUMB_LABEL_KEY));
             JLabel licenseLabel = new JLabel(I18n.getString(LICENSE_LABEL_KEY));
+            JLabel ratingLabel = new JLabel(I18n.getString(RATING_LABEL_KEY));
+            JLabel languageLabel = new JLabel(I18n.getString(LANGUAGE_LABEL_KEY));
             JLabel tagsLabel = new JLabel(I18n.getString(TAGS_LABEL_KEY));
             JLabel categoryLabel = new JLabel(I18n.getString(CATEGORY_LABEL_KEY));
             final JTextField titleField = new JTextField(10);
@@ -157,7 +169,7 @@ public class MetaDataStep extends AbstractWizardStep {
                         }
                     }
             );
-            final JTextArea descArea = new JTextArea(10, 10);
+            final JTextArea descArea = new JTextArea(5, 10);
             LinkLabel applyDescLabel = new LinkLabel(
                     I18n.getString(APPLY_LABEL_KEY),
                     new Command() {
@@ -201,6 +213,29 @@ public class MetaDataStep extends AbstractWizardStep {
                         }
                     }
             );
+            final JComboBox ratings = new JComboBox(MetadataLoader.ratings.keySet().toArray());
+            LinkLabel applyRatingLabel = new LinkLabel(
+                    I18n.getString(APPLY_LABEL_KEY),
+                    new Command() {
+                        public void execute() {
+                            int index = ratings.getSelectedIndex();
+                            for (int i = 0; i < ratingList.length; i++)
+                                ratingList[i].setSelectedIndex(index);
+                        }
+                    }
+            );
+            final JComboBox languages = new JComboBox(MetadataLoader.languages.keySet().toArray());
+            languages.setSelectedItem("English");
+            LinkLabel applyLanguageLabel = new LinkLabel(
+                    I18n.getString(APPLY_LABEL_KEY),
+                    new Command() {
+                        public void execute() {
+                            int index = languages.getSelectedIndex();
+                            for (int i = 0; i < languageList.length; i++)
+                                languageList[i].setSelectedIndex(index);
+                        }
+                    }
+            );
             final JTextField tagsField = new JTextField(10);
             LinkLabel applyTagsLabel = new LinkLabel(
                     I18n.getString(APPLY_LABEL_KEY),
@@ -226,6 +261,8 @@ public class MetaDataStep extends AbstractWizardStep {
             tagsList[i] = tagsField;
             licenseList[i] = licenses;
             categoryList[i] = categories;
+            ratingList[i] = ratings;
+            languageList[i] = languages;
             // Layout for the internal panel
             GridBagLayout gbl2 = new GridBagLayout();
             GridBagConstraints gbc2 = new GridBagConstraints();
@@ -330,35 +367,68 @@ public class MetaDataStep extends AbstractWizardStep {
             gbc2.gridx = 2;
             gbl2.setConstraints(applyCatLabel, gbc2);
             panel.add(applyCatLabel);
-            final JPanel blogPanel = new JPanel();
-            final JLabel blogLabel = new JLabel(I18n.getString(BLOG_LABEL_KEY), Icons.expandedIcon, JLabel.HORIZONTAL);
-            blogLabel.addMouseListener(
-                    new MouseListener() {
-                        public void mouseClicked(MouseEvent e) {
-                            blogPanel.setVisible(!blogPanel.isVisible());
-                            blogLabel.setIcon(blogLabel.getIcon().equals(Icons.collapsedIcon) ? Icons.expandedIcon : Icons.collapsedIcon);
-                        }
-                        public void mousePressed(MouseEvent e) { /* ignored */ }
-                        public void mouseReleased(MouseEvent e) { /* ignored */ }
-                        public void mouseEntered(MouseEvent e) { /* ignored */ }
-                        public void mouseExited(MouseEvent e) { /* ignored */ }
-                    }
-            );
             gbc2.gridx = 0;
             gbc2.gridy = 7;
-            gbc2.anchor = GridBagConstraints.NORTHEAST;
-            gbl2.setConstraints(blogLabel, gbc2);
-            panel.add(blogLabel);
-            int mod = blogCheckboxList[i].length % 2;
-            int div = blogCheckboxList[i].length / 2;
-            blogPanel.setLayout(new GridLayout(mod == 0 ? div : div + 1, 2));
-            for (int j = 0; j < blogCheckboxList[i].length; j++) {
-                blogPanel.add(blogCheckboxList[i][j]);
-            }
+            gbc2.anchor = GridBagConstraints.EAST;
+            gbc2.fill = GridBagConstraints.NONE;
+            gbl2.setConstraints(ratingLabel, gbc2);
+            panel.add(ratingLabel);
             gbc2.gridx = 1;
+            //gbc2.gridy = 1;
             gbc2.anchor = GridBagConstraints.WEST;
-            gbl2.setConstraints(blogPanel, gbc2);
-            panel.add(blogPanel);
+            gbl2.setConstraints(ratings, gbc2);
+            panel.add(ratings);
+            gbc2.gridx = 2;
+            gbl2.setConstraints(applyRatingLabel, gbc2);
+            panel.add(applyRatingLabel);
+
+            gbc2.gridx = 0;
+            gbc2.gridy = 8;
+            gbc2.anchor = GridBagConstraints.EAST;
+            gbc2.fill = GridBagConstraints.NONE;
+            gbl2.setConstraints(languageLabel, gbc2);
+            panel.add(languageLabel);
+            gbc2.gridx = 1;
+            //gbc2.gridy = 1;
+            gbc2.anchor = GridBagConstraints.WEST;
+            gbl2.setConstraints(languages, gbc2);
+            panel.add(languages);
+            gbc2.gridx = 2;
+            gbl2.setConstraints(applyLanguageLabel, gbc2);
+            panel.add(applyLanguageLabel);
+
+            if (blogNames.length != 0) {
+                final JPanel blogPanel = new JPanel();
+                final JLabel blogLabel = new JLabel(I18n.getString(BLOG_LABEL_KEY), Icons.collapsedIcon, JLabel.HORIZONTAL);
+                blogLabel.addMouseListener(
+                        new MouseListener() {
+                            public void mouseClicked(MouseEvent e) {
+                                blogPanel.setVisible(!blogPanel.isVisible());
+                                blogLabel.setIcon(blogLabel.getIcon().equals(Icons.collapsedIcon) ? Icons.expandedIcon : Icons.collapsedIcon);
+                            }
+                            public void mousePressed(MouseEvent e) { /* ignored */ }
+                            public void mouseReleased(MouseEvent e) { /* ignored */ }
+                            public void mouseEntered(MouseEvent e) { /* ignored */ }
+                            public void mouseExited(MouseEvent e) { /* ignored */ }
+                        }
+                );
+                gbc2.gridx = 0;
+                gbc2.gridy = 9;
+                gbc2.anchor = GridBagConstraints.NORTHEAST;
+                gbl2.setConstraints(blogLabel, gbc2);
+                panel.add(blogLabel);
+                int mod = blogCheckboxList[i].length % 2;
+                int div = blogCheckboxList[i].length / 2;
+                blogPanel.setLayout(new GridLayout(mod == 0 ? div : div + 1, 2));
+                for (int j = 0; j < blogCheckboxList[i].length; j++) {
+                    blogPanel.add(blogCheckboxList[i][j]);
+                }
+                gbc2.gridx = 1;
+                gbc2.anchor = GridBagConstraints.WEST;
+                gbl2.setConstraints(blogPanel, gbc2);
+                panel.add(blogPanel);
+                blogPanel.setVisible(false);
+            }
 
             gbc.gridx = 0;
             gbc.gridy += 1;
@@ -378,10 +448,15 @@ public class MetaDataStep extends AbstractWizardStep {
         // this is called when the user clicks "Next"
         // Create string arrays
         String[] titles = new String[titleList.length];
+        // TODO: why descList? why not match up?
         String[] descriptions = new String[descList.length];
         String[] tags = new String[descList.length];
         String[] categories = new String[descList.length];
         String[] licenses = new String[descList.length];
+        String[] ratings = new String[descList.length];
+        String[] languages = new String[descList.length];
+        // TODO: this could result in an NPE, right? maybe not.
+        String[][] blogs = new String[blogCheckboxList.length][blogCheckboxList[0].length];
         File[] thumbnails = new File[descList.length];
         // Loop through components and populate the arrays
         for (int i = 0; i < titleList.length; i++) {
@@ -395,8 +470,13 @@ public class MetaDataStep extends AbstractWizardStep {
             }
             descriptions[i] = descList[i].getText();
             tags[i] = tagsList[i].getText();
+            languages[i] = (String)MetadataLoader.languages.get(languageList[i].getSelectedItem());
             categories[i] = (String)MetadataLoader.categories.get(categoryList[i].getSelectedItem());
             licenses[i] = (String)MetadataLoader.licenses.get(licenseList[i].getSelectedItem());
+            ratings[i] = null;
+            if (ratingList[i].getSelectedIndex() != 0) {
+                ratings[i] = (String)MetadataLoader.ratings.get(ratingList[i].getSelectedItem());
+            }
             thumbnails[i] = null;
             if (thumbList[i].getSelectedIndex() != 0) {
                 String filename = (String)thumbList[i].getSelectedItem();
@@ -404,6 +484,9 @@ public class MetaDataStep extends AbstractWizardStep {
                 if (obj != null)
                     thumbnails[i] = (File)obj;
             }
+            for (int j = 0; j < blogs[i].length; j++)
+                if (blogCheckboxList[i][j].isSelected())
+                    blogs[i][j] = (String)MetadataLoader.blogs.get(blogCheckboxList[i][j].getText());
         }
         // Put the arrays in our model
         model.setTitles(titles);
@@ -412,6 +495,7 @@ public class MetaDataStep extends AbstractWizardStep {
         model.setCategories(categories);
         model.setLicenses(licenses);
         model.setThumbnails(thumbnails);
+        model.setCrossposts(blogs);
     }
 
     public Dimension getPreferredSize() {

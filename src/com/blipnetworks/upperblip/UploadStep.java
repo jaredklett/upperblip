@@ -28,14 +28,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.22 2006/11/13 22:27:08 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.23 2006/11/16 17:52:32 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.22 $";
+	public static final String CVS_REV = "$Revision: 1.23 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -189,6 +189,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 		String[] descriptions = model.getDescriptions();
         String[] licenses = model.getLicenses();
         String[] categories = model.getCategories();
+        String[][] blogs = model.getCrossposts();
         File[] thumbnails = model.getThumbnails();
         // Create a properties object
 		Properties props = new Properties();
@@ -205,12 +206,25 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 			props.put(Uploader.DESC_PARAM_KEY, descriptions[i]);
             props.put(Uploader.LICENSE_PARAM_KEY, licenses[i]);
             props.put(Uploader.CAT_PARAM_KEY, categories[i]);
-			// calculate the approximate transfer time for the next file
+            List list = new ArrayList();
+            boolean blogsFound = false;
+            for (int j = 0; j < blogs[i].length; j++) {
+                if (blogs[i][j] != null) {
+                    list.add(blogs[i][j]);
+                    blogsFound = true;
+                }
+            }
+
+            // calculate the approximate transfer time for the next file
 			// do the upload
 			Thread thread = new Thread(timer);
 			running = true;
 			thread.start();
-			boolean success = uploader.uploadFile(files[i], thumbnails[i], props);
+			boolean success;
+            if (blogsFound)
+                success = uploader.uploadFile(files[i], thumbnails[i], props, list);
+            else
+                success = uploader.uploadFile(files[i], thumbnails[i], props);
             String msg = "An unknown error occurred.";
             int err = -1;
             if (!success) {

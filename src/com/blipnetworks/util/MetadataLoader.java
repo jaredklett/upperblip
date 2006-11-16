@@ -22,20 +22,22 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.util.Map;
 import java.util.TreeMap;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 /**
  * This is a placeholder description of this class.
  *
  * @author Jared Klett
- * @version $Id: MetadataLoader.java,v 1.6 2006/10/23 20:49:44 jklett Exp $
+ * @version $Id: MetadataLoader.java,v 1.7 2006/11/16 17:52:32 jklett Exp $
  */
 
 public class MetadataLoader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_ID = "$Id: MetadataLoader.java,v 1.6 2006/10/23 20:49:44 jklett Exp $";
-    public static final String CVS_REV = "$Revision: 1.6 $";
+    public static final String CVS_ID = "$Id: MetadataLoader.java,v 1.7 2006/11/16 17:52:32 jklett Exp $";
+    public static final String CVS_REV = "$Revision: 1.7 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -105,7 +107,11 @@ public class MetadataLoader {
                         name = content;
                 }
             }
-            map.put(name, id);
+            try {
+                map.put(URLDecoder.decode(name, "UTF-8"), id);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
     }
 
