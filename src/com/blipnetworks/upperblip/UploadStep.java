@@ -28,14 +28,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.25 2006/11/17 19:50:21 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.26 2006/11/17 21:21:26 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.25 $";
+	public static final String CVS_REV = "$Revision: 1.26 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -311,20 +311,20 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 // Class methods //////////////////////////////////////////////////////////////
 
     public static String parseSize(int bytes) {
-        StringBuilder builder = new StringBuilder();
+        StringBuffer buffer = new StringBuffer();
         // is it smaller than 1K?
         // TODO: externalize
         if (bytes < 1024)
-            builder.append(bytes).append(" bytes");
+            buffer.append(bytes).append(" bytes");
         // is it smaller than 1M?
         else if(bytes < 1024000)
-            builder.append(bytes / 1024).append(" KB");
+            buffer.append(bytes / 1024).append(" KB");
         // is it smaller than 1G?
         else if (bytes < 1024000000)
-            builder.append(bytes / 1024000).append(" MB");
+            buffer.append(bytes / 1024000).append(" MB");
         //else if (bytes < 1024000000000)
-            //builder.append(bytes / 1024000000).append(" GB");
-        return builder.toString();
+            //buffer.append(bytes / 1024000000).append(" GB");
+        return buffer.toString();
     }
 
     public static String parseTime(long time) {
