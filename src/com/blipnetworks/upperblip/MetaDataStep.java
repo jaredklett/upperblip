@@ -31,14 +31,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.26 2006/11/17 19:50:21 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.27 2006/11/17 23:22:42 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.26 $";
+    public static final String CVS_REV = "$Revision: 1.27 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -424,8 +424,15 @@ public class MetaDataStep extends AbstractWizardStep {
                             public void mouseExited(MouseEvent e) { /* ignored */ }
                         }
                 );
-                distPanel.setLayout(new GridLayout(noBlogs || noDests ? 1 : 2, 1));
+                //distPanel.setLayout(new GridLayout(noBlogs || noDests ? 1 : 2, 1));
+                GridBagLayout gbl3 = new GridBagLayout();
+                GridBagConstraints gbc3 = new GridBagConstraints();
+                distPanel.setLayout(gbl3);
+                gbc3.gridy = -1;
+                gbc3.fill = GridBagConstraints.HORIZONTAL;
                 if (!noBlogs) {
+                    gbc3.gridx = 0;
+                    gbc3.gridy += 1;
                     JPanel blogPanel = new JPanel();
                     blogPanel.setBorder(
                             BorderFactory.createCompoundBorder(
@@ -436,15 +443,32 @@ public class MetaDataStep extends AbstractWizardStep {
                                     blogPanel.getBorder()
                             )
                     );
+                    final JCheckBox[] boxes = blogCheckboxList[i];
+                    LinkLabel applyBlogLabel = new LinkLabel(
+                            I18n.getString(APPLY_LABEL_KEY),
+                            new Command() {
+                                public void execute() {
+                                    for (int x = 0; x < blogCheckboxList.length; x++)
+                                        for (int y = 0; y < blogCheckboxList[x].length; y++)
+                                            blogCheckboxList[x][y].setSelected(boxes[y].isSelected());
+                                }
+                            }
+                    );
                     int mod = blogCheckboxList[i].length % 2;
                     int div = blogCheckboxList[i].length / 2;
                     blogPanel.setLayout(new GridLayout(mod == 0 ? div : div + 1, 2));
                     for (int j = 0; j < blogCheckboxList[i].length; j++) {
                         blogPanel.add(blogCheckboxList[i][j]);
                     }
+                    gbl3.setConstraints(blogPanel, gbc3);
                     distPanel.add(blogPanel);
+                    gbc3.gridx = 1;
+                    gbl3.setConstraints(applyBlogLabel, gbc3);
+                    distPanel.add(applyBlogLabel);
                 }
                 if (!noDests) {
+                    gbc3.gridx = 0;
+                    gbc3.gridy += 1;
                     JPanel uploadPanel = new JPanel();
                     uploadPanel.setBorder(
                             BorderFactory.createCompoundBorder(
@@ -455,13 +479,28 @@ public class MetaDataStep extends AbstractWizardStep {
                                     uploadPanel.getBorder()
                             )
                     );
+                    final JCheckBox[] boxes = destCheckboxList[i];
+                    LinkLabel applyDestLabel = new LinkLabel(
+                            I18n.getString(APPLY_LABEL_KEY),
+                            new Command() {
+                                public void execute() {
+                                    for (int x = 0; x < destCheckboxList.length; x++)
+                                        for (int y = 0; y < destCheckboxList[x].length; y++)
+                                            destCheckboxList[x][y].setSelected(boxes[y].isSelected());
+                                }
+                            }
+                    );
                     int mod = destCheckboxList[i].length % 2;
                     int div = destCheckboxList[i].length / 2;
                     uploadPanel.setLayout(new GridLayout(mod == 0 ? div : div + 1, 2));
                     for (int j = 0; j < destCheckboxList[i].length; j++) {
                         uploadPanel.add(destCheckboxList[i][j]);
                     }
+                    gbl3.setConstraints(uploadPanel, gbc3);
                     distPanel.add(uploadPanel);
+                    gbc3.gridx = 1;
+                    gbl3.setConstraints(applyDestLabel, gbc3);
+                    distPanel.add(applyDestLabel);
                 }
 
                 // add to overall layout
