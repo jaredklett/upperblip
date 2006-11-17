@@ -31,14 +31,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.25 2006/11/17 19:31:06 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.26 2006/11/17 19:50:21 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.25 $";
+    public static final String CVS_REV = "$Revision: 1.26 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -105,7 +105,7 @@ public class MetaDataStep extends AbstractWizardStep {
     public MetaDataStep() {
         super(I18n.getString(TITLE_KEY), I18n.getString(SUMMARY_KEY));
         view = new JPanel();
-        setIcon(new ImageIcon(ClassLoader.getSystemResource("icons/accessories-text-editor.png")));
+        setIcon(Icons.metadataIcon);
         setComplete(true);
     }
 

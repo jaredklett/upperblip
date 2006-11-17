@@ -25,15 +25,15 @@ import java.net.URL;
  * This class is and should always be immutable.
  *
  * @author Jared Klett
- * @version $Id: BuildNumber.java,v 1.7 2006/10/20 17:26:46 jklett Exp $
+ * @version $Id: BuildNumber.java,v 1.8 2006/11/17 19:50:21 jklett Exp $
  */
 
 public class BuildNumber {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_ID = "$Id: BuildNumber.java,v 1.7 2006/10/20 17:26:46 jklett Exp $";
-    public static final String CVS_REV = "$Revision: 1.7 $";
+    public static final String CVS_ID = "$Id: BuildNumber.java,v 1.8 2006/11/17 19:50:21 jklett Exp $";
+    public static final String CVS_REV = "$Revision: 1.8 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -81,7 +81,7 @@ public class BuildNumber {
      * @throws IOException
      */
     public static BuildNumber loadLocal() throws IOException {
-        return load(ClassLoader.getSystemResourceAsStream(BUILD_NUMBER));
+        return load(BuildNumber.class.getClassLoader().getResourceAsStream(BUILD_NUMBER));
     }
 
     /**

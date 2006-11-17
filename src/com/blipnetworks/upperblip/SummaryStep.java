@@ -28,14 +28,14 @@ import java.io.File;
 /**
  *
  * @author Jared Klett
- * @version $Id: SummaryStep.java,v 1.2 2006/11/13 22:27:08 jklett Exp $
+ * @version $Id: SummaryStep.java,v 1.3 2006/11/17 19:50:21 jklett Exp $
  */
 
 public class SummaryStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.2 $";
+    public static final String CVS_REV = "$Revision: 1.3 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -60,7 +60,7 @@ public class SummaryStep extends AbstractWizardStep {
     public SummaryStep() {
         super(I18n.getString(TITLE_KEY), I18n.getString(SUMMARY_KEY));
         view = new JPanel();
-        setIcon(new ImageIcon(ClassLoader.getSystemResource("icons/dialog-information.png")));
+        setIcon(Icons.summaryIcon);
         setComplete(true);
     }
 

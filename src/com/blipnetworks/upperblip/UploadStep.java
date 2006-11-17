@@ -28,14 +28,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.24 2006/11/17 19:31:06 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.25 2006/11/17 19:50:21 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.24 $";
+	public static final String CVS_REV = "$Revision: 1.25 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -129,7 +129,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 	public UploadStep() {
 		super(I18n.getString(TITLE_KEY), I18n.getString(SUMMARY_KEY));
 
-        setIcon(new ImageIcon(ClassLoader.getSystemResource("icons/go-up.png")));
+        setIcon(Icons.uploadIcon);
         postList = new ArrayList();
         // Create and layout components
 		rateLabel = new JLabel(I18n.getString(RATE_LABEL_KEY));

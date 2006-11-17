@@ -19,14 +19,24 @@ import java.util.*;
  * Icons, yea!
  *
  * @author Jared Klett
- * @version $Id: Icons.java,v 1.12 2006/11/14 20:14:42 jklett Exp $
+ * @version $Id: Icons.java,v 1.13 2006/11/17 19:50:34 jklett Exp $
  */
 
 public class Icons {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.12 $";
+    public static final String CVS_REV = "$Revision: 1.13 $";
+
+// Class variables ////////////////////////////////////////////////////////////
+
+    private static Map iconMap = new HashMap();
+    private static ClassLoader cl = Icons.class.getClassLoader();
+
+    public static String[] imageFormats;
+    public static String[] soundFormats;
+    public static String[] videoFormats;
+    public static String[] disallowedFormats;
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -47,26 +57,29 @@ public class Icons {
     public static final String ERROR_ICON_PATH = "icons/exclamation.png";
     public static final String EXPANDED_ICON_PATH = "icons/expanded.png";
     public static final String COLLAPSED_ICON_PATH = "icons/collapsed.png";
+    public static final String AUTH_ICON_PATH = "icons/emblem-readonly.png";
+    public static final String FILEDROP_ICON_PATH = "icons/list-add.png";
+    public static final String METADATA_ICON_PATH = "icons/accessories-text-editor.png";
+    public static final String UPLOAD_ICON_PATH = "icons/go-up.png";
+    public static final String SUMMARY_ICON_PATH = "icons/dialog-information.png";
 
-    public static final ImageIcon imageIcon = new ImageIcon(ClassLoader.getSystemResource(IMAGE_ICON_PATH));
-    public static final ImageIcon soundIcon = new ImageIcon(ClassLoader.getSystemResource(SOUND_ICON_PATH));
-    public static final ImageIcon videoIcon = new ImageIcon(ClassLoader.getSystemResource(VIDEO_ICON_PATH));
-    public static final ImageIcon unknownIcon = new ImageIcon(ClassLoader.getSystemResource(UNKNOWN_ICON_PATH));
-    public static final ImageIcon frameIcon = new ImageIcon(ClassLoader.getSystemResource(FRAME_ICON_PATH));
-    public static final ImageIcon successIcon = new ImageIcon(ClassLoader.getSystemResource(SUCCESS_ICON_PATH));
-    public static final ImageIcon errorIcon = new ImageIcon(ClassLoader.getSystemResource(ERROR_ICON_PATH));
-    public static final ImageIcon disallowedIcon = new ImageIcon(ClassLoader.getSystemResource(DISALLOWED_ICON_PATH));
-    public static final ImageIcon expandedIcon = new ImageIcon(ClassLoader.getSystemResource(EXPANDED_ICON_PATH));
-    public static final ImageIcon collapsedIcon = new ImageIcon(ClassLoader.getSystemResource(COLLAPSED_ICON_PATH));
-
-    public static String[] imageFormats;
-    public static String[] soundFormats;
-    public static String[] videoFormats;
-    public static String[] disallowedFormats;
-
-// Class variables ////////////////////////////////////////////////////////////
-
-    private static Map iconMap = new HashMap();
+    public static final ImageIcon addIcon = new ImageIcon(cl.getResource(ADD_ICON_PATH));
+    public static final ImageIcon removeIcon = new ImageIcon(cl.getResource(DELETE_ICON_PATH));
+    public static final ImageIcon imageIcon = new ImageIcon(cl.getResource(IMAGE_ICON_PATH));
+    public static final ImageIcon soundIcon = new ImageIcon(cl.getResource(SOUND_ICON_PATH));
+    public static final ImageIcon videoIcon = new ImageIcon(cl.getResource(VIDEO_ICON_PATH));
+    public static final ImageIcon unknownIcon = new ImageIcon(cl.getResource(UNKNOWN_ICON_PATH));
+    public static final ImageIcon frameIcon = new ImageIcon(cl.getResource(FRAME_ICON_PATH));
+    public static final ImageIcon successIcon = new ImageIcon(cl.getResource(SUCCESS_ICON_PATH));
+    public static final ImageIcon errorIcon = new ImageIcon(cl.getResource(ERROR_ICON_PATH));
+    public static final ImageIcon disallowedIcon = new ImageIcon(cl.getResource(DISALLOWED_ICON_PATH));
+    public static final ImageIcon expandedIcon = new ImageIcon(cl.getResource(EXPANDED_ICON_PATH));
+    public static final ImageIcon collapsedIcon = new ImageIcon(cl.getResource(COLLAPSED_ICON_PATH));
+    public static final ImageIcon authIcon = new ImageIcon(cl.getResource(AUTH_ICON_PATH));
+    public static final ImageIcon filedropIcon = new ImageIcon(cl.getResource(FILEDROP_ICON_PATH));
+    public static final ImageIcon metadataIcon = new ImageIcon(cl.getResource(METADATA_ICON_PATH));
+    public static final ImageIcon uploadIcon = new ImageIcon(cl.getResource(UPLOAD_ICON_PATH));
+    public static final ImageIcon summaryIcon = new ImageIcon(cl.getResource(SUMMARY_ICON_PATH));
 
 // Class initializer //////////////////////////////////////////////////////////
 

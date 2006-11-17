@@ -32,14 +32,14 @@ import org.pietschy.wizard.WizardModel;
  * 
  * 
  * @author Jared Klett
- * @version $Id: FileDropStep.java,v 1.17 2006/11/13 22:27:08 jklett Exp $
+ * @version $Id: FileDropStep.java,v 1.18 2006/11/17 19:50:21 jklett Exp $
  */
 
 public class FileDropStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.17 $";
+    public static final String CVS_REV = "$Revision: 1.18 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -153,7 +153,7 @@ public class FileDropStep extends AbstractWizardStep {
     public FileDropStep() {
         super(I18n.getString(TITLE_KEY), I18n.getString(SUMMARY_KEY));
 
-        setIcon(new ImageIcon(ClassLoader.getSystemResource("icons/list-add.png")));
+        setIcon(Icons.filedropIcon);
         // Create and layout components
         list = new JList(new DefaultListModel());
         list.setDragEnabled(true);
@@ -167,10 +167,10 @@ public class FileDropStep extends AbstractWizardStep {
 
         JPanel panel = new JPanel();
         ((FlowLayout)panel.getLayout()).setAlignment(FlowLayout.LEFT);
-        JButton addButton = new JButton(new ImageIcon(ClassLoader.getSystemResource(Icons.ADD_ICON_PATH)));
+        JButton addButton = new JButton(Icons.addIcon);
         addButton.addActionListener(adder);
         addButton.setToolTipText(I18n.getString(ADD_TOOLTIP_KEY));
-        JButton removeButton = new JButton(new ImageIcon(ClassLoader.getSystemResource(Icons.DELETE_ICON_PATH)));
+        JButton removeButton = new JButton(Icons.removeIcon);
         removeButton.addActionListener(remover);
         removeButton.setToolTipText(I18n.getString(REMOVE_TOOLTIP_KEY));
         panel.add(addButton);
