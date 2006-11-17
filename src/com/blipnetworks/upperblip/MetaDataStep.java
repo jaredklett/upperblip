@@ -31,14 +31,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.24 2006/11/16 23:30:08 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.25 2006/11/17 19:31:06 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.24 $";
+    public static final String CVS_REV = "$Revision: 1.25 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -424,10 +424,6 @@ public class MetaDataStep extends AbstractWizardStep {
                             public void mouseExited(MouseEvent e) { /* ignored */ }
                         }
                 );
-/*
-                GridBagLayout gbl3 = new GridBagLayout();
-                GridBagConstraints gbc3 = new GridBagConstraints();
-*/
                 distPanel.setLayout(new GridLayout(noBlogs || noDests ? 1 : 2, 1));
                 if (!noBlogs) {
                     JPanel blogPanel = new JPanel();
@@ -446,11 +442,6 @@ public class MetaDataStep extends AbstractWizardStep {
                     for (int j = 0; j < blogCheckboxList[i].length; j++) {
                         blogPanel.add(blogCheckboxList[i][j]);
                     }
-/*
-                    gbc3.gridx = 0;
-                    gbc3.gridy = 0;
-                    gbl3.setConstraints(blogPanel, gbc3);
-*/
                     distPanel.add(blogPanel);
                 }
                 if (!noDests) {
@@ -470,11 +461,6 @@ public class MetaDataStep extends AbstractWizardStep {
                     for (int j = 0; j < destCheckboxList[i].length; j++) {
                         uploadPanel.add(destCheckboxList[i][j]);
                     }
-/*
-                    gbc3.gridx = 0;
-                    gbc3.gridy = 1;
-                    gbl3.setConstraints(uploadPanel, gbc3);
-*/
                     distPanel.add(uploadPanel);
                 }
 
@@ -518,6 +504,7 @@ public class MetaDataStep extends AbstractWizardStep {
         String[] languages = new String[descList.length];
         // TODO: this could result in an NPE, right? maybe not.
         String[][] blogs = new String[blogCheckboxList.length][blogCheckboxList[0].length];
+        String[][] destinations = new String[destCheckboxList.length][destCheckboxList[0].length];
         File[] thumbnails = new File[descList.length];
         // Loop through components and populate the arrays
         for (int i = 0; i < titleList.length; i++) {
@@ -548,6 +535,9 @@ public class MetaDataStep extends AbstractWizardStep {
             for (int j = 0; j < blogs[i].length; j++)
                 if (blogCheckboxList[i][j].isSelected())
                     blogs[i][j] = (String)MetadataLoader.blogs.get(blogCheckboxList[i][j].getText());
+            for (int j = 0; j < destinations[i].length; j++)
+                if (destCheckboxList[i][j].isSelected())
+                    destinations[i][j] = (String)MetadataLoader.crossuploads.get(destCheckboxList[i][j].getText());
         }
         // Put the arrays in our model
         model.setTitles(titles);
@@ -557,6 +547,7 @@ public class MetaDataStep extends AbstractWizardStep {
         model.setLicenses(licenses);
         model.setThumbnails(thumbnails);
         model.setCrossposts(blogs);
+        model.setCrossuploads(destinations);
     }
 
     public Dimension getPreferredSize() {

@@ -35,14 +35,14 @@ import com.blipnetworks.upperblip.Main;
  * TODO: use a logging interface for stack traces and println's.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.18 2006/11/16 17:52:32 jklett Exp $
+ * @version $Id: Uploader.java,v 1.19 2006/11/17 19:31:06 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.18 $";
+    public static final String CVS_REV = "$Revision: 1.19 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -175,6 +175,9 @@ public class Uploader {
             for (int i = 0; i < crossposts.size(); i++)
                 list.add(new StringPart(CROSSPOST_PARAM_KEY, (String)crossposts.get(i)));
         }
+        String ia = parameters.getProperty(IA_PARAM_KEY);
+        if (ia != null)
+            list.add(new StringPart(IA_PARAM_KEY, ia));
         // We want to omit the un/pw parts if we have an auth cookie
         if (authCookie == null) {
             list.add(new StringPart(USER_PARAM_KEY, parameters.getProperty(USER_PARAM_KEY, USER_PARAM_DEF)));

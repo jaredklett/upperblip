@@ -23,7 +23,7 @@ import javax.swing.*;
 
 /**
  * @author Jared Klett
- * @version $Id: UpperBlipModel.java,v 1.17 2006/11/16 23:30:08 jklett Exp $
+ * @version $Id: UpperBlipModel.java,v 1.18 2006/11/17 19:31:06 jklett Exp $
  */
 
 public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
@@ -41,7 +41,7 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
     private String[] ratings;
     private String[][] crossposts;
     private String[] postURLs;
-    private String[] crossuploads;
+    private String[][] crossuploads;
     private String username;
     private String password;
     private boolean remember;
@@ -107,7 +107,7 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
         return crossposts;
     }
 
-    public String[] getCrossuploads() {
+    public String[][] getCrossuploads() {
         return crossuploads;
     }
 
@@ -179,7 +179,7 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
         this.crossposts = crossposts;
     }
 
-    public void setCrossuploads(String[] crossuploads) {
+    public void setCrossuploads(String[][] crossuploads) {
         this.crossuploads = crossuploads;
     }
 

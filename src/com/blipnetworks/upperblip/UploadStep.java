@@ -28,14 +28,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.23 2006/11/16 17:52:32 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.24 2006/11/17 19:31:06 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.23 $";
+	public static final String CVS_REV = "$Revision: 1.24 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -190,6 +190,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
         String[] licenses = model.getLicenses();
         String[] categories = model.getCategories();
         String[][] blogs = model.getCrossposts();
+        String[][] destinations = model.getCrossuploads();
         File[] thumbnails = model.getThumbnails();
         // Create a properties object
 		Properties props = new Properties();
@@ -214,6 +215,9 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
                     blogsFound = true;
                 }
             }
+            for (int j = 0; j < destinations[i].length; j++)
+                if (destinations[i][j] != null)
+                    props.put(Uploader.IA_PARAM_KEY, destinations[i][j]);
 
             // calculate the approximate transfer time for the next file
 			// do the upload
