@@ -35,14 +35,14 @@ import com.blipnetworks.upperblip.Main;
  * TODO: use a logging interface for stack traces and println's.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.19 2006/11/17 19:31:06 jklett Exp $
+ * @version $Id: Uploader.java,v 1.20 2006/11/17 21:17:10 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.19 $";
+    public static final String CVS_REV = "$Revision: 1.20 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -232,7 +232,7 @@ public class Uploader {
             if (responseCode == HttpStatus.SC_OK) {
                 if (document != null) {
                     // attempt to discern the status from the respose
-                    String responseText = document.getElementsByTagName("response").item(0).getTextContent();
+                    String responseText = document.getElementsByTagName("response").item(0).getFirstChild().getNodeValue();
                     String[] lines = responseText.trim().split("\n");
                     if (lines.length >= 2) {
                         try {

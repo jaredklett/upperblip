@@ -24,14 +24,14 @@ import javax.xml.parsers.ParserConfigurationException;
  * It's immutable and should stay that way.
  *
  * @author Jared Klett
- * @version $Id: UploadStatus.java,v 1.12 2006/11/13 15:44:14 jklett Exp $
+ * @version $Id: UploadStatus.java,v 1.13 2006/11/17 21:16:26 jklett Exp $
  */
 
 public class UploadStatus {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.12 $";
+    public static final String CVS_REV = "$Revision: 1.13 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -81,12 +81,12 @@ public class UploadStatus {
         if (document != null) {
             try {
                 status = new UploadStatus();
-                status.setGuid(document.getElementsByTagName(GUID_TAG).item(0).getTextContent());
-                status.setFilename(document.getElementsByTagName(FILENAME_TAG).item(0).getTextContent());
-                status.setStart(Integer.parseInt(document.getElementsByTagName(START_TAG).item(0).getTextContent()));
-                status.setUpdate(Integer.parseInt(document.getElementsByTagName(UPDATE_TAG).item(0).getTextContent()));
-                status.setRead(Integer.parseInt(document.getElementsByTagName(READ_TAG).item(0).getTextContent()));
-                status.setTotal(Integer.parseInt(document.getElementsByTagName(TOTAL_TAG).item(0).getTextContent()));
+                status.setGuid(document.getElementsByTagName(GUID_TAG).item(0).getFirstChild().getNodeValue());
+                status.setFilename(document.getElementsByTagName(FILENAME_TAG).item(0).getFirstChild().getNodeValue());
+                status.setStart(Integer.parseInt(document.getElementsByTagName(START_TAG).item(0).getFirstChild().getNodeValue()));
+                status.setUpdate(Integer.parseInt(document.getElementsByTagName(UPDATE_TAG).item(0).getFirstChild().getNodeValue()));
+                status.setRead(Integer.parseInt(document.getElementsByTagName(READ_TAG).item(0).getFirstChild().getNodeValue()));
+                status.setTotal(Integer.parseInt(document.getElementsByTagName(TOTAL_TAG).item(0).getFirstChild().getNodeValue()));
             } catch (Exception e) {
                 // TODO: dirty hack, fix
                 return null;
