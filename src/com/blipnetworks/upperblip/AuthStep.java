@@ -29,14 +29,14 @@ import org.pietschy.wizard.InvalidStateException;
  * the user and authenticates to the site.
  *
  * @author Jared Klett
- * @version $Id: AuthStep.java,v 1.14 2006/11/17 19:50:21 jklett Exp $
+ * @version $Id: AuthStep.java,v 1.15 2006/11/17 20:50:33 jklett Exp $
  */
 
 public class AuthStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.14 $";
+	public static final String CVS_REV = "$Revision: 1.15 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -50,6 +50,7 @@ public class AuthStep extends AbstractWizardStep {
     private static final String PASS_LABEL_KEY = "auth.pass.label";
     /** blah */
     private static final String BOX_LABEL_KEY = "auth.box.label";
+    private static final String BAD_AUTH_KEY = "auth.bad";
 
 // Enumerated types ////////////////////////////////////////////////////////////
 
@@ -190,7 +191,7 @@ public class AuthStep extends AbstractWizardStep {
         if (!ad.wasSuccessful()) {
             setComplete(false);
             // TODO: better message here
-            throw new InvalidStateException("Bad username/password");
+            throw new InvalidStateException(I18n.getString(BAD_AUTH_KEY));
         }
         setComplete(true);
         model.setUsername(userField.getText());
