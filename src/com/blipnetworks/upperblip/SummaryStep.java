@@ -28,14 +28,14 @@ import java.io.File;
 /**
  *
  * @author Jared Klett
- * @version $Id: SummaryStep.java,v 1.3 2006/11/17 19:50:21 jklett Exp $
+ * @version $Id: SummaryStep.java,v 1.4 2006/11/28 00:14:28 jklett Exp $
  */
 
 public class SummaryStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.3 $";
+    public static final String CVS_REV = "$Revision: 1.4 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -70,6 +70,7 @@ public class SummaryStep extends AbstractWizardStep {
 
     public void prepare() {
         view.removeAll();
+        JPanel overall = new JPanel();
         //JLabel successLabel = new JLabel(I18n.getString(SUCCESS_KEY), Icons.successIcon, JLabel.HORIZONTAL);
         //JLabel errorLabel = new JLabel(I18n.getString(ERROR_KEY), Icons.errorIcon, JLabel.HORIZONTAL);
         Font linkFont = new Font("SansSerif", Font.PLAIN, 12);
@@ -78,7 +79,7 @@ public class SummaryStep extends AbstractWizardStep {
         final String[] postURLs = model.getPostURLs();
         GridBagLayout gbl = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
-        view.setLayout(gbl);
+        overall.setLayout(gbl);
         for (int i = 0; i < files.length; i++) {
             final int index = i;
             JPanel panel = new JPanel();
@@ -132,8 +133,13 @@ public class SummaryStep extends AbstractWizardStep {
             gbc.gridy = i;
             gbc.fill = GridBagConstraints.HORIZONTAL;
             gbl.setConstraints(panel, gbc);
-            view.add(panel);
+            overall.add(panel);
         }
+        JScrollPane scrollpane = new JScrollPane(overall);
+
+        view.setLayout(new BorderLayout());
+        view.add(scrollpane, BorderLayout.CENTER);
+
         setView(view);
     }
 
