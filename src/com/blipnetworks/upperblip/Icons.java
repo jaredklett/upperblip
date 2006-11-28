@@ -19,14 +19,14 @@ import java.util.*;
  * Icons, yea!
  *
  * @author Jared Klett
- * @version $Id: Icons.java,v 1.13 2006/11/17 19:50:34 jklett Exp $
+ * @version $Id: Icons.java,v 1.14 2006/11/28 00:14:10 jklett Exp $
  */
 
 public class Icons {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.13 $";
+    public static final String CVS_REV = "$Revision: 1.14 $";
 
 // Class variables ////////////////////////////////////////////////////////////
 
@@ -168,7 +168,7 @@ public class Icons {
         int dotIndex = filename.lastIndexOf(".");
         if (dotIndex == -1)
             throw new IllegalArgumentException("No dot-extension in this filename: " + filename);
-        return filename.substring(dotIndex + 1, filename.length());
+        return filename.substring(dotIndex + 1, filename.length()).toLowerCase();
     }
 
 } // class Icons
