@@ -31,14 +31,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.27 2006/11/17 23:22:42 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.28 2006/11/28 20:53:54 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.27 $";
+    public static final String CVS_REV = "$Revision: 1.28 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -122,8 +122,8 @@ public class MetaDataStep extends AbstractWizardStep {
         overall.setLayout(gbl);
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.insets.top = 2;
-        gbc.insets.bottom = 2;
+        gbc.insets.top = 4;
+        gbc.insets.bottom = 4;
 
         File[] files = model.getFiles();
         titleList = new JTextField[files.length];

@@ -27,14 +27,14 @@ import com.blipnetworks.upperblip.Main;
  *
  *
  * @author Jared Klett
- * @version $Id: Authenticator.java,v 1.4 2006/10/20 17:34:45 jklett Exp $
+ * @version $Id: Authenticator.java,v 1.5 2006/11/28 20:53:54 jklett Exp $
  */
 
 public class Authenticator {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.4 $";
+    public static final String CVS_REV = "$Revision: 1.5 $";
 
 // Class variables ////////////////////////////////////////////////////////////
 
@@ -55,8 +55,11 @@ public class Authenticator {
      * @param username
      * @param password
      * @return True we got an auth cookie, false otherwise.
+     * @throws IllegalStateException If the server returns an error code.
      */
     public static boolean authenticate(String username, String password) {
+        if (username == null || password == null)
+            throw new IllegalArgumentException("Neither username nor password can be null");
         boolean okay = false;
         String url = Main.appProperties.getProperty(Main.PROPERTY_BASE_URL);
         String uri = Main.appProperties.getProperty(PROPERTY_LOGIN_URI);
@@ -91,6 +94,9 @@ public class Authenticator {
             if (succeeded && myCookie != null) {
                 authCookie = myCookie;
                 okay = true;
+            } else {
+                // TODO: error message here
+                throw new IllegalStateException("Received bad response from the server, HTTP response code " + responseCode);
             }
         }
         catch (HttpException e) {

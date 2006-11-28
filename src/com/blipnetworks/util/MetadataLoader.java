@@ -29,15 +29,15 @@ import java.net.URLDecoder;
  * This is a placeholder description of this class.
  *
  * @author Jared Klett
- * @version $Id: MetadataLoader.java,v 1.8 2006/11/16 23:30:08 jklett Exp $
+ * @version $Id: MetadataLoader.java,v 1.9 2006/11/28 20:53:54 jklett Exp $
  */
 
 public class MetadataLoader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_ID = "$Id: MetadataLoader.java,v 1.8 2006/11/16 23:30:08 jklett Exp $";
-    public static final String CVS_REV = "$Revision: 1.8 $";
+    public static final String CVS_ID = "$Id: MetadataLoader.java,v 1.9 2006/11/28 20:53:54 jklett Exp $";
+    public static final String CVS_REV = "$Revision: 1.9 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -72,6 +72,8 @@ public class MetadataLoader {
             blogs = new TreeMap();
             languages = new TreeMap();
             ratings = new TreeMap();
+            // TODO: load this somehow?
+            ratings.put("None", "");
             crossuploads = new TreeMap();
             Document document = null;
             try {
@@ -112,6 +114,7 @@ public class MetadataLoader {
                 }
             }
             try {
+                // TODO: take out?
                 map.put(URLDecoder.decode(name, "UTF-8"), id);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();

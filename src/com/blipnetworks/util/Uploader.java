@@ -35,14 +35,14 @@ import com.blipnetworks.upperblip.Main;
  * TODO: use a logging interface for stack traces and println's.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.20 2006/11/17 21:17:10 jklett Exp $
+ * @version $Id: Uploader.java,v 1.21 2006/11/28 20:53:54 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.20 $";
+    public static final String CVS_REV = "$Revision: 1.21 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -103,8 +103,9 @@ public class Uploader {
     /** Default: TODO. */
     public static final String INGEST_PARAM_DEF = "upperblip";
 
-    public static final int ERROR_UNKNOWN = 0;
-    public static final int ERROR_BAD_AUTH = 1;
+    public static final int ERROR_UNKNOWN = 10;
+    public static final int ERROR_BAD_AUTH = 11;
+    public static final int ERROR_SERVER = 12;
 
     private Cookie authCookie;
     private String url;
@@ -137,6 +138,7 @@ public class Uploader {
         return uploadFile(videoFile, thumbnailFile, parameters, null);
     }
 
+    // TODO: break this beast up
     public boolean uploadFile(File videoFile, File thumbnailFile, Properties parameters, List crossposts) {
         PostMethod post = new PostMethod(urlWithGuid);
         FilePart videoFilePart;
@@ -254,6 +256,7 @@ public class Uploader {
                 }
             } else {
                 succeeded = false;
+                errorCode = ERROR_SERVER;
             }
         }
         catch (HttpException e) {

@@ -28,14 +28,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.26 2006/11/17 21:21:26 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.27 2006/11/28 20:53:54 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.26 $";
+	public static final String CVS_REV = "$Revision: 1.27 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -55,10 +55,9 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
     private static final String TIME_LABEL_KEY = "upload.time.label";
 	/** blah */
 	public static final String PROP_BASE_URL = "base.url";
-
-// Enumerated types ////////////////////////////////////////////////////////////
-
-	// Enums, if any, go here
+    /** blah */
+    public static final String ERROR_TITLE = "upload.error.title";
+    public static final String DONE_LABEL_KEY = "upload.done.msg";
 
 // Instance variables //////////////////////////////////////////////////////////
 
@@ -81,6 +80,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 	/** */
 	private JProgressBar progress;
     private List postList;
+    private boolean done;
 
     private Runnable timer = new Runnable() {
         public void run() {
@@ -129,6 +129,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 	public UploadStep() {
 		super(I18n.getString(TITLE_KEY), I18n.getString(SUMMARY_KEY));
 
+        done = false;
         setIcon(Icons.uploadIcon);
         postList = new ArrayList();
         // Create and layout components
@@ -234,8 +235,10 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
             if (!success) {
                 err = uploader.getErrorCode();
                 if (err == Uploader.ERROR_BAD_AUTH) {
+                     // TODO: externalize
                     msg = "Uh-oh, it looks like you supplied a bad username and/or password.\nPlease exit and try again.";
                 } else {
+                     // TODO: externalize
                     msg = "It seems that a problem arose while uploading.\nDo you wish to continue attempting to upload?";
                 }
             }
@@ -255,8 +258,8 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
                 if (err == Uploader.ERROR_UNKNOWN) {
                     choice = JOptionPane.showConfirmDialog(
                             Main.getMainInstance().getMainFrame(),
-                            msg, // TODO: externalize
-                            "Error occurred during upload",
+                            msg,
+                            I18n.getString(ERROR_TITLE),
                             JOptionPane.YES_NO_OPTION,
                             JOptionPane.ERROR_MESSAGE
                     );
@@ -265,8 +268,8 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
                 } else {
                     JOptionPane.showMessageDialog(
                             Main.getMainInstance().getMainFrame(),
-                            msg, // TODO: externalize
-                            "Error occurred during upload",
+                            msg,
+                            I18n.getString(ERROR_TITLE),
                             JOptionPane.ERROR_MESSAGE
                     );
                 }
@@ -281,8 +284,12 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 				//progress.setIndeterminate(false);
 			//progress.setValue(progress.getValue() + 1);
 		}
-		setBusy(false);
+        progress.setValue(progress.getMaximum());
+        timeLabel.setVisible(false);
+        rateLabel.setText(I18n.getString(DONE_LABEL_KEY));
+        setBusy(false);
 		setComplete(true);
+        done = true;
         model.setPostURLs((String[])postList.toArray(new String[0]));
         model.nextStep();
     }
@@ -295,8 +302,9 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 
 	public void prepare() {
 		setView(view);
-		new Thread(this).start();
-	}
+        if (!done)
+            new Thread(this).start();
+    }
 
 	public void applyState() {
 		// this is called when the user clicks "Next"
