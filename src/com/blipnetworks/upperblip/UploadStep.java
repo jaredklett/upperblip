@@ -28,14 +28,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.27 2006/11/28 20:53:54 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.28 2006/12/09 21:43:30 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.27 $";
+	public static final String CVS_REV = "$Revision: 1.28 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -231,7 +231,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
             else
                 success = uploader.uploadFile(files[i], thumbnails[i], props);
             String msg = "An unknown error occurred.";
-            int err = -1;
+            int err;
             if (!success) {
                 err = uploader.getErrorCode();
                 if (err == Uploader.ERROR_BAD_AUTH) {
@@ -254,9 +254,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
             if (success) {
                 postList.add(uploader.getPostURL());
             } else {
-                int choice;
-                if (err == Uploader.ERROR_UNKNOWN) {
-                    choice = JOptionPane.showConfirmDialog(
+                int choice = JOptionPane.showConfirmDialog(
                             Main.getMainInstance().getMainFrame(),
                             msg,
                             I18n.getString(ERROR_TITLE),
@@ -265,14 +263,6 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
                     );
                     if (choice == JOptionPane.NO_OPTION)
                         break;
-                } else {
-                    JOptionPane.showMessageDialog(
-                            Main.getMainInstance().getMainFrame(),
-                            msg,
-                            I18n.getString(ERROR_TITLE),
-                            JOptionPane.ERROR_MESSAGE
-                    );
-                }
             }
 			// take out the old data
 			props.remove(Uploader.TITLE_PARAM_KEY);
