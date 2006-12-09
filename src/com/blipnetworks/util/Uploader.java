@@ -14,7 +14,6 @@ package com.blipnetworks.util;
 
 import java.io.*;
 import java.util.*;
-import java.net.URL;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.params.HttpMethodParams;
@@ -35,14 +34,14 @@ import com.blipnetworks.upperblip.Main;
  * TODO: use a logging interface for stack traces and println's.
  *
  * @author Jared Klett
- * @version $Id: Uploader.java,v 1.21 2006/11/28 20:53:54 jklett Exp $
+ * @version $Id: Uploader.java,v 1.22 2006/12/09 23:14:40 jklett Exp $
  */
 
 public class Uploader {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.21 $";
+    public static final String CVS_REV = "$Revision: 1.22 $";
 
 // Constants //////////////////////////////////////////////////////////////////
 
@@ -235,16 +234,7 @@ public class Uploader {
                 if (document != null) {
                     // attempt to discern the status from the respose
                     String responseText = document.getElementsByTagName("response").item(0).getFirstChild().getNodeValue();
-                    String[] lines = responseText.trim().split("\n");
-                    if (lines.length >= 2) {
-                        try {
-                            URL testURL = new URL(lines[1]);
-                            postURL = testURL.toString();
-                        } catch (Exception e) {
-                            // TODO: log message
-                            System.out.println("Couldn't find valid URL in response text:\n" + responseText);
-                        }
-                    }
+                    postURL = document.getElementsByTagName("post_url").item(0).getFirstChild().getNodeValue();
                     if (responseText.indexOf("couldn't find an account") != -1)
                         errorCode = ERROR_BAD_AUTH;
                     return responseText.indexOf("has been successfully posted") != -1;

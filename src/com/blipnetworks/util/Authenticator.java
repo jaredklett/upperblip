@@ -16,6 +16,7 @@ import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.PostMethod;
 
@@ -27,14 +28,14 @@ import com.blipnetworks.upperblip.Main;
  *
  *
  * @author Jared Klett
- * @version $Id: Authenticator.java,v 1.5 2006/11/28 20:53:54 jklett Exp $
+ * @version $Id: Authenticator.java,v 1.6 2006/12/09 23:14:40 jklett Exp $
  */
 
 public class Authenticator {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.5 $";
+    public static final String CVS_REV = "$Revision: 1.6 $";
 
 // Class variables ////////////////////////////////////////////////////////////
 
@@ -74,6 +75,7 @@ public class Authenticator {
             HttpClient client = new HttpClient();
             // Set a tolerant cookie policy
             client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+            client.getParams().setParameter(HttpMethodParams.USER_AGENT, Main.UA);
             // Set our timeout
             client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
             // If we had an auth cookie previously, set it in the client before

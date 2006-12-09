@@ -20,22 +20,24 @@ import javax.swing.border.EtchedBorder;
 
 import com.blipnetworks.util.I18n;
 import com.blipnetworks.util.Command;
-import com.blipnetworks.util.BrowserLauncher;
+//import com.blipnetworks.util.BrowserLauncher;
 
 import java.awt.*;
 import java.io.File;
 
+import edu.stanford.ejalbert.BrowserLauncher;
+
 /**
  *
  * @author Jared Klett
- * @version $Id: SummaryStep.java,v 1.4 2006/11/28 00:14:28 jklett Exp $
+ * @version $Id: SummaryStep.java,v 1.5 2006/12/09 23:14:40 jklett Exp $
  */
 
 public class SummaryStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.4 $";
+    public static final String CVS_REV = "$Revision: 1.5 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -99,7 +101,14 @@ public class SummaryStep extends AbstractWizardStep {
             JLabel titleLabel = new JLabel(I18n.getString(POST_TITLE_KEY) + " " + titles[i]);
             LinkLabel linkLabel = new LinkLabel("Go to the post", new Command() {
                 public void execute() {
-                    BrowserLauncher.openURL(postURLs[index]);
+                    try {
+                        BrowserLauncher bl = new BrowserLauncher(null);
+                        System.out.println(postURLs[index]);
+                        bl.openURLinBrowser(postURLs[index]);
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             });
             linkLabel.setFont(linkFont);

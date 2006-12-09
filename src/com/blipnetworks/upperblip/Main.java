@@ -24,23 +24,24 @@ import javax.swing.*;
 
 import com.blipnetworks.util.I18n;
 import com.blipnetworks.util.BuildNumber;
-import com.blipnetworks.util.BrowserLauncher;
+//import com.blipnetworks.util.BrowserLauncher;
 import org.pietschy.wizard.WizardListener;
 import org.pietschy.wizard.WizardEvent;
 import org.pietschy.wizard.Wizard;
+import edu.stanford.ejalbert.BrowserLauncher;
 
 /**
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.24 2006/11/17 19:50:21 jklett Exp $
+ * @version $Id: Main.java,v 1.25 2006/12/09 23:14:40 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.24 $";
+    public static final String CVS_REV = "$Revision: 1.25 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -58,7 +59,7 @@ public class Main {
     private static final String FRAME_TITLE_KEY = "main.frame.title";
 
     // TODO: fix
-    public static final String UA = "UpperBlip/1.1 beta (" + System.getProperty("os.name") + " " + System.getProperty("os.version") + "; http://blip.tv)";
+    public static final String UA = "UpperBlip/1.3 beta (" + System.getProperty("os.name") + " " + System.getProperty("os.version") + "; http://blip.tv)";
     private static boolean macintosh = System.getProperty("os.name").equals("Mac OS X");
     public static final String APP_PROPERTIES = "upperblip.properties";
     public static final String PROPERTY_BASE_URL = "base.url";
@@ -231,7 +232,8 @@ public class Main {
                 );
 
                 if (choice == JOptionPane.YES_OPTION) {
-                    BrowserLauncher.openURL(appProperties.getProperty(PROPERTY_BASE_URL) + "/tools");
+                    BrowserLauncher bl = new BrowserLauncher(null);
+                    bl.openURLinBrowser(appProperties.getProperty(PROPERTY_BASE_URL) + "/tools");
                 }
             }
         } catch (Exception e) { e.printStackTrace(); /* ignored */ }
