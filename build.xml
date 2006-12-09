@@ -1,4 +1,4 @@
-<!-- $Id: build.xml,v 1.12 2006/12/09 21:44:05 jklett Exp $ -->
+<!-- $Id: build.xml,v 1.13 2006/12/09 23:16:27 jklett Exp $ -->
 <project name="UpperBlip" default="build" basedir=".">
 
 	<taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen" classpath="jsmooth/lib/jsmoothgen-ant.jar" />
@@ -25,6 +25,7 @@
 	<property name="commonjars" value="commons-*.jar" />
     <property name="xercesjar" value="xerces*.jar" />
 	<property name="wizardjar" value="wizard*.jar" />
+    <property name="launcherjar" value="BrowserLauncher*.jar" />
 	<property name="metainf" value="**/META-INF/" />
 
 	<target name="init">
@@ -59,6 +60,14 @@
             </patternset>
             <fileset dir="${lib}">
                 <include name="**/${xercesjar}" />
+            </fileset>
+        </unjar>
+        <unjar dest="${build}">
+            <patternset>
+                <exclude name="${metainf}" />
+            </patternset>
+            <fileset dir="${lib}">
+                <include name="**/${launcherjar}" />
             </fileset>
         </unjar>
 	</target>
