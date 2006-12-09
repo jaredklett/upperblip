@@ -23,14 +23,14 @@ import java.awt.*;
  *
  *
  * @author Jared Klett
- * @version $Id: AuthDialog.java,v 1.2 2006/10/23 20:48:20 jklett Exp $
+ * @version $Id: AuthDialog.java,v 1.3 2006/12/09 22:17:02 jklett Exp $
  */
 
 public class AuthDialog extends JDialog implements Runnable {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.2 $";
+    public static final String CVS_REV = "$Revision: 1.3 $";
 
 // UI elements ////////////////////////////////////////////////////////////////
 
@@ -86,11 +86,17 @@ public class AuthDialog extends JDialog implements Runnable {
             try { Thread.sleep(10); } catch (Exception e) { /* ignore */ }
         }
         // 1. run authentication
-        success = Authenticator.authenticate(username, password);
+        try {
+            success = Authenticator.authenticate(username, password);
+        }
+        catch (Exception e) {
+            success = false;
+        }
         if (success) {
             infoLabel.setText(I18n.getString(DATA_LABEL_KEY));
             // 2. load metadata/user data
             String url = Main.appProperties.getProperty("base.url");
+            // TODO FIXME bad default!!
             String uri = Main.appProperties.getProperty("metadata.uri", "/liccat.xml");
             MetadataLoader.load(url + uri, Authenticator.authCookie);
         }
