@@ -31,14 +31,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.28 2006/11/28 20:53:54 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.29 2006/12/09 22:20:54 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.28 $";
+    public static final String CVS_REV = "$Revision: 1.29 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -201,6 +201,8 @@ public class MetaDataStep extends AbstractWizardStep {
                     }
             );
             final JComboBox categories = new JComboBox(MetadataLoader.categories.keySet().toArray());
+            // TODO: load this from the config
+            categories.setSelectedItem("Default Category");
             LinkLabel applyCatLabel = new LinkLabel(
                     I18n.getString(APPLY_LABEL_KEY),
                     new Command() {
