@@ -20,7 +20,6 @@ import javax.swing.border.EtchedBorder;
 
 import com.blipnetworks.util.I18n;
 import com.blipnetworks.util.Command;
-//import com.blipnetworks.util.BrowserLauncher;
 
 import java.awt.*;
 import java.io.File;
@@ -30,14 +29,14 @@ import edu.stanford.ejalbert.BrowserLauncher;
 /**
  *
  * @author Jared Klett
- * @version $Id: SummaryStep.java,v 1.5 2006/12/09 23:14:40 jklett Exp $
+ * @version $Id: SummaryStep.java,v 1.6 2006/12/11 14:58:32 jklett Exp $
  */
 
 public class SummaryStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.5 $";
+    public static final String CVS_REV = "$Revision: 1.6 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
