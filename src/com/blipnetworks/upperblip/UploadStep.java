@@ -28,14 +28,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.28 2006/12/09 21:43:30 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.29 2007/03/20 22:00:53 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.28 $";
+	public static final String CVS_REV = "$Revision: 1.29 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -195,19 +195,19 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
         File[] thumbnails = model.getThumbnails();
         // Create a properties object
 		Properties props = new Properties();
-		props.put(Uploader.USER_PARAM_KEY, model.getUsername());
-		props.put(Uploader.PASS_PARAM_KEY, model.getPassword());
+		props.put(Parameters.USER_PARAM_KEY, model.getUsername());
+		props.put(Parameters.PASS_PARAM_KEY, model.getPassword());
 		for (int i = 0; i < files.length; i++) {
             filename = files[i].getName();
             // Generate a new GUID
 			guid = new RandomGUID(false);
 			uploader.setGuid(guid.toString());
 			// put in the current data
-			props.put(Uploader.TITLE_PARAM_KEY, titles[i]);
-			props.put(Uploader.TAGS_PARAM_KEY, tags[i]);
-			props.put(Uploader.DESC_PARAM_KEY, descriptions[i]);
-            props.put(Uploader.LICENSE_PARAM_KEY, licenses[i]);
-            props.put(Uploader.CAT_PARAM_KEY, categories[i]);
+			props.put(Parameters.TITLE_PARAM_KEY, titles[i]);
+			props.put(Parameters.TAGS_PARAM_KEY, tags[i]);
+			props.put(Parameters.DESC_PARAM_KEY, descriptions[i]);
+            props.put(Parameters.LICENSE_PARAM_KEY, licenses[i]);
+            props.put(Parameters.CAT_PARAM_KEY, categories[i]);
             List list = new ArrayList();
             boolean blogsFound = false;
             for (int j = 0; j < blogs[i].length; j++) {
@@ -218,7 +218,7 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
             }
             for (int j = 0; j < destinations[i].length; j++)
                 if (destinations[i][j] != null)
-                    props.put(Uploader.IA_PARAM_KEY, destinations[i][j]);
+                    props.put(Parameters.IA_PARAM_KEY, destinations[i][j]);
 
             // calculate the approximate transfer time for the next file
 			// do the upload
@@ -265,11 +265,11 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
                         break;
             }
 			// take out the old data
-			props.remove(Uploader.TITLE_PARAM_KEY);
-			props.remove(Uploader.DESC_PARAM_KEY);
-            props.remove(Uploader.LICENSE_PARAM_KEY);
-            props.remove(Uploader.CAT_PARAM_KEY);
-            props.remove(Uploader.TAGS_PARAM_KEY);
+			props.remove(Parameters.TITLE_PARAM_KEY);
+			props.remove(Parameters.DESC_PARAM_KEY);
+            props.remove(Parameters.LICENSE_PARAM_KEY);
+            props.remove(Parameters.CAT_PARAM_KEY);
+            props.remove(Parameters.TAGS_PARAM_KEY);
 			//if (progress.isIndeterminate())
 				//progress.setIndeterminate(false);
 			//progress.setValue(progress.getValue() + 1);
