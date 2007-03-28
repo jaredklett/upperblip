@@ -1,7 +1,7 @@
 /*
  * @(#)Icons.java
  *
- * Copyright (c) 2006 by Blip Networks, Inc.
+ * Copyright (c) 2005-2007 by Blip Networks, Inc.
  * 239 Centre St, 3rd Floor
  * New York, NY 10013
  * All rights reserved.
@@ -19,14 +19,14 @@ import java.util.*;
  * Icons, yea!
  *
  * @author Jared Klett
- * @version $Id: Icons.java,v 1.14 2006/11/28 00:14:10 jklett Exp $
+ * @version $Id: Icons.java,v 1.15 2007/03/28 19:12:45 jklett Exp $
  */
 
 public class Icons {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.14 $";
+    public static final String CVS_REV = "$Revision: 1.15 $";
 
 // Class variables ////////////////////////////////////////////////////////////
 

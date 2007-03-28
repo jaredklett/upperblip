@@ -1,7 +1,7 @@
 /* 
  * @(#)I18n.java
  * 
- * Copyright (c) 2006 by Blip Networks, Inc.
+ * Copyright (c) 2005-2007 by Blip Networks, Inc.
  * 239 Centre St, 3rd Floor
  * New York, NY 10013
  * All rights reserved.
@@ -19,14 +19,14 @@ import java.util.Locale;
  * This class serves as an internationalization helper.
  *
  * @author Jared Klett
- * @version $Id: I18n.java,v 1.10 2007/03/20 22:00:26 jklett Exp $
+ * @version $Id: I18n.java,v 1.11 2007/03/28 19:12:45 jklett Exp $
  */
 
 public class I18n {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.10 $";
+	public static final String CVS_REV = "$Revision: 1.11 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

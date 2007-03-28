@@ -1,7 +1,7 @@
 /* 
  * @(#)MetaDataStep.java
  * 
- * Copyright (c) 2006 by Blip Networks, Inc.
+ * Copyright (c) 2005-2007 by Blip Networks, Inc.
  * 239 Centre St, 3rd Floor
  * New York, NY 10013
  * All rights reserved.
@@ -31,14 +31,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.29 2006/12/09 22:20:54 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.30 2007/03/28 19:12:45 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.29 $";
+    public static final String CVS_REV = "$Revision: 1.30 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

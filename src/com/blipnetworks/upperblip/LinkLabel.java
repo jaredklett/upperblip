@@ -1,3 +1,15 @@
+/*
+ * @(#)LinkLabel.java
+ *
+ * Copyright (c) 2005-2007 by Blip Networks, Inc.
+ * 239 Centre St, 3rd Floor
+ * New York, NY 10013
+ * All rights reserved.
+ *
+ * This software is the confidential and
+ * proprietary information of Blip Networks, Inc.
+ */
+
 package com.blipnetworks.upperblip;
 
 import com.blipnetworks.util.Command;
@@ -16,7 +28,7 @@ import java.util.List;
  *
  *
  * @author Jared Klett
- * @version $Id: LinkLabel.java,v 1.2 2006/11/30 19:40:27 jklett Exp $
+ * @version $Id: LinkLabel.java,v 1.3 2007/03/28 19:12:45 jklett Exp $
  */
 
 public class LinkLabel extends JLabel implements Command {

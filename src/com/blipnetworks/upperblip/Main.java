@@ -1,7 +1,7 @@
 /* 
  * @(#)Main.java
  * 
- * Copyright (c) 2006 by Blip Networks, Inc.
+ * Copyright (c) 2005-2007 by Blip Networks, Inc.
  * 239 Centre St, 3rd Floor
  * New York, NY 10013
  * All rights reserved.
@@ -24,6 +24,7 @@ import javax.swing.*;
 
 import com.blipnetworks.util.I18n;
 import com.blipnetworks.util.BuildNumber;
+import com.blipnetworks.util.Parameters;
 //import com.blipnetworks.util.BrowserLauncher;
 import org.pietschy.wizard.WizardListener;
 import org.pietschy.wizard.WizardEvent;
@@ -34,14 +35,14 @@ import edu.stanford.ejalbert.BrowserLauncher;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.25 2006/12/09 23:14:40 jklett Exp $
+ * @version $Id: Main.java,v 1.26 2007/03/28 19:12:45 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.25 $";
+    public static final String CVS_REV = "$Revision: 1.26 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -87,6 +88,8 @@ public class Main {
 
     static {
         try {
+            // TODO FIXME
+            Parameters.loadConfig();
             appProperties.load(Main.class.getClassLoader().getResourceAsStream(APP_PROPERTIES));
         }
         catch (IOException e) {

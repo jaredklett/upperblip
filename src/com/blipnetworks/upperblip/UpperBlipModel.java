@@ -1,7 +1,7 @@
 /* 
  * @(#)UpperBlipModel.java
  * 
- * Copyright (c) 2006 by Blip Networks, Inc.
+ * Copyright (c) 2007 by Blip Networks, Inc.
  * 239 Centre St, 3rd Floor
  * New York, NY 10013
  * All rights reserved.
@@ -24,7 +24,7 @@ import javax.swing.*;
 
 /**
  * @author Jared Klett
- * @version $Id: UpperBlipModel.java,v 1.19 2007/03/28 18:13:19 jklett Exp $
+ * @version $Id: UpperBlipModel.java,v 1.20 2007/03/28 19:12:45 jklett Exp $
  */
 
 public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {

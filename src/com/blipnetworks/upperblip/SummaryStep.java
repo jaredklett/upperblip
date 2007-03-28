@@ -1,7 +1,7 @@
 /*
  * @(#)SummaryStep.java
  *
- * Copyright (c) 2006 by Blip Networks, Inc.
+ * Copyright (c) 2005-2007 by Blip Networks, Inc.
  * 239 Centre St, 3rd Floor
  * New York, NY 10013
  * All rights reserved.
@@ -29,14 +29,14 @@ import edu.stanford.ejalbert.BrowserLauncher;
 /**
  *
  * @author Jared Klett
- * @version $Id: SummaryStep.java,v 1.6 2006/12/11 14:58:32 jklett Exp $
+ * @version $Id: SummaryStep.java,v 1.7 2007/03/28 19:12:45 jklett Exp $
  */
 
 public class SummaryStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.6 $";
+    public static final String CVS_REV = "$Revision: 1.7 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 

@@ -1,13 +1,13 @@
 /* 
  * @(#)UploadStep.java
  *
- * Copyright (c) 2006 by Pokkari, Inc.
+ * Copyright (c) 2005-2007 by Blip Networks, Inc.
  * 239 Centre St, 3rd Floor
  * New York, NY 10013
  * All rights reserved.
  *
  * This software is the confidential and
- * proprietary information of Pokkari, Inc.
+ * proprietary information of Blip Networks, Inc.
  */
 
 package com.blipnetworks.upperblip;
@@ -30,14 +30,14 @@ import org.xml.sax.SAXException;
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.30 2007/03/28 18:13:19 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.31 2007/03/28 19:12:45 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.30 $";
+	public static final String CVS_REV = "$Revision: 1.31 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -91,11 +91,11 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
                 try {
                     status = UploadStatus.getStatus(guid.toString(), model.getAuthCookie());
                 } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    e.printStackTrace();
                 } catch (ParserConfigurationException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    e.printStackTrace();
                 } catch (SAXException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    e.printStackTrace();
                 }
                 if (status != null) {
                     long start = status.getStart();
