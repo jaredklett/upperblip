@@ -18,24 +18,26 @@ import java.util.*;
 import java.util.List;
 
 import javax.swing.*;
+import javax.xml.parsers.ParserConfigurationException;
 
 import com.blipnetworks.util.*;
 
 import org.pietschy.wizard.AbstractWizardStep;
 import org.pietschy.wizard.WizardModel;
+import org.xml.sax.SAXException;
 
 /**
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.29 2007/03/20 22:00:53 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.30 2007/03/28 18:13:19 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.29 $";
+	public static final String CVS_REV = "$Revision: 1.30 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -61,10 +63,8 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // Instance variables //////////////////////////////////////////////////////////
 
-	/** */
-	private boolean running;
     /** */
-    private String statusURL;
+    private boolean running;
     /** */
     private String filename;
     /** */
@@ -87,7 +87,16 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
             progress.setMinimum(0);
             try { Thread.sleep(INIT_INTERVAL); } catch (Exception e) { /* ignored */ }
             while (running) {
-                UploadStatus status = UploadStatus.getStatus(statusURL, guid.toString());
+                UploadStatus status = null;
+                try {
+                    status = UploadStatus.getStatus(guid.toString(), model.getAuthCookie());
+                } catch (IOException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                } catch (ParserConfigurationException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                } catch (SAXException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
                 if (status != null) {
                     long start = status.getStart();
                     long update = status.getUpdate();
@@ -175,13 +184,9 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // Runnable implementation ////////////////////////////////////////////////////
 
-	public void run() {
-		setBusy(true);
-		String url = Main.appProperties.getProperty(PROP_BASE_URL) + "/file/post?form_cookie=";
-		statusURL = Main.appProperties.getProperty(PROP_BASE_URL) + "/upload/status?skin=xmlhttprequest&form_cookie=";
-		Uploader uploader = new Uploader(url);
-        // TODO: safeguards?
-        uploader.setAuthCookie(Authenticator.authCookie);
+    public void run() {
+        setBusy(true);
+        Uploader uploader = new Uploader(model.getAuthCookie());
         File[] files = model.getFiles();
 		//progress.setMinimum(0);
 		//progress.setMaximum(files.length);
@@ -200,8 +205,8 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 		for (int i = 0; i < files.length; i++) {
             filename = files[i].getName();
             // Generate a new GUID
-			guid = new RandomGUID(false);
-			uploader.setGuid(guid.toString());
+            guid = new RandomGUID();
+            uploader.setGuid(guid.toString());
 			// put in the current data
 			props.put(Parameters.TITLE_PARAM_KEY, titles[i]);
 			props.put(Parameters.TAGS_PARAM_KEY, tags[i]);
@@ -225,11 +230,27 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 			Thread thread = new Thread(timer);
 			running = true;
 			thread.start();
-			boolean success;
+			boolean success = false;
             if (blogsFound)
-                success = uploader.uploadFile(files[i], thumbnails[i], props, list);
+                try {
+                    success = uploader.uploadFile(files[i], thumbnails[i], props, list);
+                } catch (IOException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                } catch (ParserConfigurationException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                } catch (SAXException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
             else
-                success = uploader.uploadFile(files[i], thumbnails[i], props);
+                try {
+                    success = uploader.uploadFile(files[i], thumbnails[i], props);
+                } catch (IOException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                } catch (ParserConfigurationException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                } catch (SAXException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
             String msg = "An unknown error occurred.";
             int err;
             if (!success) {

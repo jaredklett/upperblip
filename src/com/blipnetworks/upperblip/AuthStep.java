@@ -29,14 +29,14 @@ import org.pietschy.wizard.InvalidStateException;
  * the user and authenticates to the site.
  *
  * @author Jared Klett
- * @version $Id: AuthStep.java,v 1.15 2006/11/17 20:50:33 jklett Exp $
+ * @version $Id: AuthStep.java,v 1.16 2007/03/28 18:13:19 jklett Exp $
  */
 
 public class AuthStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.15 $";
+	public static final String CVS_REV = "$Revision: 1.16 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -179,7 +179,7 @@ public class AuthStep extends AbstractWizardStep {
 	public void applyState() throws InvalidStateException {
 		// this is called when the user clicks "Next"
         setBusy(true);
-        AuthDialog ad = new AuthDialog(userField.getText(), new String(passField.getPassword()));
+        AuthDialog ad = new AuthDialog(userField.getText(), new String(passField.getPassword()), model);
         ad.pack();
         Dimension d = ad.getSize();
         ad.setSize(d.width * 2, d.height);

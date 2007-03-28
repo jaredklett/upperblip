@@ -18,12 +18,13 @@ import java.util.HashMap;
 
 import org.pietschy.wizard.*;
 import org.pietschy.wizard.models.*;
+import org.apache.commons.httpclient.Cookie;
 
 import javax.swing.*;
 
 /**
  * @author Jared Klett
- * @version $Id: UpperBlipModel.java,v 1.18 2006/11/17 19:31:06 jklett Exp $
+ * @version $Id: UpperBlipModel.java,v 1.19 2007/03/28 18:13:19 jklett Exp $
  */
 
 public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
@@ -46,6 +47,7 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
     private String password;
     private boolean remember;
     public Map thumbnailFileLookup;
+    public Cookie authCookie;
 
     public boolean isRemembered() {
         return remember;
@@ -113,6 +115,10 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
 
     public String[] getPostURLs() {
         return postURLs;
+    }
+
+    public Cookie getAuthCookie() {
+        return authCookie;
     }
 
     public void setRemembered(boolean remember) {
@@ -185,6 +191,10 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
 
     public void setPostURLs(String[] postURLs) {
         this.postURLs = postURLs;
+    }
+
+    public void setAuthCookie(Cookie authCookie) {
+        this.authCookie = authCookie;
     }
 
     public void activateHelp(JComponent parent, WizardModel model) {

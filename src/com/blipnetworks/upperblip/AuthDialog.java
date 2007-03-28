@@ -19,18 +19,20 @@ import com.blipnetworks.util.I18n;
 import javax.swing.*;
 import java.awt.*;
 
+import org.apache.commons.httpclient.Cookie;
+
 /**
  *
  *
  * @author Jared Klett
- * @version $Id: AuthDialog.java,v 1.3 2006/12/09 22:17:02 jklett Exp $
+ * @version $Id: AuthDialog.java,v 1.4 2007/03/28 18:13:19 jklett Exp $
  */
 
 public class AuthDialog extends JDialog implements Runnable {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.3 $";
+    public static final String CVS_REV = "$Revision: 1.4 $";
 
 // UI elements ////////////////////////////////////////////////////////////////
 
@@ -50,6 +52,7 @@ public class AuthDialog extends JDialog implements Runnable {
     private boolean success;
     private String username;
     private String password;
+    private UpperBlipModel model;
 
 // Constructors ///////////////////////////////////////////////////////////////
 
@@ -58,10 +61,11 @@ public class AuthDialog extends JDialog implements Runnable {
      * @param username
      * @param password
      */
-    public AuthDialog(String username, String password) {
+    public AuthDialog(String username, String password, UpperBlipModel model) {
         super(Main.getMainInstance().getMainFrame(), I18n.getString(TITLE_KEY), true);
         setUsername(username);
         setPassword(password);
+        setModel(model);
         progress.setIndeterminate(true);
         JPanel panel = new JPanel();
         panel.setBorder(
@@ -87,7 +91,10 @@ public class AuthDialog extends JDialog implements Runnable {
         }
         // 1. run authentication
         try {
-            success = Authenticator.authenticate(username, password);
+            Cookie authCookie = Authenticator.authenticate(username, password);
+            success = authCookie != null;
+            if (success)
+                model.setAuthCookie(authCookie);
         }
         catch (Exception e) {
             success = false;
@@ -95,10 +102,12 @@ public class AuthDialog extends JDialog implements Runnable {
         if (success) {
             infoLabel.setText(I18n.getString(DATA_LABEL_KEY));
             // 2. load metadata/user data
-            String url = Main.appProperties.getProperty("base.url");
-            // TODO FIXME bad default!!
-            String uri = Main.appProperties.getProperty("metadata.uri", "/liccat.xml");
-            MetadataLoader.load(url + uri, Authenticator.authCookie);
+            try {
+                MetadataLoader.load(model.getAuthCookie());
+            } catch (Exception e) {
+                // TODO FIXME: what to do?
+                throw new IllegalStateException("Could not load metadata!");
+            }
         }
         setVisible(false);
     }
@@ -117,6 +126,10 @@ public class AuthDialog extends JDialog implements Runnable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setModel(UpperBlipModel model) {
+        this.model = model;
     }
 
 } // class AuthDialog
