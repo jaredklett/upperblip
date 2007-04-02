@@ -25,7 +25,6 @@ import javax.swing.*;
 import com.blipnetworks.util.I18n;
 import com.blipnetworks.util.BuildNumber;
 import com.blipnetworks.util.Parameters;
-//import com.blipnetworks.util.BrowserLauncher;
 import org.pietschy.wizard.WizardListener;
 import org.pietschy.wizard.WizardEvent;
 import org.pietschy.wizard.Wizard;
@@ -35,14 +34,14 @@ import edu.stanford.ejalbert.BrowserLauncher;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.26 2007/03/28 19:12:45 jklett Exp $
+ * @version $Id: Main.java,v 1.27 2007/04/02 18:03:36 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.26 $";
+    public static final String CVS_REV = "$Revision: 1.27 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -88,12 +87,15 @@ public class Main {
 
     static {
         try {
-            // TODO FIXME
-            Parameters.loadConfig();
             appProperties.load(Main.class.getClassLoader().getResourceAsStream(APP_PROPERTIES));
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not UpperBlip configuration: " + APP_PROPERTIES, e);
         }
-        catch (IOException e) {
-            e.printStackTrace();
+        try {
+            //Parameters.loadConfig();
+            Parameters.loadConfig(Main.class.getClassLoader().getResourceAsStream(Parameters.BLIPLIB_PROPERTIES));
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not BlipLib configuration: " + Parameters.BLIPLIB_PROPERTIES, e);
         }
     }
 
@@ -223,7 +225,7 @@ public class Main {
         }
         // Check for new version
         try {
-            BuildNumber remoteBuild = BuildNumber.loadRemote(new URL(appProperties.getProperty(PROPERTY_BASE_URL) + BUILD_NUMBER_URI));
+            BuildNumber remoteBuild = BuildNumber.loadRemote(new URL(Parameters.config.getProperty(PROPERTY_BASE_URL) + BUILD_NUMBER_URI));
             BuildNumber localBuild = BuildNumber.loadLocal();
             if (remoteBuild.getBuildNumber() > localBuild.getBuildNumber()) {
                 int choice = JOptionPane.showConfirmDialog(

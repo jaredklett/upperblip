@@ -30,14 +30,14 @@ import org.xml.sax.SAXException;
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.31 2007/03/28 19:12:45 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.32 2007/04/02 18:03:36 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.31 $";
+	public static final String CVS_REV = "$Revision: 1.32 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -90,12 +90,13 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
                 UploadStatus status = null;
                 try {
                     status = UploadStatus.getStatus(guid.toString(), model.getAuthCookie());
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
-                } catch (ParserConfigurationException e) {
-                    e.printStackTrace();
-                } catch (SAXException e) {
-                    e.printStackTrace();
+                    try {
+                        System.out.println("Document:\n" + XmlUtils.makeStringFromDocument(status.getDocument()));
+                    } catch (IOException e1) {
+                        e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
                 }
                 if (status != null) {
                     long start = status.getStart();

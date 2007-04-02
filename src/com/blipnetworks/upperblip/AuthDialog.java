@@ -25,14 +25,14 @@ import org.apache.commons.httpclient.Cookie;
  *
  *
  * @author Jared Klett
- * @version $Id: AuthDialog.java,v 1.5 2007/03/28 19:13:02 jklett Exp $
+ * @version $Id: AuthDialog.java,v 1.6 2007/04/02 18:03:36 jklett Exp $
  */
 
 public class AuthDialog extends JDialog implements Runnable {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.5 $";
+    public static final String CVS_REV = "$Revision: 1.6 $";
 
 // UI elements ////////////////////////////////////////////////////////////////
 
