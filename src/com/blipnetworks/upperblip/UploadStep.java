@@ -30,14 +30,14 @@ import org.xml.sax.SAXException;
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.32 2007/04/02 18:03:36 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.33 2007/04/05 23:34:10 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.32 $";
+	public static final String CVS_REV = "$Revision: 1.33 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -196,6 +196,9 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 		String[] descriptions = model.getDescriptions();
         String[] licenses = model.getLicenses();
         String[] categories = model.getCategories();
+        String[] languages = model.getLanguages();
+        String[] explicitFlags = model.getExplicitFlags();
+        String[] ratings = model.getRatings();
         String[][] blogs = model.getCrossposts();
         String[][] destinations = model.getCrossuploads();
         File[] thumbnails = model.getThumbnails();
@@ -214,6 +217,9 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 			props.put(Parameters.DESC_PARAM_KEY, descriptions[i]);
             props.put(Parameters.LICENSE_PARAM_KEY, licenses[i]);
             props.put(Parameters.CAT_PARAM_KEY, categories[i]);
+            props.put(Parameters.RATING_PARAM_KEY, ratings[i]);
+            props.put(Parameters.LANGUAGE_PARAM_KEY, languages[i]);
+            props.put(Parameters.EXPLICIT_PARAM_KEY, explicitFlags[i]);
             List list = new ArrayList();
             boolean blogsFound = false;
             for (int j = 0; j < blogs[i].length; j++) {
