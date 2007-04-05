@@ -24,7 +24,7 @@ import javax.swing.*;
 
 /**
  * @author Jared Klett
- * @version $Id: UpperBlipModel.java,v 1.20 2007/03/28 19:12:45 jklett Exp $
+ * @version $Id: UpperBlipModel.java,v 1.21 2007/04/05 19:55:06 jklett Exp $
  */
 
 public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
@@ -40,6 +40,7 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
     private String[] licenses;
     private String[] languages;
     private String[] ratings;
+    private String[] explicitFlags;
     private String[][] crossposts;
     private String[] postURLs;
     private String[][] crossuploads;
@@ -48,6 +49,8 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
     private boolean remember;
     public Map thumbnailFileLookup;
     public Cookie authCookie;
+
+// Accessors //////////////////////////////////////////////////////////////////
 
     public boolean isRemembered() {
         return remember;
@@ -120,6 +123,12 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
     public Cookie getAuthCookie() {
         return authCookie;
     }
+
+    public String[] getExplicitFlags() {
+        return explicitFlags;
+    }
+
+// Mutators ///////////////////////////////////////////////////////////////////
 
     public void setRemembered(boolean remember) {
         this.remember = remember;
@@ -196,6 +205,12 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
     public void setAuthCookie(Cookie authCookie) {
         this.authCookie = authCookie;
     }
+
+    public void setExplicitFlags(String[] explicitFlags) {
+        this.explicitFlags = explicitFlags;
+    }
+
+// Instance methods ///////////////////////////////////////////////////////////
 
     public void activateHelp(JComponent parent, WizardModel model) {
         System.out.println(parent.getClass());
