@@ -31,14 +31,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.30 2007/03/28 19:12:45 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.31 2007/04/05 19:54:55 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.30 $";
+    public static final String CVS_REV = "$Revision: 1.31 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -58,6 +58,8 @@ public class MetaDataStep extends AbstractWizardStep {
     private static final String LICENSE_LABEL_KEY = "meta.license.label";
     /** blah */
     private static final String RATING_LABEL_KEY = "meta.rating.label";
+    /** blah */
+    private static final String EXPLICIT_LABEL_KEY = "meta.explicit.label";
     /** blah */
     private static final String LANGUAGE_LABEL_KEY = "meta.language.label";
     /** blah */
@@ -91,6 +93,8 @@ public class MetaDataStep extends AbstractWizardStep {
     private JComboBox[] languageList;
     /** */
     private JComboBox[] ratingList;
+    /** */
+    private JCheckBox[] explicitList;
     /** */
     private JCheckBox[][] blogCheckboxList;
     /** */
@@ -132,6 +136,7 @@ public class MetaDataStep extends AbstractWizardStep {
         categoryList = new JComboBox[files.length];
         licenseList = new JComboBox[files.length];
         ratingList = new JComboBox[files.length];
+        explicitList = new JCheckBox[files.length];
         languageList = new JComboBox[files.length];
         tagsList = new JTextField[files.length];
         // TODO: break type array out
@@ -235,6 +240,17 @@ public class MetaDataStep extends AbstractWizardStep {
                         }
                     }
             );
+            final JCheckBox explicit = new JCheckBox(I18n.getString(EXPLICIT_LABEL_KEY));
+            LinkLabel applyExplicitLabel = new LinkLabel(
+                    I18n.getString(APPLY_LABEL_KEY),
+                    new Command() {
+                        public void execute() {
+                            boolean selected = explicit.isSelected();
+                            for (int i = 0; i < explicitList.length; i++)
+                                explicitList[i].setSelected(selected);
+                        }
+                    }
+            );
             final JComboBox languages = new JComboBox(MetadataLoader.languages.keySet().toArray());
             languages.setSelectedItem("English");
             LinkLabel applyLanguageLabel = new LinkLabel(
@@ -274,6 +290,7 @@ public class MetaDataStep extends AbstractWizardStep {
             licenseList[i] = licenses;
             categoryList[i] = categories;
             ratingList[i] = ratings;
+            explicitList[i] = explicit;
             languageList[i] = languages;
             // Layout for the internal panel
             GridBagLayout gbl2 = new GridBagLayout();
@@ -394,8 +411,23 @@ public class MetaDataStep extends AbstractWizardStep {
             gbl2.setConstraints(applyRatingLabel, gbc2);
             panel.add(applyRatingLabel);
 
-            gbc2.gridx = 0;
+            //gbc2.gridx = 0;
             gbc2.gridy = 8;
+            //gbc2.anchor = GridBagConstraints.EAST;
+            gbc2.fill = GridBagConstraints.NONE;
+            //gbl2.setConstraints(ratingLabel, gbc2);
+            //panel.add(ratingLabel);
+            gbc2.gridx = 1;
+            //gbc2.gridy = 1;
+            gbc2.anchor = GridBagConstraints.WEST;
+            gbl2.setConstraints(explicit, gbc2);
+            panel.add(explicit);
+            gbc2.gridx = 2;
+            gbl2.setConstraints(applyExplicitLabel, gbc2);
+            panel.add(applyExplicitLabel);
+
+            gbc2.gridx = 0;
+            gbc2.gridy = 9;
             gbc2.anchor = GridBagConstraints.EAST;
             gbc2.fill = GridBagConstraints.NONE;
             gbl2.setConstraints(languageLabel, gbc2);
@@ -542,6 +574,7 @@ public class MetaDataStep extends AbstractWizardStep {
         String[] categories = new String[descList.length];
         String[] licenses = new String[descList.length];
         String[] ratings = new String[descList.length];
+        String[] explicitFlags = new String[descList.length];
         String[] languages = new String[descList.length];
         // TODO: this could result in an NPE, right? maybe not.
         String[][] blogs = new String[blogCheckboxList.length][blogCheckboxList[0].length];
@@ -562,10 +595,14 @@ public class MetaDataStep extends AbstractWizardStep {
             languages[i] = (String)MetadataLoader.languages.get(languageList[i].getSelectedItem());
             categories[i] = (String)MetadataLoader.categories.get(categoryList[i].getSelectedItem());
             licenses[i] = (String)MetadataLoader.licenses.get(licenseList[i].getSelectedItem());
+            // Content rating dropdowns
             ratings[i] = null;
             if (ratingList[i].getSelectedIndex() != 0) {
                 ratings[i] = (String)MetadataLoader.ratings.get(ratingList[i].getSelectedItem());
             }
+            // Explicit checkboxes
+            explicitFlags[i] = explicitList[i].isSelected() ? "1" : "0";
+            // Thumbnail file dropdowns
             thumbnails[i] = null;
             if (thumbList[i].getSelectedIndex() != 0) {
                 String filename = (String)thumbList[i].getSelectedItem();
@@ -573,9 +610,11 @@ public class MetaDataStep extends AbstractWizardStep {
                 if (obj != null)
                     thumbnails[i] = (File)obj;
             }
+            // Cross-post destination dropdowns
             for (int j = 0; j < blogs[i].length; j++)
                 if (blogCheckboxList[i][j].isSelected())
                     blogs[i][j] = (String)MetadataLoader.blogs.get(blogCheckboxList[i][j].getText());
+            // Cross-upload destination dropdowns
             for (int j = 0; j < destinations[i].length; j++)
                 if (destCheckboxList[i][j].isSelected())
                     destinations[i][j] = (String)MetadataLoader.crossuploads.get(destCheckboxList[i][j].getText());
@@ -586,6 +625,9 @@ public class MetaDataStep extends AbstractWizardStep {
         model.setTags(tags);
         model.setCategories(categories);
         model.setLicenses(licenses);
+        model.setRatings(ratings);
+        model.setExplicitFlags(explicitFlags);
+        model.setLanguages(languages);
         model.setThumbnails(thumbnails);
         model.setCrossposts(blogs);
         model.setCrossuploads(destinations);
