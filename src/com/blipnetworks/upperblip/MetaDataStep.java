@@ -31,14 +31,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.31 2007/04/05 19:54:55 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.32 2007/05/18 19:48:23 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.31 $";
+    public static final String CVS_REV = "$Revision: 1.32 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -539,7 +539,7 @@ public class MetaDataStep extends AbstractWizardStep {
 
                 // add to overall layout
                 gbc2.gridx = 0;
-                gbc2.gridy = 9;
+                gbc2.gridy = 10;
                 gbc2.anchor = GridBagConstraints.NORTHEAST;
                 gbl2.setConstraints(distLabel, gbc2);
                 panel.add(distLabel);
