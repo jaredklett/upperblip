@@ -30,14 +30,14 @@ import org.xml.sax.SAXException;
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.33 2007/04/05 23:34:10 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.34 2007/05/18 19:35:34 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.33 $";
+	public static final String CVS_REV = "$Revision: 1.34 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -204,8 +204,8 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
         File[] thumbnails = model.getThumbnails();
         // Create a properties object
 		Properties props = new Properties();
-		props.put(Parameters.USER_PARAM_KEY, model.getUsername());
-		props.put(Parameters.PASS_PARAM_KEY, model.getPassword());
+		//props.put(Parameters.USER_PARAM_KEY, model.getUsername());
+		//props.put(Parameters.PASS_PARAM_KEY, model.getPassword());
 		for (int i = 0; i < files.length; i++) {
             filename = files[i].getName();
             // Generate a new GUID
@@ -293,12 +293,8 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
                         break;
             }
 			// take out the old data
-			props.remove(Parameters.TITLE_PARAM_KEY);
-			props.remove(Parameters.DESC_PARAM_KEY);
-            props.remove(Parameters.LICENSE_PARAM_KEY);
-            props.remove(Parameters.CAT_PARAM_KEY);
-            props.remove(Parameters.TAGS_PARAM_KEY);
-			//if (progress.isIndeterminate())
+            props.clear();
+            //if (progress.isIndeterminate())
 				//progress.setIndeterminate(false);
 			//progress.setValue(progress.getValue() + 1);
 		}
