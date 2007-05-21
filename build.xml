@@ -1,4 +1,4 @@
-<!-- $Id: build.xml,v 1.14 2006/12/14 23:34:44 jklett Exp $ -->
+<!-- $Id: build.xml,v 1.15 2007/05/21 22:38:52 jklett Exp $ -->
 <project name="UpperBlip" default="build" basedir=".">
 
 	<taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen" classpath="jsmooth/lib/jsmoothgen-ant.jar" />
@@ -20,6 +20,7 @@
 	<property name="jarfile" value="upper.jar" />
 	<property name="usenprops" value="com-blipnetworks-upperblip_en_US.properties" />
     <property name="blipprops" value="upperblip.properties" />
+    <property name="bliplibprops" value="bliplib.properties" />
 	<property name="wizardprops" value="org-pietschy-wizard.properties" />
 	<property name="filedropjar" value="filedrop*.jar" />
 	<property name="commonjars" value="commons-*.jar" />
@@ -114,6 +115,7 @@
         -->
 		<copy file="${etc}/${usenprops}" tofile="${build}/${usenprops}" />
 		<copy file="${etc}/${blipprops}" tofile="${build}/${blipprops}" />
+        <copy file="${etc}/${bliplibprops}" tofile="${build}/${bliplibprops}" />
 		<copy file="${etc}/${wizardprops}" tofile="${build}/${wizardprops}" />
 		<!-- jar it up -->
 		<jar destfile="${jarfile}" basedir="${build}" manifest="${etc}/MainClass" />
