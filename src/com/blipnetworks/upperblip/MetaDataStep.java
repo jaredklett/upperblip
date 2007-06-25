@@ -31,14 +31,14 @@ import org.pietschy.wizard.WizardModel;
  *
  *
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.32 2007/05/18 19:48:23 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.33 2007/06/25 22:38:03 jklett Exp $
  */
 
 public class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.32 $";
+    public static final String CVS_REV = "$Revision: 1.33 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -230,6 +230,7 @@ public class MetaDataStep extends AbstractWizardStep {
                     }
             );
             final JComboBox ratings = new JComboBox(MetadataLoader.ratings.keySet().toArray());
+            ratings.setSelectedIndex(1);
             LinkLabel applyRatingLabel = new LinkLabel(
                     I18n.getString(APPLY_LABEL_KEY),
                     new Command() {
@@ -596,7 +597,7 @@ public class MetaDataStep extends AbstractWizardStep {
             categories[i] = (String)MetadataLoader.categories.get(categoryList[i].getSelectedItem());
             licenses[i] = (String)MetadataLoader.licenses.get(licenseList[i].getSelectedItem());
             // Content rating dropdowns
-            ratings[i] = null;
+            ratings[i] = "";
             if (ratingList[i].getSelectedIndex() != 0) {
                 ratings[i] = (String)MetadataLoader.ratings.get(ratingList[i].getSelectedItem());
             }
