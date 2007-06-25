@@ -34,14 +34,14 @@ import edu.stanford.ejalbert.BrowserLauncher;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.28 2007/06/25 23:04:26 jklett Exp $
+ * @version $Id: Main.java,v 1.29 2007/06/25 23:06:35 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.28 $";
+    public static final String CVS_REV = "$Revision: 1.29 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -58,11 +58,10 @@ public class Main {
     private static final String UPDATE_TEXT_KEY = "main.update.text";
     private static final String FRAME_TITLE_KEY = "main.frame.title";
 
-    // TODO: fix
-    public static final String UA = "UpperBlip/1.4.1 (" + System.getProperty("os.name") + " " + System.getProperty("os.version") + "; http://blip.tv)";
     private static boolean macintosh = System.getProperty("os.name").equals("Mac OS X");
     public static final String APP_PROPERTIES = "upperblip.properties";
     public static final String PROPERTY_BASE_URL = "base.url";
+    public static final String PROPERTY_USER_AGENT = "user.agent";
 
     /** blah */
     private static final String X_KEY = "x.pos";
@@ -84,6 +83,7 @@ public class Main {
     private static Main m;
 
     public static Properties appProperties = new Properties();
+    public static String userAgent;
 
     static {
         try {
@@ -94,6 +94,7 @@ public class Main {
         try {
             //Parameters.loadConfig();
             Parameters.loadConfig(Main.class.getClassLoader().getResourceAsStream(Parameters.BLIPLIB_PROPERTIES));
+            userAgent = Parameters.config.getProperty(PROPERTY_USER_AGENT) + " (" + System.getProperty("os.name") + " " + System.getProperty("os.version") + "; http://blip.tv)";
         } catch (IOException e) {
             throw new IllegalStateException("Could not BlipLib configuration: " + Parameters.BLIPLIB_PROPERTIES, e);
         }
