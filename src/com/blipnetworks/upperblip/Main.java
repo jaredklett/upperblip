@@ -34,14 +34,14 @@ import edu.stanford.ejalbert.BrowserLauncher;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.27 2007/04/02 18:03:36 jklett Exp $
+ * @version $Id: Main.java,v 1.28 2007/06/25 23:04:26 jklett Exp $
  */
 
 public class Main {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.27 $";
+    public static final String CVS_REV = "$Revision: 1.28 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -59,7 +59,7 @@ public class Main {
     private static final String FRAME_TITLE_KEY = "main.frame.title";
 
     // TODO: fix
-    public static final String UA = "UpperBlip/1.3 beta (" + System.getProperty("os.name") + " " + System.getProperty("os.version") + "; http://blip.tv)";
+    public static final String UA = "UpperBlip/1.4.1 (" + System.getProperty("os.name") + " " + System.getProperty("os.version") + "; http://blip.tv)";
     private static boolean macintosh = System.getProperty("os.name").equals("Mac OS X");
     public static final String APP_PROPERTIES = "upperblip.properties";
     public static final String PROPERTY_BASE_URL = "base.url";
@@ -238,7 +238,7 @@ public class Main {
 
                 if (choice == JOptionPane.YES_OPTION) {
                     BrowserLauncher bl = new BrowserLauncher(null);
-                    bl.openURLinBrowser(appProperties.getProperty(PROPERTY_BASE_URL) + "/tools");
+                    bl.openURLinBrowser(Parameters.config.getProperty(PROPERTY_BASE_URL) + "/tools");
                 }
             }
         } catch (Exception e) { e.printStackTrace(); /* ignored */ }
