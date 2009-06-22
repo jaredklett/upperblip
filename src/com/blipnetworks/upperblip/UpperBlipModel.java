@@ -1,8 +1,8 @@
 /* 
  * @(#)UpperBlipModel.java
  * 
- * Copyright (c) 2007 by Blip Networks, Inc.
- * 239 Centre St, 3rd Floor
+ * Copyright (c) 2005-2009 by Blip Networks, Inc.
+ * 407 Broome St., 5th Floor
  * New York, NY 10013
  * All rights reserved.
  *
@@ -12,43 +12,54 @@
 
 package com.blipnetworks.upperblip;
 
-import java.io.*;
-import java.util.Map;
-import java.util.HashMap;
+import 	java.io.*;
+import 	java.util.*;
 
-import org.pietschy.wizard.*;
-import org.pietschy.wizard.models.*;
-import org.apache.commons.httpclient.Cookie;
+import	com.blipnetworks.upperblip.wizard.*;
+import	com.blipnetworks.upperblip.wizard.models.*;
+import 	org.apache.commons.httpclient.Cookie;
 
 import javax.swing.*;
 
 /**
  * @author Jared Klett
- * @version $Id: UpperBlipModel.java,v 1.21 2007/04/05 19:55:06 jklett Exp $
+ * @version $Id: UpperBlipModel.java,v 1.22 2009/06/22 21:07:45 jklett Exp $
  */
 
 public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
+	
+    public static final String CVS_REV = "$Revision: 1.22 $";
 
-    private File[] files;
-    private File[] imageFiles;
-    private File[] thumbnails;
-    private String[] imageFilenames;
-    private String[] titles;
-    private String[] descriptions;
-    private String[] tags;
-    private String[] categories;
-    private String[] licenses;
-    private String[] languages;
-    private String[] ratings;
-    private String[] explicitFlags;
-    private String[][] crossposts;
-    private String[] postURLs;
-    private String[][] crossuploads;
-    private String username;
-    private String password;
-    private boolean remember;
-    public Map thumbnailFileLookup;
-    public Cookie authCookie;
+	private static final String	NONE_TEXT = "general.none.text";
+	
+    private File[] 		files;
+    private File[] 		imageFiles;
+    private File[] 		thumbnails;
+    private String[] 	imageFilenames;
+    private String[] 	titles;
+    private String[] 	descriptions;
+    private String[]	tags;
+    private String[] 	categories;
+    private String[] 	licenses;
+    private String[] 	languages;
+    private String[] 	ratings;
+    private String[] 	explicitFlags;
+    private String[][] 	crossposts;
+    private String[] 	postURLs;
+    private String[][] 	crossuploads;
+    private String[][]	conversionTargets;
+    private String[]	mp3Audios;
+    private String[]	mpeg4Videos;
+    private String[]	privateFiles;
+    private String[]	passwordFiles;
+    private String[]	makePublicFiles;
+    private String[]	passwordFields;
+    private String[]	makePublicFields;
+    private String 		username;
+    private String 		password;
+    private boolean 	remember;
+    public Map<String, File> thumbnailFileLookup;
+    public Cookie 		authCookie;
 
 // Accessors //////////////////////////////////////////////////////////////////
 
@@ -116,6 +127,38 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
         return crossuploads;
     }
 
+    public String[][] getConversionTargets() {
+    	return conversionTargets;
+    }
+    
+    public String[] getMp3Audios() {
+    	return mp3Audios;
+    }
+    
+    public String[] getMpeg4Videos() {
+    	return mpeg4Videos;
+    }
+    
+    public String[] getPrivateFiles() {
+    	return privateFiles;
+    }
+    
+    public String[] getPasswordFiles() {
+    	return passwordFiles;
+    }
+    
+    public String[] getMakePublicFiles() {
+    	return makePublicFiles;
+    }
+    
+    public String[] getPasswordFields() {
+    	return passwordFields;
+    }
+    
+    public String[] getMakePublicFields() {
+    	return makePublicFields;
+    }
+
     public String[] getPostURLs() {
         return postURLs;
     }
@@ -146,12 +189,19 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
         this.files = files;
     }
 
+    public void setPreviousAvailable(boolean enabled) {
+    	super.setPreviousAvailable(enabled);
+    }
+    
+    public void setCancelAvailable(boolean enabled) {
+    	super.setCancelAvailable(enabled);
+    }
+    
     public void setImageFiles(File[] imageFiles) {
         this.imageFiles = imageFiles;
         imageFilenames = new String[imageFiles.length + 1];
-        thumbnailFileLookup = new HashMap();
-        // TODO: externalize
-        imageFilenames[0] = "None";
+        thumbnailFileLookup = new HashMap<String, File>();
+        imageFilenames[0] = I18n.getString(NONE_TEXT);
         for (int i = 0; i < imageFiles.length; i++) {
             imageFilenames[i + 1] = imageFiles[i].getName();
             thumbnailFileLookup.put(imageFiles[i].getName(), imageFiles[i]);
@@ -198,6 +248,38 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
         this.crossuploads = crossuploads;
     }
 
+    public void setConversionTargets(String[][] targets) {
+    	this.conversionTargets = targets;
+    }
+    
+    public void setMp3Audios(String[] mp3Audio) {
+    	this.mp3Audios = mp3Audio;
+    }
+    
+    public void setMpeg4Videos(String[] mpeg4Video) {
+    	this.mpeg4Videos = mpeg4Video;
+    }
+    
+    public void setPrivateFiles(String[] privateFiles) {
+    	this.privateFiles = privateFiles;
+    }
+    
+    public void setPasswordFiles(String[] passwordFiles) {
+    	this.passwordFiles = passwordFiles;
+    }
+    
+    public void setMakePublicFiles(String[] makePublicFiles) {
+    	this.makePublicFiles = makePublicFiles;
+    }
+    
+    public void setPasswordFields(String[] passwordFields) {
+    	this.passwordFields = passwordFields;
+    }
+    
+    public void setMakePublicFields(String[] makePublicFields) {
+    	this.makePublicFields = makePublicFields;
+    }
+    
     public void setPostURLs(String[] postURLs) {
         this.postURLs = postURLs;
     }
@@ -209,11 +291,18 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
     public void setExplicitFlags(String[] explicitFlags) {
         this.explicitFlags = explicitFlags;
     }
-
+    
+    public void setNextAvailable(boolean enable) {
+    	super.setNextAvailable(enable);
+    }
+    
+    public void setLastAvailable(boolean enable) {
+    	super.setLastAvailable(enable);
+    }
+    
 // Instance methods ///////////////////////////////////////////////////////////
 
     public void activateHelp(JComponent parent, WizardModel model) {
-        System.out.println(parent.getClass());
         HelpWindow window = new HelpWindow();
         window.setSize(200, 400);
         window.setLocationRelativeTo(null);

@@ -1,8 +1,8 @@
 /*
  * @(#)AuthDialog.java
  *
- * Copyright (c) 2005-2007 by Blip Networks, Inc.
- * 239 Centre St, 3rd Floor
+ * Copyright (c) 2005-2009 by Blip Networks, Inc.
+ * 407 Broome St., 5th Floor
  * New York, NY 10013
  * All rights reserved.
  *
@@ -25,19 +25,20 @@ import org.apache.commons.httpclient.Cookie;
  *
  *
  * @author Jared Klett
- * @version $Id: AuthDialog.java,v 1.6 2007/04/02 18:03:36 jklett Exp $
+ * @version $Id: AuthDialog.java,v 1.7 2009/06/22 21:07:45 jklett Exp $
  */
 
+@SuppressWarnings("serial")
 public class AuthDialog extends JDialog implements Runnable {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.6 $";
+    public static final String CVS_REV = "$Revision: 1.7 $";
 
 // UI elements ////////////////////////////////////////////////////////////////
 
-    private JLabel infoLabel = new JLabel(I18n.getString(LOGIN_LABEL_KEY));
-    private JProgressBar progress = new JProgressBar();
+    private JLabel			infoLabel = new JLabel(I18n.getString(LOGIN_LABEL_KEY));
+    private JProgressBar	progress = new JProgressBar();
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -49,10 +50,10 @@ public class AuthDialog extends JDialog implements Runnable {
 
 // Instance variables /////////////////////////////////////////////////////////
 
-    private boolean success;
-    private String username;
-    private String password;
-    private UpperBlipModel model;
+    private boolean			success;
+    private String 			username;
+    private String 			password;
+    private UpperBlipModel 	model;
 
 // Constructors ///////////////////////////////////////////////////////////////
 
@@ -63,11 +64,14 @@ public class AuthDialog extends JDialog implements Runnable {
      */
     public AuthDialog(String username, String password, UpperBlipModel model) {
         super(Main.getMainInstance().getMainFrame(), I18n.getString(TITLE_KEY), true);
+        
         setUsername(username);
         setPassword(password);
         setModel(model);
         progress.setIndeterminate(true);
+        
         JPanel panel = new JPanel();
+        
         panel.setBorder(
                 BorderFactory.createCompoundBorder(
                         BorderFactory.createCompoundBorder(
@@ -77,10 +81,11 @@ public class AuthDialog extends JDialog implements Runnable {
                         panel.getBorder()
                 )
         );
+        
         panel.setLayout(new GridLayout(2, 1));
         panel.add(infoLabel);
         panel.add(progress);
-        getContentPane().add(panel);
+        add(panel);
     }
 
 // Runnable implementation ////////////////////////////////////////////////////
@@ -89,23 +94,25 @@ public class AuthDialog extends JDialog implements Runnable {
         while (!this.isVisible()) {
             try { Thread.sleep(10); } catch (Exception e) { /* ignore */ }
         }
+        
         // 1. run authentication
         try {
             Cookie authCookie = Authenticator.authenticate(username, password);
             success = authCookie != null;
-            if (success)
+            if (success) {
                 model.setAuthCookie(authCookie);
+            }
         }
         catch (Exception e) {
             success = false;
         }
+        
         if (success) {
             infoLabel.setText(I18n.getString(DATA_LABEL_KEY));
             // 2. load metadata/user data
             try {
                 MetadataLoader.load(model.getAuthCookie());
             } catch (Exception e) {
-                // TODO FIXME: what to do?
                 throw new IllegalStateException("Could not load metadata!");
             }
         }

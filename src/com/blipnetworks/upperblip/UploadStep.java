@@ -2,7 +2,7 @@
  * @(#)UploadStep.java
  *
  * Copyright (c) 2005-2007 by Blip Networks, Inc.
- * 239 Centre St, 3rd Floor
+ * 407 Broome St., 5th Floor
  * New York, NY 10013
  * All rights reserved.
  *
@@ -12,38 +12,37 @@
 
 package com.blipnetworks.upperblip;
 
-import java.awt.*;
-import java.io.*;
-import java.util.*;
-import java.util.List;
+import 	java.awt.*;
+import 	java.io.*;
+import 	java.util.*;
+import 	java.util.List;
+import 	java.util.Timer;
 
-import javax.swing.*;
-import javax.xml.parsers.ParserConfigurationException;
+import 	javax.swing.*;
+import 	javax.xml.parsers.ParserConfigurationException;
 
-import com.blipnetworks.util.*;
-
-import org.pietschy.wizard.AbstractWizardStep;
-import org.pietschy.wizard.WizardModel;
-import org.xml.sax.SAXException;
+import 	com.blipnetworks.util.*;
+import 	com.blipnetworks.util.I18n;
+import	com.blipnetworks.upperblip.wizard.*;
+import 	edu.stanford.ejalbert.BrowserLauncher;
+import 	org.xml.sax.SAXException;
 
 /**
  *
  *
  * @author Jared Klett
- * @version $Id: UploadStep.java,v 1.34 2007/05/18 19:35:34 jklett Exp $
+ * @version $Id: UploadStep.java,v 1.35 2009/06/22 21:07:45 jklett Exp $
  */
 
 public class UploadStep extends AbstractWizardStep implements Runnable {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.34 $";
+	public static final String CVS_REV = "$Revision: 1.35 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
-    private static final int INIT_INTERVAL = 5000;
     private static final int STATUS_INTERVAL = 3000;
-    private static final int WAIT_INTERVAL = STATUS_INTERVAL * 2;
 
 	/** blah */
 	private static final String TITLE_KEY = "upload.title";
@@ -51,10 +50,6 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 	private static final String SUMMARY_KEY = "upload.summary";
     /** blah */
     private static final String BORDER_LABEL_KEY = "upload.border.label";
-    /** blah */
-    private static final String RATE_LABEL_KEY = "upload.rate.label";
-    /** blah */
-    private static final String TIME_LABEL_KEY = "upload.time.label";
 	/** blah */
 	public static final String PROP_BASE_URL = "base.url";
     /** blah */
@@ -64,76 +59,21 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 // Instance variables //////////////////////////////////////////////////////////
 
     /** */
-    private boolean running;
-    /** */
-    private String filename;
-    /** */
-    private RandomGUID guid;
+    private RandomGUID 		guid;
 	/** */
-	private JPanel view;
+	private JPanel 			view;
 	/** */
-	private UpperBlipModel model;
+	private UpperBlipModel 	model;
 	/** */
-	private JLabel rateLabel;
-	/** */
-	private JLabel timeLabel;
-	/** */
-	private JProgressBar progress;
-    private List postList;
-    private boolean done;
+	private JProgressBar 	progress;
+	private UploadDetails	details = null;
+	private JScrollPane		scrollPane = null;
+    private List<String> 	postList;
+    private boolean 		done;
 
-    private Runnable timer = new Runnable() {
-        public void run() {
-            progress.setMinimum(0);
-            try { Thread.sleep(INIT_INTERVAL); } catch (Exception e) { /* ignored */ }
-            while (running) {
-                UploadStatus status = null;
-                try {
-                    status = UploadStatus.getStatus(guid.toString(), model.getAuthCookie());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    try {
-                        System.out.println("Document:\n" + XmlUtils.makeStringFromDocument(status.getDocument()));
-                    } catch (IOException e1) {
-                        e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }
-                }
-                if (status != null) {
-                    long start = status.getStart();
-                    long update = status.getUpdate();
-                    int read = status.getRead();
-                    int total = status.getTotal();
-                    progress.setIndeterminate(false);
-                    progress.setValue(read);
-                    progress.setMaximum(total);
-                    long delta = update - start;
-                    if (delta == 0)
-                        continue;
-                    float bps = read / delta;
-                    int time = (int) (total / bps);
-                    String kbpstr = Float.toString(bps / 1000);
-                    // TODO: externalize
-                    rateLabel.setText("Uploading \"" + filename + "\" at " + kbpstr.substring(0, kbpstr.indexOf(".") + 2) + " KB/s");
-
-                    String str = " (" + parseSize(read) + " of " + parseSize(total) + " uploaded)";
-                    // TODO: externalize
-                    if (time < 60) {
-                        timeLabel.setText("Time remaining: less than a minute" + str);
-                    } else {
-                        int minutes = time / 60;
-                        if (minutes > 1)
-                            timeLabel.setText("Time remaining: about " + minutes + " minutes" + str);
-                        else if (minutes > 0)
-                            timeLabel.setText("Time remaining: about a minute" + str);
-                        else
-                            timeLabel.setText("Time remaining: less than a minute" + str);
-                    }
-                }
-                try { Thread.sleep(STATUS_INTERVAL); } catch (Exception e) { /* ignored */ }
-            }
-        }
-    };
-
+    private JFrame			frame = null;
+    private MovementHandler	mover = null;
+    
 // Constructor ////////////////////////////////////////////////////////////////
 
 	public UploadStep() {
@@ -141,76 +81,83 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
 
         done = false;
         setIcon(Icons.uploadIcon);
-        postList = new ArrayList();
+        postList = new ArrayList<String>();
+        
         // Create and layout components
-		rateLabel = new JLabel(I18n.getString(RATE_LABEL_KEY));
-		timeLabel = new JLabel(I18n.getString(TIME_LABEL_KEY));
 		progress = new JProgressBar();
 		progress.setIndeterminate(true);
+	}
+	
+// WizardStep implementation //////////////////////////////////////////////////
 
-		GridBagLayout gbl = new GridBagLayout();
-		GridBagConstraints gbc = new GridBagConstraints();
-		JPanel panel = new JPanel();
-		panel.setLayout(gbl);
-		// Set up a border
-		panel.setBorder(
-			BorderFactory.createCompoundBorder(
-				BorderFactory.createCompoundBorder(
-					BorderFactory.createTitledBorder(I18n.getString(BORDER_LABEL_KEY)),
-					BorderFactory.createEmptyBorder(5, 5, 5, 5)
-				),
-				panel.getBorder()
-			)
-		);
+	public void init(WizardModel model) {
+		this.model = (UpperBlipModel)model;
+	}
 
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbl.setConstraints(rateLabel, gbc);
-		panel.add(rateLabel);
-
-		gbc.gridx = 0;
-		gbc.gridy = 1;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbl.setConstraints(progress, gbc);
-		panel.add(progress);
-
-		gbc.gridx = 0;
-		gbc.gridy = 2;
-		gbl.setConstraints(timeLabel, gbc);
-		panel.add(timeLabel);
-
+	public void prepare() {
+		model.setOverridePreviousState(true);
+		model.setPreviousAvailable(false);
+		
+		details = new UploadDetails(model.getFiles().length);
+		
+		frame = Main.getMainInstance().getMainFrame();
+		mover = Main.getMainInstance().getMover();
+		JPanel	panel = createViewPanel();
+		
 		view = new JPanel();
 		view.add(panel);
+		setView(view);
+
+		frame.pack();
+		frame.setVisible(true);
+		mover.positionFrame(true);
+		
+        if (!done)
+            new Thread(this).start();
+    }
+
+	public void applyState() {
+	}
+
+	public Dimension getPreferredSize() {
+		return view.getPreferredSize();
 	}
 
 // Runnable implementation ////////////////////////////////////////////////////
 
     public void run() {
         setBusy(true);
+        
         Uploader uploader = new Uploader(model.getAuthCookie());
-        File[] files = model.getFiles();
-		//progress.setMinimum(0);
-		//progress.setMaximum(files.length);
-		String[] titles = model.getTitles();
-		String[] tags = model.getTags();
-		String[] descriptions = model.getDescriptions();
-        String[] licenses = model.getLicenses();
-        String[] categories = model.getCategories();
-        String[] languages = model.getLanguages();
-        String[] explicitFlags = model.getExplicitFlags();
-        String[] ratings = model.getRatings();
-        String[][] blogs = model.getCrossposts();
-        String[][] destinations = model.getCrossuploads();
-        File[] thumbnails = model.getThumbnails();
+        
+        File[] 		files = model.getFiles();
+		String[] 	titles = model.getTitles();
+		String[] 	tags = model.getTags();
+		String[] 	descriptions = model.getDescriptions();
+        String[] 	licenses = model.getLicenses();
+        String[] 	categories = model.getCategories();
+        String[] 	languages = model.getLanguages();
+        String[] 	explicitFlags = model.getExplicitFlags();
+        String[] 	ratings = model.getRatings();
+        String[][] 	blogs = model.getCrossposts();
+        String[][] 	destinations = model.getCrossuploads();
+        String[]	mp3Audios = model.getMp3Audios();
+        String[]	mpeg4Videos = model.getMpeg4Videos();
+        String[]	privateFiles = model.getPrivateFiles();
+        String[]	passwordFiles = model.getPasswordFiles();
+        String[]	passwordFields = model.getPasswordFields();
+        String[]	makePublicFiles = model.getMakePublicFiles();
+        String[]	makePublicFields = model.getMakePublicFields();
+        File[] 		thumbnails = model.getThumbnails();
+ 
         // Create a properties object
 		Properties props = new Properties();
-		//props.put(Parameters.USER_PARAM_KEY, model.getUsername());
-		//props.put(Parameters.PASS_PARAM_KEY, model.getPassword());
 		for (int i = 0; i < files.length; i++) {
-            filename = files[i].getName();
+            
             // Generate a new GUID
             guid = new RandomGUID();
             uploader.setGuid(guid.toString());
+            
 			// put in the current data
 			props.put(Parameters.TITLE_PARAM_KEY, titles[i]);
 			props.put(Parameters.TAGS_PARAM_KEY, tags[i]);
@@ -220,167 +167,363 @@ public class UploadStep extends AbstractWizardStep implements Runnable {
             props.put(Parameters.RATING_PARAM_KEY, ratings[i]);
             props.put(Parameters.LANGUAGE_PARAM_KEY, languages[i]);
             props.put(Parameters.EXPLICIT_PARAM_KEY, explicitFlags[i]);
-            List list = new ArrayList();
-            boolean blogsFound = false;
+            
+            List<String>	crossposts = new ArrayList<String>();
+            List<String>	conversions = new ArrayList<String>();
+            boolean 		blogsFound = false;
+            boolean			convsFound = false;
+            
             for (int j = 0; j < blogs[i].length; j++) {
                 if (blogs[i][j] != null) {
-                    list.add(blogs[i][j]);
+                    crossposts.add(blogs[i][j]);
                     blogsFound = true;
                 }
             }
-            for (int j = 0; j < destinations[i].length; j++)
-                if (destinations[i][j] != null)
+            for (int j = 0; j < destinations[i].length; j++) {
+                if (destinations[i][j] != null) {
                     props.put(Parameters.IA_PARAM_KEY, destinations[i][j]);
-
-            // calculate the approximate transfer time for the next file
-			// do the upload
-			Thread thread = new Thread(timer);
-			running = true;
-			thread.start();
+                }
+            }
+            
+            if (mp3Audios[i].equals("1")) {
+            	conversions.add("mp3:web");
+            	convsFound = true;
+            }
+            
+            if (mpeg4Videos[i].equals("1")) {
+            	conversions.add("m4v:web");
+            	convsFound = true;
+            }
+            
+            if (privateFiles[i].equals("1")) {
+            	props.put("hidden", "1");
+            }
+            
+            if (passwordFiles[i].equals("1")) {
+            	props.put("hidden_visible_password", "1");
+            }
+            
+            if (!passwordFields[i].equals("")) {
+            	props.put("hidden_password", passwordFields[i]);
+            }
+            
+            if (makePublicFiles[i].equals("1")) {
+            	props.put("enable_next_hidden_state", "1");
+            }
+            
+            if (!makePublicFields[i].equals("")) {
+            	props.put("next_hidden_date", makePublicFields[i]);
+            }
+                        
+            Timer	timer = new Timer(false);
+            UploadWatchTask	timerTask = new UploadWatchTask(i);
+            timer.scheduleAtFixedRate(timerTask, STATUS_INTERVAL, STATUS_INTERVAL);
+			
 			boolean success = false;
-            if (blogsFound)
+            if (blogsFound || convsFound)
                 try {
-                    success = uploader.uploadFile(files[i], thumbnails[i], props, list);
+                    success = uploader.uploadFile(files[i], thumbnails[i], props, crossposts, conversions);
                 } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                	Main.getMainInstance().abortApplication(e);
                 } catch (ParserConfigurationException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                	Main.getMainInstance().abortApplication(e);
                 } catch (SAXException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                	Main.getMainInstance().abortApplication(e);
                 }
             else
                 try {
                     success = uploader.uploadFile(files[i], thumbnails[i], props);
                 } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                	Main.getMainInstance().abortApplication(e);
                 } catch (ParserConfigurationException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                	Main.getMainInstance().abortApplication(e);
                 } catch (SAXException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                	Main.getMainInstance().abortApplication(e);
                 }
-            String msg = "An unknown error occurred.";
-            int err;
-            if (!success) {
-                err = uploader.getErrorCode();
-                if (err == Uploader.ERROR_BAD_AUTH) {
-                     // TODO: externalize
-                    msg = "Uh-oh, it looks like you supplied a bad username and/or password.\nPlease exit and try again.";
-                } else {
-                     // TODO: externalize
-                    msg = "It seems that a problem arose while uploading.\nDo you wish to continue attempting to upload?";
-                }
-            }
+            
             // Halt the timer thread
-			running = false;
-			thread.interrupt();
-            try {
-                thread.join(WAIT_INTERVAL);
-            }
-            catch (InterruptedException e) {
-                //thread.stop();
-            }
+            timer.cancel();
+            
             if (success) {
+            	progress.setValue(progress.getMaximum());
                 postList.add(uploader.getPostURL());
+                details.setTimeLeft("0 sec", i);
+                details.setBytesLoaded(timerTask.getTotalBytes(), timerTask.getTotalBytes(), i);
+                details.setSuccess(i);
+                final int index = i;
+
+                LinkLabel linkLabel = new LinkLabel("Click to view", new Command() {
+                    public void execute() {
+                        try {
+                            BrowserLauncher bl = new BrowserLauncher(null);
+                            bl.openURLinBrowser(postList.get(index));
+                        }
+                        catch (Exception e) {
+                        	Main.getMainInstance().abortApplication(e);
+                        }
+                    }
+                });
+                
+                details.setSummaryPost(i, linkLabel);
+                frame.pack();
             } else {
-                int choice = JOptionPane.showConfirmDialog(
-                            Main.getMainInstance().getMainFrame(),
-                            msg,
-                            I18n.getString(ERROR_TITLE),
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.ERROR_MESSAGE
-                    );
-                    if (choice == JOptionPane.NO_OPTION)
-                        break;
+            	details.setFailure(i);
+            	frame.pack();
             }
 			// take out the old data
             props.clear();
-            //if (progress.isIndeterminate())
-				//progress.setIndeterminate(false);
-			//progress.setValue(progress.getValue() + 1);
 		}
+		
         progress.setValue(progress.getMaximum());
-        timeLabel.setVisible(false);
-        rateLabel.setText(I18n.getString(DONE_LABEL_KEY));
         setBusy(false);
 		setComplete(true);
         done = true;
-        model.setPostURLs((String[])postList.toArray(new String[0]));
-        model.nextStep();
+        model.setLastAvailable(false);
     }
-
-// WizardStep implementation //////////////////////////////////////////////////
-
-	public void init(WizardModel model) {
-		this.model = (UpperBlipModel)model;
-	}
-
-	public void prepare() {
-		setView(view);
-        if (!done)
-            new Thread(this).start();
-    }
-
-	public void applyState() {
-		// this is called when the user clicks "Next"
-		//FontItem fi = (FontItem)dropdown.getSelectedItem();
-		//model.setFontSize(fi.getFont().getSize());
-	}
-
-	public Dimension getPreferredSize() {
-		return view.getPreferredSize();
-	}
 
 // Class methods //////////////////////////////////////////////////////////////
+    
+	private JPanel createViewPanel() {
+		JPanel	panel = new JPanel(new GridBagLayout());
+		Grid	grid = new Grid();
+		
+		panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createCompoundBorder(
+						BorderFactory.createTitledBorder(I18n.getString(BORDER_LABEL_KEY)),BorderFactory.createEmptyBorder(5, 5, 5, 5)),
+						panel.getBorder()));
+		
+		grid.setRelativeY();
+		grid.setFill(Grid.horizontalFill);
+		panel.add(progress, grid);
+		panel.add(details, grid);
+		scrollPane = new JScrollPane(panel);
+		scrollPane.setPreferredSize(new Dimension(750, 550));
+		
+		return panel;
+	}
+	
+	/**
+	 * Given a time interval in seconds, this method calculates this
+	 * interval is seconds, minutes, hours, etc.
+	 * 
+	 * @param time
+	 * @return
+	 */
+	private static String calculateTime(long time) {
+		long[]			factors = { 60L, 60L, 24L, 365L };
+		String[]		units = { " sec", " min", " hr", " day", " yr" };
+		ArrayList<Long>	parts = new ArrayList<Long>();
+		long			result = 0L;
+		long			remainder = 0L;
+		long			interval = time;
+		StringBuilder	str = new StringBuilder();
+		
+		for (int i = 0; i < factors.length; i++) {
+			result = interval / factors[i];
+			remainder = interval % factors[i];
+			parts.add(remainder);
+			if (result == 0) {
+				break;
+			}
+			if (result < factors[i]) {
+				parts.add(result);
+				break;
+			}
+			interval = result;
+		}
+		
+		for (int i = 0; i < parts.size(); i++) {
+			str.insert(0, units[i]);
+			str.insert(0, parts.get(i));
+			str.insert(0, " ");
+		}
+		return str.toString();
+	}
+	
+//// Inner classes ////
+	
+	@SuppressWarnings("serial")
+	private final class UploadDetails extends JPanel {
+		
+		private int				sectionsPerRow = 2;
+		private Grid			grid = new Grid();
+		private JLabel[][]		labels = null;
 
-    public static String parseSize(int bytes) {
-        StringBuffer buffer = new StringBuffer();
-        // is it smaller than 1K?
-        // TODO: externalize
-        if (bytes < 1024)
-            buffer.append(bytes).append(" bytes");
-        // is it smaller than 1M?
-        else if(bytes < 1024000)
-            buffer.append(bytes / 1024).append(" KB");
-        // is it smaller than 1G?
-        else if (bytes < 1024000000)
-            buffer.append(bytes / 1024000).append(" MB");
-        //else if (bytes < 1024000000000)
-            //buffer.append(bytes / 1024000000).append(" GB");
-        return buffer.toString();
-    }
-
-    public static String parseTime(long time) {
-		long t;
-		StringBuffer buffer = new StringBuffer();
-
-        // TODO: externalize
-		if(time < 60000) {
-			t = time / 1000;
-			buffer.append(t).append(" second");
-		} else if(time > 60000 && time < 3600000) {
-			t = time / 60000;
-			buffer.append(t).append(" minute");
-		} else if(time > 3600000 && time < 86400000) {
-			t = time / 3600000;
-			buffer.append(t).append(" hour");
-		} else if(time > 86400000 && time < 604800000L) {
-			t = time / 86400000;
-			buffer.append(t).append(" day");
-		} else if(time > 604800000L && time < 2419200000L) {
-			t = time / 604800000L;
-			buffer.append(t).append(" week");
-		} else if(time > 2419200000L && time < 29030400000L) {
-			t = time / 2419200000L;
-			buffer.append(t).append(" month");
-		} else {
-			t = time / 29030400000L;
-			buffer.append(t).append(" year");
+		public UploadDetails(int numberFiles) {			
+			super();
+			
+			setLayout(new GridBagLayout());
+			grid.setAnchor(Grid.westAnchor);
+			grid.setInsets(0, 5, 0, 5);
+			
+			labels = new JLabel[numberFiles * 4 + numberFiles - 1][sectionsPerRow * 4];
+			initializeTable(numberFiles);
+		}
+		
+		public void setFile(String fileName, int fileNumber) {
+			if (fileName.length() <= 20) {
+				setValueAt(fileName, calculateX(fileNumber) + 1, calculateY(fileNumber));
+				return;
+			}
+			
+			StringBuilder	name = new StringBuilder();
+			name.append(fileName.substring(0, 10));
+			name.append(Character.toString('\u2026'));	// u2026 is an ellipses
+			name.append(fileName.substring(fileName.length() - 9));
+			setValueAt(name.toString(), calculateX(fileNumber) + 1, calculateY(fileNumber));
+		}
+		
+		public void setTimeLeft(String timeLeft, int fileNumber) {
+			setValueAt(timeLeft, calculateX(fileNumber) + 1, calculateY(fileNumber) + 1);
+		}
+		
+		public void setBytesLoaded(int read, int total, int fileNumber) {
+			Formatter	bytesLoaded = new Formatter();
+			setValueAt(bytesLoaded.format("%.1f MB of %.1f MB", read / 1000000f, total / 1000000f).toString(), 
+					calculateX(fileNumber) + 1, calculateY(fileNumber) + 2);
+		}
+		
+		public void setTransferRate(float bitsPerSec, int fileNumber) {
+			Formatter	transferRate = new Formatter();
+			setValueAt(transferRate.format("%.1f KB/s", bitsPerSec / 1000f).toString(), calculateX(fileNumber) + 1, 
+									calculateY(fileNumber) + 3);
+		}
+		
+		public void setSuccess(int fileNumber) {
+			JLabel	label = new JLabel(new String(Character.toString('\u2714')) + " Success");	// u2714 is a bold check mark
+			label.setForeground(new Color(0x00, 0x7f, 0x00));
+			setValueAt(label, calculateX(fileNumber) + 2, calculateY(fileNumber));
+		}
+		
+		public void setFailure(int fileNumber) {
+			JLabel	label = new JLabel(new String(Character.toString('\u2718')) + " Failed");	// u2718 is a bold X
+			setForeground(new Color(0xff, 0x00, 0x15));
+			setValueAt(label, calculateX(fileNumber) + 2, calculateY(fileNumber));
+		}
+		
+		public void setSummaryPost(int fileNumber, JLabel label) {
+			setValueAt(label, calculateX(fileNumber) + 2, calculateY(fileNumber) + 1);
+		}
+		
+		private void setValueAt(String text, int x, int y) {
+			JLabel	label = labels[y][x];
+			
+			if (label != null) {
+				label.setText(text);
+				return;
+			}
+			
+			labels[y][x] = new JLabel(text);
+			grid.setXY(x, y);
+			add(labels[y][x], grid);
 		}
 
-		if(t > 1)
-			buffer.append("s");
-
-		return buffer.toString();
+		private void setValueAt(Component content, int x, int y) {
+			JLabel	label = labels[y][x];
+			
+			if (label != null) {
+				label.setText(((JLabel)content).getText());
+				return;
+			}
+			
+			grid.setXY(x, y);
+			add(content, grid);
+			if (content instanceof JSeparator) {
+				return;
+			}
+			
+			labels[y][x] = (JLabel)content;
+		}
+		
+		private int calculateX(int fileNumber) {
+			return fileNumber % sectionsPerRow * 4;
+		}
+		
+		private int calculateY(int fileNumber) {
+			return 5 * (fileNumber / sectionsPerRow);
+		}
+		
+		private void initializeTable(int numberFiles) {
+			
+			for (int i = 0; i < numberFiles; i++) {
+				int xValue = calculateX(i);
+				int yValue = calculateY(i);
+				
+				if (i > sectionsPerRow - 1 && xValue == 0) {
+					grid.setColumnSpan(4 * sectionsPerRow);
+					grid.setFill(Grid.horizontalFill);
+					JSeparator	separator = new JSeparator();
+					separator.setForeground(Color.blue);
+					setValueAt(separator, xValue, yValue - 1);
+					grid.setColumnSpan(1);
+					grid.setFill(Grid.noneFill);
+				}
+				
+				setValueAt(new JLabel("File:"), xValue, yValue++);
+				setValueAt(new JLabel("Estimated time left:"), xValue, yValue++);
+				setValueAt(new JLabel("Bytes loaded:"), xValue, yValue++);
+				setValueAt(new JLabel("Transfer rate:"), xValue, yValue++);
+			}
+		}
+	}
+	
+	private final class UploadWatchTask extends TimerTask {
+		
+		private	int				fileNumber = 0;
+		private UploadStatus	status = null;
+		private boolean			initialized = false;
+		private int				totalBytes = 0;
+		
+		public UploadWatchTask(int fileNumber) {
+			this.fileNumber = fileNumber;
+		}
+		
+		public void run() {
+			try {
+				status = UploadStatus.getStatus(guid.toString(), model.getAuthCookie());
+			} catch(SAXException e) {
+				Main.getMainInstance().abortApplication(e);
+			} catch (IOException e) {
+				Main.getMainInstance().abortApplication(e);
+			} catch (ParserConfigurationException e) {
+				Main.getMainInstance().abortApplication(e);
+			}
+			
+			if (status != null) {
+				if (!initialized) {
+					details.setFile(status.getFilename(), fileNumber);
+					progress.setIndeterminate(false);
+					progress.setMaximum(status.getTotal());
+					frame.pack();
+					mover.positionFrame(true);
+					initialized = true;
+				}
+				
+				long	start = status.getStart();
+				long	update = status.getUpdate();
+				int		read = status.getRead();
+				int		total = status.getTotal();
+				
+				progress.setValue(read);
+				totalBytes = total;
+				
+				long	delta = update - start;	// elapsed time in secs
+				if (delta == 0) {
+					return;
+				}
+				
+				float	bitsPerSec = read / delta;
+				long	time = (long)((total - read) / bitsPerSec);
+				details.setTimeLeft(calculateTime(time).trim(), fileNumber);
+				details.setBytesLoaded(read, total, fileNumber);
+				details.setTransferRate(bitsPerSec, fileNumber);
+				frame.pack();
+				mover.positionFrame(true);
+			}
+		}
+		
+		public int getTotalBytes() {
+			return totalBytes;
+		}
 	}
 
 } // class UploadStep

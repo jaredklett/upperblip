@@ -1,8 +1,8 @@
 /* 
  * @(#)FileDropStep.java
  * 
- * Copyright (c) 2005-2007 by Blip Networks, Inc.
- * 239 Centre St, 3rd Floor
+ * Copyright (c) 2005-2009 by Blip Networks, Inc.
+ * 407 Broome St., 5th Floor
  * New York, NY 10013
  * All rights reserved.
  *
@@ -13,9 +13,12 @@
 package com.blipnetworks.upperblip;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import	java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
@@ -25,21 +28,20 @@ import com.blipnetworks.util.I18n;
 import javax.swing.*;
 
 import net.iharder.dnd.*;
-import org.pietschy.wizard.AbstractWizardStep;
-import org.pietschy.wizard.WizardModel;
+import	com.blipnetworks.upperblip.wizard.*;
 
 /**
  * 
  * 
  * @author Jared Klett
- * @version $Id: FileDropStep.java,v 1.19 2007/03/28 19:12:45 jklett Exp $
+ * @version $Id: FileDropStep.java,v 1.20 2009/06/22 21:07:45 jklett Exp $
  */
 
 public class FileDropStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.19 $";
+    public static final String CVS_REV = "$Revision: 1.20 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -55,6 +57,7 @@ public class FileDropStep extends AbstractWizardStep {
     private static final String DISALLOWED_TITLE_KEY = "filedrop.disallowed.title";
     /** blah */
     private static final String DISALLOWED_MESSAGE_KEY = "filedrop.disallowed.message";
+    private static final String	DRAG_TEXT = "filedrop.drag.text";
 
 // Enumerated types ////////////////////////////////////////////////////////////
 
@@ -63,102 +66,131 @@ public class FileDropStep extends AbstractWizardStep {
 // Instance variables //////////////////////////////////////////////////////////
 
     /** */
-    private UpperBlipModel model;
+    private UpperBlipModel 	model;
     /** */
-    private JPanel view;
+    private JPanel 			view;
     /** */
-    private JList list;
+    private JList 			list;
     /** */
-    private List fileList;
-    /**
-     * I think we have to keep a reference to this so it doesn't get garbage
-     * collected before we leave this step.
-     */
-    private FileDrop dropper;
+    private List<File> 		fileList;
+    private boolean			drawn = false;
+
+    @SuppressWarnings("unused")
+	private FileDrop dropper;
     /** */
+    
     private FileDrop.Listener fdl = new FileDrop.Listener() {
+    	
         public void filesDropped(File[] files) {
-            if (fileList == null)
-                fileList = new ArrayList(files.length + 10);
-            for (int i = 0; i < files.length; i++)
-                fileList.add(files[i]);
+            if (fileList == null) {
+                fileList = new ArrayList<File>(files.length + 10);
+            }
+            
+            for (File file : files) {
+            	fileList.add(file);
+            }
 
             DefaultListModel dlm = (DefaultListModel)list.getModel();
-            for (int i = 0; i < files.length; i++)
-                dlm.addElement(files[i].getName());
+            for (File file : files) {
+            	dlm.addElement(file.getName());
+            	drawn = true;
+            }
+            
             if (isDisallowedPresent()) {
-                JOptionPane.showMessageDialog(
-                        Main.getMainInstance().getMainFrame(),
-                        I18n.getString(DISALLOWED_MESSAGE_KEY),
-                        I18n.getString(DISALLOWED_TITLE_KEY),
-                        JOptionPane.WARNING_MESSAGE
-                );
+                JOptionPane.showMessageDialog(Main.getMainInstance().getMainFrame(), I18n.getString(DISALLOWED_MESSAGE_KEY),
+                        						I18n.getString(DISALLOWED_TITLE_KEY), JOptionPane.WARNING_MESSAGE);
                 setComplete(false);
-            } else {
+                return;
+            }
+            else {
                 setComplete(true);
             }
         }
     };
 
     private ActionListener adder = new ActionListener() {
+    	
         public void actionPerformed(ActionEvent e) {
             JFileChooser chooser = new JFileChooser();
+            
+            chooser.setDragEnabled(true);
+            chooser.setMultiSelectionEnabled(true);
+            
             int retval = chooser.showOpenDialog(Main.getMainInstance().getMainFrame());
             if (retval == JFileChooser.APPROVE_OPTION) {
-                File file = chooser.getSelectedFile();
-                if (fileList == null)
-                    fileList = new ArrayList();
-                fileList.add(file);
-                ((DefaultListModel)list.getModel()).addElement(file.getName());
-                if (isDisallowedPresent()) {
-                    JOptionPane.showMessageDialog(
-                            Main.getMainInstance().getMainFrame(),
-                            I18n.getString(DISALLOWED_MESSAGE_KEY),
-                            I18n.getString(DISALLOWED_TITLE_KEY),
-                            JOptionPane.WARNING_MESSAGE
-                    );
-                    setComplete(false);
-                } else {
-                    setComplete(true);
+                if (fileList == null) {
+                    fileList = new ArrayList<File>();
                 }
+                
+            	for (File file : chooser.getSelectedFiles()) {
+            		fileList.add(file);
+            		((DefaultListModel)list.getModel()).addElement(file.getName());
+            		drawn = true;
+            	}
+            	
+        		if (isDisallowedPresent()) {
+        			JOptionPane.showMessageDialog(
+                        Main.getMainInstance().getMainFrame(),
+                        I18n.getString(DISALLOWED_MESSAGE_KEY),
+                        I18n.getString(DISALLOWED_TITLE_KEY),
+                        JOptionPane.WARNING_MESSAGE
+        			);
+        			setComplete(false);
+        			return;
+        		}
+                setComplete(true);
             }
         }
     };
 
     private ActionListener remover = new ActionListener() {
+    	
         public void actionPerformed(ActionEvent e) {
             if (list.getSelectedIndex() != -1) {
                 // Remove the representation from the list
                 Object obj = ((DefaultListModel)list.getModel()).remove(list.getSelectedIndex());
                 // Remove the file object from the list
-                for (int i = 0; i < fileList.size(); i++) {
-                    File f = (File)fileList.get(i);
-                    if (f.getName().equals(obj)) {
-                        fileList.remove(f);
+                for (File file : fileList) {
+                    if (file.getName().equals(obj)) {
+                        fileList.remove(file);
                         break;
                     }
                 }
-                if (list.getModel().getSize() == 0)
+                if (list.getModel().getSize() == 0) {
                     setComplete(false);
-                else if (isDisallowedPresent())
-                    setComplete(false);
-                else
-                    setComplete(true);
+                }
+                else setComplete((isDisallowedPresent()) ? false : true);
             }
         }
     };
 
 // Constructor /////////////////////////////////////////////////////////////////
-
-    public FileDropStep() {
+    
+    @SuppressWarnings("serial")
+	public FileDropStep() {
         super(I18n.getString(TITLE_KEY), I18n.getString(SUMMARY_KEY));
 
         setIcon(Icons.filedropIcon);
         // Create and layout components
-        list = new JList(new DefaultListModel());
+        list = new JList(new DefaultListModel()) {
+        	public void paintComponent(Graphics g) {
+        		super.paintComponent(g);
+        		
+        		if (drawn) {
+        			return;
+        		}
+				Graphics2D	g2 = (Graphics2D)g;
+				g2.setColor(Color.gray);
+				g2.drawString(I18n.getString(DRAG_TEXT), 200, 20);
+        	}
+        };
         list.setDragEnabled(true);
+        list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        list.setVisibleRowCount(10);
+        list.setFixedCellWidth(-1);
         list.setCellRenderer(new MyCellRenderer());
+        list.setPreferredSize(new Dimension(530, 180));
 
         JScrollPane scrollpane = new JScrollPane(list);
         scrollpane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -177,6 +209,7 @@ public class FileDropStep extends AbstractWizardStep {
         panel.add(removeButton);
 
         view = new JPanel();
+        //view.setName("FileDropStep");
         view.setLayout(new BorderLayout());
         view.add(scrollpane, BorderLayout.CENTER);
         view.add(panel, BorderLayout.SOUTH);
@@ -188,6 +221,9 @@ public class FileDropStep extends AbstractWizardStep {
 
     public void prepare() {
         setView(view);
+        Main.getMainInstance().getMainFrame().pack();
+        Main.getMainInstance().getMover().positionFrame(true);
+        model.setNextAvailable(false);
     }
 
     public void applyState() {
@@ -195,17 +231,19 @@ public class FileDropStep extends AbstractWizardStep {
         // Create an empty type array
         File[] filetyper = new File[0];
         // Transform and cast the list to an array
-        File[] files = (File[])fileList.toArray(filetyper);
-        List imageList = new ArrayList();
-        List list = new ArrayList();
+        File[] files = fileList.toArray(filetyper);
+        List<File> imageList = new ArrayList<File>();
+        List<File> list = new ArrayList<File>();
         for (int i = 0; i < files.length; i++) {
-            if (Icons.isImage(files[i].getName()))
+            if (Icons.isImage(files[i].getName())) {
                 imageList.add(files[i]);
-            else
+            }
+            else {
                 list.add(files[i]);
+            }
         }
-        model.setFiles((File[])list.toArray(filetyper));
-        model.setImageFiles((File[])imageList.toArray(filetyper));
+        model.setFiles(list.toArray(filetyper));
+        model.setImageFiles(imageList.toArray(filetyper));
     }
 
     public Dimension getPreferredSize() {
@@ -213,27 +251,22 @@ public class FileDropStep extends AbstractWizardStep {
     }
 
     private boolean isDisallowedPresent() {
-        boolean retval = false;
-        for (int i = 0; i < fileList.size(); i++) {
-            File file = (File)fileList.get(i);
+        
+        for (File file : fileList) {
             if (Icons.isDisallowed(file.getName())) {
-                retval = true;
-                break;
+                return true;
             }
         }
-        return retval;
+        return false;
     }
 
-    class MyCellRenderer extends JLabel implements ListCellRenderer {
+    @SuppressWarnings("serial")
+	class MyCellRenderer extends JLabel implements ListCellRenderer {
         // This is the only method defined by ListCellRenderer.
         // We just reconfigure the JLabel each time we're called.
-        public Component getListCellRendererComponent(JList list,
-                                                      Object value,
-                                                      int index,
-                                                      boolean isSelected,
-                                                      boolean cellHasFocus)
-        {
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             String s = value.toString();
+            
             setText(s);
             setIcon(Icons.getIconForFilename(s));
             if (isSelected) {
@@ -243,6 +276,7 @@ public class FileDropStep extends AbstractWizardStep {
                 setBackground(list.getBackground());
                 setForeground(list.getForeground());
             }
+            
             setEnabled(list.isEnabled());
             setFont(list.getFont());
             setOpaque(true);

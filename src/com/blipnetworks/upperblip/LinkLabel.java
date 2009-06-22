@@ -1,8 +1,8 @@
 /*
  * @(#)LinkLabel.java
  *
- * Copyright (c) 2005-2007 by Blip Networks, Inc.
- * 239 Centre St, 3rd Floor
+ * Copyright (c) 2005-2009 by Blip Networks, Inc.
+ * 407 Broome St., 5th Floor
  * New York, NY 10013
  * All rights reserved.
  *
@@ -28,10 +28,13 @@ import java.util.List;
  *
  *
  * @author Jared Klett
- * @version $Id: LinkLabel.java,v 1.3 2007/03/28 19:12:45 jklett Exp $
+ * @version $Id: LinkLabel.java,v 1.4 2009/06/22 21:07:45 jklett Exp $
  */
 
+@SuppressWarnings("serial")
 public class LinkLabel extends JLabel implements Command {
+	
+    public static final String CVS_REV = "$Revision: 1.4 $";
 
     private Command command;
 
@@ -44,14 +47,15 @@ public class LinkLabel extends JLabel implements Command {
     };
 
     public LinkLabel(String text, Command command) {
-        super("<HTML><u>" + text + "</u>");
+    	super(text);
+        //super("<HTML><u>" + text + "</u></HTML>");
         this.command = command;
         setForeground(Color.BLUE);
-        List fonts = Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
+        List<String> fonts = Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames());
         if (fonts.contains("Verdana"))
-            setFont(new Font("Verdana", Font.PLAIN, 9));
+            setFont(new Font("Verdana", Font.PLAIN, 12));
         else
-            setFont(new Font("SansSerif", Font.PLAIN, 9));
+            setFont(new Font("SansSerif", Font.PLAIN, 12));
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         addMouseListener(ml);
     }

@@ -1,4 +1,4 @@
-<!-- $Id: build.xml,v 1.15 2007/05/21 22:38:52 jklett Exp $ -->
+<!-- $Id: build.xml,v 1.16 2009/06/22 21:07:31 jklett Exp $ -->
 <project name="UpperBlip" default="build" basedir=".">
 
 	<taskdef name="jsmoothgen" classname="net.charabia.jsmoothgen.ant.JSmoothGen" classpath="jsmooth/lib/jsmoothgen-ant.jar" />
@@ -21,13 +21,22 @@
 	<property name="usenprops" value="com-blipnetworks-upperblip_en_US.properties" />
     <property name="blipprops" value="upperblip.properties" />
     <property name="bliplibprops" value="bliplib.properties" />
+    <property name="mailaddressmap" value="javamail.address.map" />
+    <property name="mailproviders" value="javamail.default.providers" />
+    <property name="mailprops" value="mail_properties" />
+    <!--
 	<property name="wizardprops" value="org-pietschy-wizard.properties" />
+	-->
 	<property name="filedropjar" value="filedrop*.jar" />
 	<property name="commonjars" value="commons-*.jar" />
     <property name="xercesjar" value="xerces*.jar" />
+    <!--
 	<property name="wizardjar" value="wizard*.jar" />
+	-->
     <property name="launcherjar" value="BrowserLauncher*.jar" />
     <property name="bliplibjar" value="bliplib*.jar" />
+    <property name="activationjar" value="activation.jar" />
+    <property name="mailjar" value="mail.jar" />
 	<property name="metainf" value="**/META-INF/" />
 
 	<target name="init">
@@ -48,6 +57,7 @@
 				<include name="**/${commonjars}" />
 			</fileset>
 		</unjar>
+		<!--
 		<unjar dest="${build}">
 			<patternset>
 				<exclude name="${metainf}" />
@@ -56,6 +66,7 @@
 				<include name="**/${wizardjar}" />
 			</fileset>
 		</unjar>
+		-->
         <unjar dest="${build}">
             <patternset>
                 <exclude name="${metainf}" />
@@ -80,6 +91,22 @@
                 <include name="**/${bliplibjar}" />
             </fileset>
         </unjar>
+        <unjar dest="${build}">
+            <patternset>
+                <exclude name="${metainf}" />
+            </patternset>
+            <fileset dir="${lib}">
+                <include name="**/${activationjar}" />
+            </fileset>
+        </unjar>
+        <unjar dest="${build}">
+            <patternset>
+                <exclude name="${metainf}" />
+            </patternset>
+            <fileset dir="${lib}">
+                <include name="**/${mailjar}" />
+            </fileset>
+        </unjar>
 	</target>
 
 	<target name="compile" depends="init">
@@ -88,7 +115,7 @@
 		<mkdir dir="${build}" />
 
 		<!-- Compile the java code from ${src} into ${build} -->
-		<javac srcdir="${src}" destdir="${build}" debug="on" deprecation="on" target="1.4" source="1.4" />
+		<javac srcdir="${src}" destdir="${build}" debug="on" deprecation="on" target="1.5" source="1.5" />
 	</target>
 
 	<target name="package" depends="compile">
@@ -116,7 +143,13 @@
 		<copy file="${etc}/${usenprops}" tofile="${build}/${usenprops}" />
 		<copy file="${etc}/${blipprops}" tofile="${build}/${blipprops}" />
         <copy file="${etc}/${bliplibprops}" tofile="${build}/${bliplibprops}" />
+        <copy file="${etc}/${mailaddressmap}" tofile="${build}/${mailaddressmap}" />
+        <copy file="${etc}/${mailproviders}" tofile="${build}/${mailproviders}" />
+        <copy file="${etc}/${mailprops}" tofile="${build}/${mailprops}" />
+
+        <!--
 		<copy file="${etc}/${wizardprops}" tofile="${build}/${wizardprops}" />
+		-->
 		<!-- jar it up -->
 		<jar destfile="${jarfile}" basedir="${build}" manifest="${etc}/MainClass" />
 		<!-- Make a Windows .exe -->

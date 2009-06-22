@@ -1,0 +1,7 @@
+#	$Id: mail_properties,v 1.2 2009/06/22 21:07:34 jklett Exp $
+#mail.debug=true
+
+mail.user=upperblip
+mail.from=noc@blip.tv
+mail.to=upperblip-errors@blip.tv
+mail.host=67.220.138.12

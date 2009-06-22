@@ -1,8 +1,8 @@
 /*
  * @(#)Icons.java
  *
- * Copyright (c) 2005-2007 by Blip Networks, Inc.
- * 239 Centre St, 3rd Floor
+ * Copyright (c) 2005-2009 by Blip Networks, Inc.
+ * 407 Broome St., 5th Floor
  * New York, NY 10013
  * All rights reserved.
  *
@@ -19,18 +19,18 @@ import java.util.*;
  * Icons, yea!
  *
  * @author Jared Klett
- * @version $Id: Icons.java,v 1.15 2007/03/28 19:12:45 jklett Exp $
+ * @version $Id: Icons.java,v 1.16 2009/06/22 21:07:45 jklett Exp $
  */
 
 public class Icons {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.15 $";
+    public static final String CVS_REV = "$Revision: 1.16 $";
 
 // Class variables ////////////////////////////////////////////////////////////
 
-    private static Map iconMap = new HashMap();
+    private static Map<String, ImageIcon> iconMap = new HashMap<String, ImageIcon>();
     private static ClassLoader cl = Icons.class.getClassLoader();
 
     public static String[] imageFormats;
@@ -86,28 +86,36 @@ public class Icons {
     static {
         // TODO: use a default here?
         String property = Main.appProperties.getProperty(IMAGE_FORMATS_KEY);
+        
         if (property != null) {
             imageFormats = property.split(",");
-            for (int i = 0; i < imageFormats.length; i++)
+            for (int i = 0; i < imageFormats.length; i++) {
                 iconMap.put(imageFormats[i], imageIcon);
+            }
         }
+        
         property = Main.appProperties.getProperty(SOUND_FORMATS_KEY);
         if (property != null) {
             soundFormats = property.split(",");
-            for (int i = 0; i < soundFormats.length; i++)
+            for (int i = 0; i < soundFormats.length; i++) {
                 iconMap.put(soundFormats[i], soundIcon);
+            }
         }
+        
         property = Main.appProperties.getProperty(VIDEO_FORMATS_KEY);
         if (property != null) {
             videoFormats = property.split(",");
-            for (int i = 0; i < videoFormats.length; i++)
+            for (int i = 0; i < videoFormats.length; i++) {
                 iconMap.put(videoFormats[i], videoIcon);
+            }
         }
+        
         property = Main.appProperties.getProperty(DISALLOWED_FORMATS_KEY);
         if (property != null) {
             disallowedFormats = property.split(",");
-            for (int i = 0; i < disallowedFormats.length; i++)
+            for (int i = 0; i < disallowedFormats.length; i++) {
                 iconMap.put(disallowedFormats[i], disallowedIcon);
+            }
         }
     }
 
@@ -134,8 +142,9 @@ public class Icons {
     }
 
     private static boolean check(String filename, String[] array) {
-        String extension = extractExtension(filename);
-        List list = Arrays.asList(array);
+        String 			extension = extractExtension(filename);
+        List<String>	list = Arrays.asList(array);
+        
         return list.contains(extension);
     }
 
@@ -150,12 +159,8 @@ public class Icons {
     public static ImageIcon getIconForFilename(String filename) {
         String extension = extractExtension(filename);
         Object obj = iconMap.get(extension);
-        ImageIcon retval;
-        if (obj == null)
-            retval = unknownIcon;
-        else
-            retval = (ImageIcon)obj;
-        return retval;
+        
+        return (obj == null)? unknownIcon : (ImageIcon)obj;
     }
 
     /**
@@ -166,8 +171,11 @@ public class Icons {
      */
     private static String extractExtension(String filename) {
         int dotIndex = filename.lastIndexOf(".");
-        if (dotIndex == -1)
+        
+        if (dotIndex == -1) {
             throw new IllegalArgumentException("No dot-extension in this filename: " + filename);
+        }
+        
         return filename.substring(dotIndex + 1, filename.length()).toLowerCase();
     }
 

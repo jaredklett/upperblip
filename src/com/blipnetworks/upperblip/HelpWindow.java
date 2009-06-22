@@ -1,8 +1,8 @@
 /*
  * @(#)HelpWindow.java
  *
- * Copyright (c) 2005-2007 by Blip Networks, Inc.
- * 239 Centre St, 3rd Floor
+ * Copyright (c) 2005-2009 by Blip Networks, Inc.
+ * 407 Broome St., 5th Floor
  * New York, NY 10013
  * All rights reserved.
  *
@@ -22,7 +22,10 @@ import java.awt.*;
  * @author Jared Klett
  */
 
+@SuppressWarnings("serial")
 public class HelpWindow extends JWindow {
+	
+    public static final String CVS_REV = "$Revision: 1.7 $";
 
     public HelpWindow() {
         super();

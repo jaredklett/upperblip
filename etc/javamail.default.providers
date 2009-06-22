@@ -1,0 +1,2 @@
+#	$Id: javamail.default.providers,v 1.2 2009/06/22 21:07:34 jklett Exp $
+protocol=smtp; type=transport; class=com.sun.mail.smtp.SMTPTransport; vendor=Sun Microsystems, Inc.;
