@@ -30,24 +30,24 @@ import edu.stanford.ejalbert.BrowserLauncher;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.30 2009/06/22 21:07:45 jklett Exp $
+ * @version $Id: Main.java,v 1.31 2009/07/26 13:07:31 dsk Exp $
  */
 
 public class Main implements Thread.UncaughtExceptionHandler {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.30 $";
+    public static final String CVS_REV = "$Revision: 1.31 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
     // TODO: cleanup
     private static final String BUILD_NUMBER_URI = "/upperblip.build";
     private static final String PREFS_NODE = "com.blipnetworks.upperblip";
-    private static final String PREFS_DIR = "/Library/Preferences/";
-    private static final String PROPS_FILE = "com.blipnetworks.upperblip.properties";
-    private static final String PREFS_PROPERTIES = System.getProperty("user.home") + PREFS_DIR + PROPS_FILE;
-    private static final String PREFS_NAME = "UpperBlip preferences";
+    //private static final String PREFS_DIR = "/Library/Preferences/";
+    //private static final String PROPS_FILE = "com.blipnetworks.upperblip.properties";
+    //private static final String PREFS_PROPERTIES = System.getProperty("user.home") + PREFS_DIR + PROPS_FILE;
+    //private static final String PREFS_NAME = "UpperBlip preferences";
     private static final String CANCEL_TITLE_KEY = "main.cancel.title";
     private static final String CANCEL_TEXT_KEY = "main.cancel.text";
     private static final String UPDATE_TITLE_KEY = "main.update.title";
@@ -56,7 +56,7 @@ public class Main implements Thread.UncaughtExceptionHandler {
 
     private static final String	ABORT_TEXT = "main.abort.text";
     
-    private static boolean macintosh = System.getProperty("os.name").equals("Mac OS X");
+    //private static boolean macintosh = System.getProperty("os.name").equals("Mac OS X");
     public static final String APP_PROPERTIES = "upperblip.properties";
     public static final String PROPERTY_BASE_URL = "base.url";
     public static final String PROPERTY_USER_AGENT = "user.agent";
@@ -81,7 +81,7 @@ public class Main implements Thread.UncaughtExceptionHandler {
 
     private UpperBlipModel 	model;
     private Preferences 	prefs;
-    private Properties 		props;
+    //private Properties 		props;
     private Wizard 			wizard;
     private MovementHandler	mover = null;
 
@@ -119,7 +119,6 @@ public class Main implements Thread.UncaughtExceptionHandler {
      * An initialized but not running thread for when the JVM exits.
      */
     private Thread shutdownHook = new Thread("Main.shutdownHook") {
-    	
         public void run() {
             savePrefs();
         }
@@ -159,30 +158,17 @@ public class Main implements Thread.UncaughtExceptionHandler {
         // Set system properties for Mac LAF guidelines
         //System.setProperty("apple.laf.useScreenMenuBar", "true");
         // Load prefs
-        String username;
-        String password;
-        boolean remembered;
+        String username = null;
+        String password =  null;
+        boolean remembered = false;
         // The Java Preferences API doesn't work when run through an application
         // bundle on Mac OS X 10.4.3 with the latest Java 1.4.2_09 JVM.
         // It works fine run from a straight up jar.
         // So here's a workaround, using the trusty Properties object.
-        if (macintosh) {
-            props = new Properties();
-            try {
-                props.load(new FileInputStream(PREFS_PROPERTIES));
-            }
-            catch (Exception e) {
-                abortApplication();
-            }
-            username = props.getProperty(USER_KEY, null);
-            password = props.getProperty(PASS_KEY, null);
-            remembered = Boolean.valueOf(props.getProperty(REM_KEY, null)).booleanValue();
-        } else {
-            prefs = Preferences.userRoot().node(PREFS_NODE);
-            username = prefs.get(USER_KEY, null);
-            password = prefs.get(PASS_KEY, null);
-            remembered = Boolean.valueOf(prefs.get(REM_KEY, null)).booleanValue();
-        }
+        prefs = Preferences.userRoot().node(PREFS_NODE);
+        username = prefs.get(USER_KEY, null);
+        password = prefs.get(PASS_KEY, null);
+        remembered = prefs.getBoolean(REM_KEY, false);
         
         model = new UpperBlipModel();
         model.setLastVisible(false);
@@ -274,30 +260,19 @@ public class Main implements Thread.UncaughtExceptionHandler {
     
     private void savePrefs() {
     	
-        if (macintosh) {
-            if (model != null) {
-                if (model.getUsername() != null) {
-                    props.setProperty(USER_KEY, model.getUsername());
-                    if (model.isRemembered())
-                        props.setProperty(PASS_KEY, model.getPassword());
-                    props.setProperty(REM_KEY, Boolean.toString(model.isRemembered()));
+        if (model != null) {
+            if (model.getUsername() != null) {
+                prefs.put(USER_KEY, model.getUsername());
+                if (model.isRemembered()) {
+                    prefs.put(PASS_KEY, model.getPassword());
                 }
+                prefs.putBoolean(REM_KEY, model.isRemembered());
             }
             try {
-                props.store(new FileOutputStream(PREFS_PROPERTIES), PREFS_NAME);
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            if (model != null) {
-                if (model.getUsername() != null) {
-                    prefs.put(USER_KEY, model.getUsername());
-                    if (model.isRemembered())
-                        prefs.put(PASS_KEY, model.getPassword());
-                    prefs.put(REM_KEY, Boolean.toString(model.isRemembered()));
-                }
-            }
+				prefs.flush();
+			} catch (BackingStoreException e) {
+				// Ignore exception
+			}
         }
     }
 
