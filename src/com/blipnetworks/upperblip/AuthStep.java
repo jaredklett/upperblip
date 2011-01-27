@@ -27,14 +27,14 @@ import	com.blipnetworks.upperblip.wizard.*;
  * the user and authenticates to the site.
  *
  * @author Jared Klett
- * @version $Id: AuthStep.java,v 1.18 2009/06/22 21:07:45 jklett Exp $
+ * @version $Id: AuthStep.java,v 1.19 2011/01/27 19:38:53 jklett Exp $
  */
 
 public class AuthStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-	public static final String CVS_REV = "$Revision: 1.18 $";
+	public static final String CVS_REV = "$Revision: 1.19 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -136,11 +136,21 @@ public class AuthStep extends AbstractWizardStep {
 	}
 
 	public void init(WizardModel model) {
-		this.model = (UpperBlipModel)model;
-		userField.setText(this.model.getUsername());
+		
+		this.model = (UpperBlipModel) model;
+		
+		String	username = this.model.getUsername();
+		String	password = this.model.getPassword();
 		
 		if (this.model.isRemembered()) {
-			passField.setText(this.model.getPassword());
+			if (username != null) {
+				userField.setText(username);
+			}
+			
+			if (password != null) {
+				passField.setText(password);
+			}
+		
 			remBox.setSelected(true);
 		}
 		
@@ -167,12 +177,15 @@ public class AuthStep extends AbstractWizardStep {
         setBusy(false);
         if (!ad.wasSuccessful()) {
             setComplete(false);
-            // TODO: better message here
+            userField.setText("");
+            passField.setText("");
+            remBox.setSelected(false);
             throw new InvalidStateException(I18n.getString(BAD_AUTH_KEY));
         }
         setComplete(true);
-        model.setUsername(userField.getText());
-		model.setPassword(new String(passField.getPassword()));
+        
+        model.setUsername(userField.getText().trim());
+		model.setPassword(new String(passField.getPassword()).trim());
 		model.setRemembered(remBox.isSelected());
 	}
 

@@ -16,11 +16,13 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * $Id: I18n.java,v 1.2 2009/06/22 21:21:54 jklett Exp $
+ * $Id: I18n.java,v 1.3 2011/01/27 19:38:54 jklett Exp $
  */
 package com.blipnetworks.upperblip.wizard;
 
 import javax.swing.*;
+
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.MissingResourceException;
 
@@ -34,13 +36,20 @@ import java.util.MissingResourceException;
 public class I18n {
 	
 	@SuppressWarnings("unused")
-	private static final String _ID_ = "$Id: I18n.java,v 1.2 2009/06/22 21:21:54 jklett Exp $";
+	private static final String _ID_ = "$Id: I18n.java,v 1.3 2011/01/27 19:38:54 jklett Exp $";
 
 	private static ResourceBundle bundle = null;
 
 	private static ResourceBundle getBundle() {
-		if (bundle == null)
-			bundle = ResourceBundle.getBundle("com-blipnetworks-upperblip");
+		if (bundle == null) {
+			try {
+				bundle = ResourceBundle.getBundle("com-blipnetworks-upperblip");
+			} catch (MissingResourceException e) {
+				Locale	locale = new Locale("en", "US");
+				Locale.setDefault(locale);
+				bundle = ResourceBundle.getBundle("com-blipnetworks-upperblip");
+			}
+		}
 
 		return bundle;
 	}

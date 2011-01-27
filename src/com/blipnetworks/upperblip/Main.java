@@ -14,6 +14,7 @@ package com.blipnetworks.upperblip;
 
 import java.awt.event.*;
 import java.io.*;
+import java.util.Map;
 import java.util.Properties;
 import java.util.prefs.*;
 import java.net.URL;
@@ -30,24 +31,20 @@ import edu.stanford.ejalbert.BrowserLauncher;
  * The main application class for the UpperBlip app.
  *
  * @author Jared Klett
- * @version $Id: Main.java,v 1.31 2009/07/26 13:07:31 dsk Exp $
+ * @version $Id: Main.java,v 1.32 2011/01/27 19:38:53 jklett Exp $
  */
 
 public class Main implements Thread.UncaughtExceptionHandler {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.31 $";
+    public static final String CVS_REV = "$Revision: 1.32 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
     // TODO: cleanup
     private static final String BUILD_NUMBER_URI = "/upperblip.build";
     private static final String PREFS_NODE = "com.blipnetworks.upperblip";
-    //private static final String PREFS_DIR = "/Library/Preferences/";
-    //private static final String PROPS_FILE = "com.blipnetworks.upperblip.properties";
-    //private static final String PREFS_PROPERTIES = System.getProperty("user.home") + PREFS_DIR + PROPS_FILE;
-    //private static final String PREFS_NAME = "UpperBlip preferences";
     private static final String CANCEL_TITLE_KEY = "main.cancel.title";
     private static final String CANCEL_TEXT_KEY = "main.cancel.text";
     private static final String UPDATE_TITLE_KEY = "main.update.title";
@@ -56,7 +53,6 @@ public class Main implements Thread.UncaughtExceptionHandler {
 
     private static final String	ABORT_TEXT = "main.abort.text";
     
-    //private static boolean macintosh = System.getProperty("os.name").equals("Mac OS X");
     public static final String APP_PROPERTIES = "upperblip.properties";
     public static final String PROPERTY_BASE_URL = "base.url";
     public static final String PROPERTY_USER_AGENT = "user.agent";
@@ -67,6 +63,9 @@ public class Main implements Thread.UncaughtExceptionHandler {
     private static final String PASS_KEY = "pass";
     /** blah */
     private static final String REM_KEY = "pass.rem";
+    
+    private static boolean		uncaughtExceptionInProgress = false;
+    private static int			currentBuildNumber = 0;
 
     private static Main m;
 
@@ -81,9 +80,9 @@ public class Main implements Thread.UncaughtExceptionHandler {
 
     private UpperBlipModel 	model;
     private Preferences 	prefs;
-    //private Properties 		props;
     private Wizard 			wizard;
     private MovementHandler	mover = null;
+    //private String			username = null;
 
 // GUI elements ///////////////////////////////////////////////////////////////
 
@@ -127,6 +126,9 @@ public class Main implements Thread.UncaughtExceptionHandler {
 // Constructor /////////////////////////////////////////////////////////////////
 
     private Main() {
+    	Properties	systemProperties = System.getProperties();
+    	String		osName = systemProperties.getProperty("os.name");
+    	
     	InputStream	upperblipProps = Main.class.getClassLoader().getResourceAsStream(APP_PROPERTIES);
     	if (upperblipProps != null) {
             try {
@@ -155,22 +157,19 @@ public class Main implements Thread.UncaughtExceptionHandler {
     	
     	Thread.currentThread().setUncaughtExceptionHandler(this);
     	
-        // Set system properties for Mac LAF guidelines
-        //System.setProperty("apple.laf.useScreenMenuBar", "true");
-        // Load prefs
-        String username = null;
-        String password =  null;
+    	// Load prefs
+    	String	username = null;
+        String 	password =  null;
         boolean remembered = false;
-        // The Java Preferences API doesn't work when run through an application
-        // bundle on Mac OS X 10.4.3 with the latest Java 1.4.2_09 JVM.
-        // It works fine run from a straight up jar.
-        // So here's a workaround, using the trusty Properties object.
+        
         prefs = Preferences.userRoot().node(PREFS_NODE);
         username = prefs.get(USER_KEY, null);
         password = prefs.get(PASS_KEY, null);
         remembered = prefs.getBoolean(REM_KEY, false);
         
         model = new UpperBlipModel();
+        
+        model.setMacOS((osName.startsWith("Mac"))? true : false);
         model.setLastVisible(false);
         model.setUsername(username);
         model.setPassword(password);
@@ -199,6 +198,9 @@ public class Main implements Thread.UncaughtExceptionHandler {
         try {
             BuildNumber remoteBuild = BuildNumber.loadRemote(new URL(Parameters.config.getProperty(PROPERTY_BASE_URL) + BUILD_NUMBER_URI));
             BuildNumber localBuild = BuildNumber.loadLocal();
+            
+            currentBuildNumber = localBuild.getBuildNumber();
+            
             if (remoteBuild.getBuildNumber() > localBuild.getBuildNumber()) {
                 int choice = JOptionPane.showConfirmDialog(frame, I18n.getString(UPDATE_TEXT_KEY), I18n.getString(UPDATE_TITLE_KEY),
                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -228,13 +230,23 @@ public class Main implements Thread.UncaughtExceptionHandler {
      * There are many exceptions that can occur rather deep in the code structure,
      * and it is difficult to handle these exceptions at that level. These uncaught
      * exceptions are handled here and reported to the customer and blip.tv.
+     * 
+     * It is probably overkill, but to insure that a loop of exceptions does not occur,
+     * the first exception is marked by the uncaughtExceptionInProgress boolean.
+     * If another uncaught exception occurs, the plug is pulled to gracefully halt
+     * the system.
      */
     public void uncaughtException(Thread t, Throwable e) {
-    	// Don't care which thread.
-    	ExceptionReporter	app = new ExceptionReporter(e.toString(), e.getStackTrace());
-    	Thread	thread = new Thread(app);
-    	thread.start();
-    	abortApplication();
+    	
+    	if (uncaughtExceptionInProgress) {
+    		System.exit(0);
+    	}
+    	uncaughtExceptionInProgress = true;
+    	
+		Map<Thread, StackTraceElement[]>	allStacks = Thread.getAllStackTraces();
+		ExceptionReporter	reporter = new ExceptionReporter(model.getUsername(), currentBuildNumber, t, e, allStacks);
+		ExceptionDialog		dialog = new ExceptionDialog(frame);
+		dialog.displayDialog(reporter);
     }
     
     public JFrame getMainFrame() {
@@ -244,14 +256,7 @@ public class Main implements Thread.UncaughtExceptionHandler {
     public MovementHandler getMover() {
     	return mover;
     }
-    
-    public void abortApplication(Exception e) {
-    	ExceptionReporter	app = new ExceptionReporter(e.toString(), e.getStackTrace());
-    	Thread	thread = new Thread(app);
-    	thread.start();
-    	abortApplication();
-    }
-        
+            
     public void abortApplication() {
     	JOptionPane.showMessageDialog(null, I18n.getString(ABORT_TEXT));
     	savePrefs();

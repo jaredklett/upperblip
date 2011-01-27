@@ -12,9 +12,7 @@
 
 package com.blipnetworks.upperblip;
 
-import com.blipnetworks.util.Authenticator;
-import com.blipnetworks.util.MetadataLoader;
-import com.blipnetworks.util.I18n;
+import com.blipnetworks.util.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,7 +23,7 @@ import org.apache.commons.httpclient.Cookie;
  *
  *
  * @author Jared Klett
- * @version $Id: AuthDialog.java,v 1.7 2009/06/22 21:07:45 jklett Exp $
+ * @version $Id: AuthDialog.java,v 1.8 2011/01/27 19:38:53 jklett Exp $
  */
 
 @SuppressWarnings("serial")
@@ -33,7 +31,7 @@ public class AuthDialog extends JDialog implements Runnable {
 
 // CVS info ///////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.7 $";
+    public static final String CVS_REV = "$Revision: 1.8 $";
 
 // UI elements ////////////////////////////////////////////////////////////////
 
@@ -112,7 +110,12 @@ public class AuthDialog extends JDialog implements Runnable {
             // 2. load metadata/user data
             try {
                 MetadataLoader.load(model.getAuthCookie());
+                model.initializeModel();
             } catch (Exception e) {
+            	if (e instanceof NoDataLoadedFromHostException) {
+            		JOptionPane.showMessageDialog(null, I18n.getString("auth.error.nodata"));
+            		System.exit(0);
+            	}
                 throw new IllegalStateException("Could not load metadata!");
             }
         }

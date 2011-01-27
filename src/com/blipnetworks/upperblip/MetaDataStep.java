@@ -16,29 +16,29 @@ import 	java.awt.*;
 import 	java.awt.event.*;
 import 	java.io.*;
 import	java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import 	java.util.regex.Matcher;
+import 	java.util.regex.Pattern;
 
 import 	javax.swing.*;
 
 import 	com.blipnetworks.util.I18n;
-import 	com.blipnetworks.util.MetadataLoader;
 import 	com.blipnetworks.util.Command;
 
+import 	com.blipnetworks.upperblip.UpperBlipModel.MapKeys;
 import	com.blipnetworks.upperblip.wizard.*;
 
 /**
  *
  *
  * @author Jared Klett
- * @version $Id: MetaDataStep.java,v 1.35 2009/06/22 21:07:45 jklett Exp $
+ * @version $Id: MetaDataStep.java,v 1.36 2011/01/27 19:38:53 jklett Exp $
  */
 
-public class MetaDataStep extends AbstractWizardStep {
+public final class MetaDataStep extends AbstractWizardStep {
 
 // CVS info ////////////////////////////////////////////////////////////////////
 
-    public static final String CVS_REV = "$Revision: 1.35 $";
+    public static final String CVS_REV = "$Revision: 1.36 $";
 
 // Static variables ////////////////////////////////////////////////////////////
 
@@ -67,47 +67,42 @@ public class MetaDataStep extends AbstractWizardStep {
     private static final String	PASSWORD_LABEL_KEY = "meta.password.label";
     private static final String	PUBLIC_LABEL_KEY = "meta.public.label";
     private static final String	PRIVACY_LABEL_KEY= "meta.privacy.label";
+    private static final String	CROSSPOST_WINDOWS_KEY = "meta.crosspostpopup.windows";
+    private static final String	CROSSPOST_MAC_KEY = "meta.crosspostpopup.mac";
+    private static final String	CROSSUPLOAD_WINDOWS_KEY = "meta.crossuploadpopup.windows";
+    private static final String	CROSSUPLOAD_MAC_KEY = "meta.crossuploadpopup.mac";
+    private static final String	SELECTALL_LABEL_KEY = "meta.selectall.label";
     
     private static final String	DEFAULT_TEXT = "general.default.text";
     
 // Instance variables //////////////////////////////////////////////////////////
 
-    private JTabbedPane		pane;
-    private JTextField[] 	titleList;
-    private JTextArea[] 	descList;
-    private JComboBox[] 	thumbList;
-    private JComboBox[] 	categoryList;
-    private JComboBox[] 	licenseList;
-    private JComboBox[] 	languageList;
-    private JComboBox[] 	ratingList;
-    private JCheckBox[] 	explicitList;
-    private JCheckBox[][]	blogCheckboxList;
-    private JCheckBox[][]	destCheckboxList;
-    private JTextField[]	tagsList;
-    private UpperBlipModel 	model;
+    private JTabbedPane		pane = null;
+    private UpperBlipModel 	model = null;
     
-    private LinkLabel		applyLabel;
-    
-    private Map<JLabel, Set<JPanel>>	distributionMap = null;
-    
-    private JCheckBox[]		mp3AudioCheckboxList = null;
-    private JCheckBox[]		mpeg4VideoCheckboxList = null;
+    private LinkLabel		applyLabel = null;
     
     // These components are used in the Privacy Settings panel
-	private JCheckBox[]			privateFileCheckboxList = null;
-	private JCheckBox[]			visiblePasswordCheckboxList = null;
-	private JCheckBox[]			makePublicCheckboxList = null;
-	private JPasswordField		visiblePasswordField = null;
-	private JPasswordField[]	visiblePasswordFieldList = null;
-	private JTextField			makePublicField = null;
-	private JTextField[]		makePublicFieldList = null;
     
 	private JButton			completeButton = null;
+	private boolean			retry = false;
 	
     private JFrame			wizardFrame = null;
     private JPanel			viewPanel = null;
     private MovementHandler	mover = null;
-        
+    
+    // This map is used to control the display of the distribution section of the
+    // form for each video file. Not used for a non-pro account.
+    private Map<JLabel, Set<JPanel>>		distributionMap = null;
+    // This list contains all the data for each video file to be uploaded.
+    private ArrayList<Map<String, Object>>	fileData = null;
+    // This map tracks all the cross posting popup menus. Used when the apply all
+    // label is selected.
+    private Map<JLabel, JPopupMenu>			crosspostPopups = null;
+    // This map tracks all the cross uploading popup menus. Used when the apply all
+    // label is selected.
+    private Map<JLabel, JPopupMenu>			crossuploadPopups = null;
+    
 // Constructor /////////////////////////////////////////////////////////////////
 
     public MetaDataStep() {
@@ -117,16 +112,17 @@ public class MetaDataStep extends AbstractWizardStep {
 
     public void init(WizardModel model) {
         this.model = (UpperBlipModel)model;
+        fileData = this.model.getFileData();
     }
 
     public void prepare() {
+    	
     	viewPanel = new JPanel(new GridBagLayout());
     	Grid	viewGrid = new Grid();
     	
     	model.setNextAvailable(false);
         wizardFrame = Main.getMainInstance().getMainFrame();
         mover = Main.getMainInstance().getMover();
-        viewPanel.removeAll();
         
         pane = new JTabbedPane();
         viewPanel.add(pane, viewGrid);
@@ -137,103 +133,101 @@ public class MetaDataStep extends AbstractWizardStep {
         
         completeButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent event) {
-        		executeForm();
-        		
-        		String[]	makePrivate = model.getPrivateFiles();
-        		String[]	makePassword = model.getPasswordFiles();
-        		String[]	makePublic = model.getMakePublicFiles();
-        		String[]	privatePasswords = model.getPasswordFields();
-        		String[]	makePublicFields = model.getMakePublicFields();
-        		
-        		for (int i = 0; i < makePrivate.length; i++) {
-        			if (makePrivate[i].equals("1")) {
-        				if (makePassword[i].equals("1")) {
-        					if (!checkPasswordFields(visiblePasswordCheckboxList, privatePasswords)) {
-        						return;
-        					}
-        				}
-        				if (makePublic[i].equals("1")) {
-        					if (!checkPublicFields(makePublicCheckboxList, makePublicFields)) {
-        						return;
-        					}
-        				}
-        			}
+        		if (!retry) {
+        			executeForm();
         		}
+        		
+        		if (model.isPrivateFiles()) {
+        			for (Map<String, Object> map : fileData) {
+        				JCheckBox	check = (JCheckBox) map.get(MapKeys.PROTECTED.getKey());
+        				if (check != null && check.isSelected()) {
+        					if (!checkPasswordField((JPasswordField) map.get(MapKeys.PASSWORD.getKey()))) {
+	        					retry = true;
+	        					return;
+	        				}
+        				}
+        				JCheckBox	box = (JCheckBox) map.get(MapKeys.MAKEPUBLIC.getKey());
+        				if (box != null && box.isSelected()) {
+        					if (!checkPublicField((JTextField) map.get(MapKeys.DATETIME.getKey()))) {
+        						retry = true;
+        						return;
+        					}
+	        			}
+        			}
+	        	}
         		setComplete(true);
         	}
-
         });
-                
-        File[] files = model.getFiles();
         
-        createModelData(files);
-                
-        // TODO: break type array out
-        String[] 	blogNames = MetadataLoader.blogs.keySet().toArray(new String[0]);
-        String[] 	destinations = MetadataLoader.crossuploads.keySet().toArray(new String[0]);
-        
-        blogCheckboxList = new JCheckBox[files.length][blogNames.length];
-        destCheckboxList = new JCheckBox[files.length][destinations.length];
-        mp3AudioCheckboxList = new JCheckBox[files.length];
-        mpeg4VideoCheckboxList = new JCheckBox[files.length];
-        privateFileCheckboxList = new JCheckBox[files.length];
-        makePublicCheckboxList = new JCheckBox[files.length];
-        visiblePasswordCheckboxList = new JCheckBox[files.length];
-
-        for (int i = 0; i < files.length; i++) {
+        // This should never be true, but accidents happen.
+		if (fileData.size() <= 0) {
+			JOptionPane.showMessageDialog(null, I18n.getString("upload.error.nofiles"));
+			System.exit(0);
+		}
+		
+		// Create a tabbed pane with a pane for each video file selected in the previous step.
+		// Each pane is composed of a top panel with basic data displayed and an optional distribution
+		// panel, displayed only if the customer has a pro-account.
+        for (Map<String, Object> formData : fileData) {
         	JPanel	panePanel = new JPanel(new GridBagLayout());
             JPanel	topPanel = new JPanel(new GridBagLayout());
             Grid	paneGrid = new Grid();
             
             panePanel.add(topPanel, paneGrid);
-                                    
-            for (int j = 0; j < blogCheckboxList[i].length; j++) {
-                blogCheckboxList[i][j] = new JCheckBox(blogNames[j], false);
-            }
-            
-            for (int j = 0; j < destCheckboxList[i].length; j++) {
-                destCheckboxList[i][j] = new JCheckBox(destinations[j], false);
-            }
             
         	Grid	topPanelGrid = new Grid();
 
             topPanelGrid.setInsets(2, 4, 2, 4);
             
-            JLabel fileLabel = new JLabel(I18n.getString(FILE_LABEL_KEY));
-            JLabel fileNameLabel = new JLabel(files[i].getName(), Icons.getIconForFilename(files[i].getName()), SwingConstants.LEFT);
+            // Display the name of the current video file plus an file icon.
+            JLabel	fileLabel = new JLabel(I18n.getString(FILE_LABEL_KEY));
+            String	fileName = ((File) formData.get(MapKeys.VIDEOFILE.getKey())).getName();
+            JLabel	fileNameLabel = new JLabel(fileName, Icons.getIconForFilename(fileName), SwingConstants.LEFT);
+            
             topPanel.add(fileLabel, topPanelGrid.setAnchor(Grid.northEastAnchor));
             topPanel.add(fileNameLabel, topPanelGrid.setAnchorIncrX(Grid.northWestAnchor));
             
-            final JTextField	titleField = new JTextField(10);
-            titleList[i] = titleField;
+            // Add the title field. If the customer leaves the title field empty, it is later
+            // filled in with the name of the video file minus the file extension.
+            final JTextField	titleField = (JTextField) formData.get(MapKeys.TITLE.getKey());
+            titleField.setColumns(10);
             applyLabel = new LinkLabel(I18n.getString(APPLY_LABEL_KEY), new Command() {
                 public void execute() {
                     String title = titleField.getText();
-                    for (int i = 0; i < titleList.length; i++) {
-                        titleList[i].setText(title);
+                    for (Map<String, Object> map : fileData) {
+                    	JTextField	field = (JTextField) map.get(MapKeys.TITLE.getKey());
+                    	field.setText(title);
                     }
                 }
             });
+            
             JLabel titleLabel = new JLabel(I18n.getString(TITLE_LABEL_KEY));
             topPanel.add(titleLabel, topPanelGrid.setAnchorIncrY(Grid.northEastAnchor));
             topPanelGrid.setFill(Grid.horizontalFill);
             topPanel.add(titleField, topPanelGrid.setAnchorIncrX(Grid.northWestAnchor));
             topPanel.add(applyLabel, topPanelGrid.incrX());
             
-            final JTextArea	descArea = new JTextArea(5, 10);
-            descArea.setLineWrap(true);
-            descArea.setWrapStyleWord(true);
-            JScrollPane jsp = new JScrollPane(descArea);
+            // Add the video description area. The description area is embedded in a scroll pane,
+            // used if the text overflows the visible field.
+            // The area is set for word and line wrapping.
+            final JTextArea	description = (JTextArea) formData.get(MapKeys.DESCRIPTION.getKey());
+            description.setRows(5);
+            description.setColumns(10);
+            description.setLineWrap(true);
+            description.setWrapStyleWord(true);
+            
+            JScrollPane jsp = new JScrollPane(description);
             jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-            descList[i] = descArea;
+            
             applyLabel = new LinkLabel(I18n.getString(APPLY_LABEL_KEY), new Command() {
                 public void execute() {
-                    String desc = descArea.getText();
-                    for (int i = 0; i < descList.length; i++) {
-                        descList[i].setText(desc);
+                    String desc = description.getText();
+                    for (Map<String, Object> map : fileData) {
+                    	((JTextArea) map.get(MapKeys.DESCRIPTION.getKey())).setText(desc);
                     }
                 }
             });
+            
             JLabel descLabel = new JLabel(I18n.getString(DESC_LABEL_KEY));
             topPanelGrid.setFill(Grid.noneFill);
             topPanel.add(descLabel, topPanelGrid.setAnchorIncrY(Grid.northEastAnchor));
@@ -241,77 +235,88 @@ public class MetaDataStep extends AbstractWizardStep {
             topPanel.add(jsp, topPanelGrid.setAnchorIncrX(Grid.northWestAnchor));
             topPanel.add(applyLabel, topPanelGrid.incrX());
             
-            final JComboBox	thumbnails = new JComboBox(model.getImageFilenames());
-            thumbList[i] = thumbnails;
+            // Add the drop-down for any thumbnail files selected in the previous step.
+            final JComboBox	thumbnails = (JComboBox) formData.get(MapKeys.THUMBNAIL.getKey());
+        	for (String item : model.getImageFilenames()) {
+        		thumbnails.addItem(item);
+        	}
+
             applyLabel = new LinkLabel(I18n.getString(APPLY_LABEL_KEY), new Command() {
                 public void execute() {
                     int index = thumbnails.getSelectedIndex();
-                    for (int i = 0; i < thumbList.length; i++) {
-                        thumbList[i].setSelectedIndex(index);
+                    for (Map<String, Object> map : fileData) {
+                    	((JComboBox) map.get(MapKeys.THUMBNAIL.getKey())).setSelectedIndex(index);
                     }
                 }
             });
+            
             JLabel thumbLabel = new JLabel(I18n.getString(THUMB_LABEL_KEY));
             topPanelGrid.setFill(Grid.noneFill);
             topPanel.add(thumbLabel, topPanelGrid.setAnchorIncrY(Grid.eastAnchor));
             topPanel.add(thumbnails, topPanelGrid.setAnchorIncrX(Grid.westAnchor));
             topPanel.add(applyLabel, topPanelGrid.incrX());
             
-            final JComboBox	licenses = new JComboBox(MetadataLoader.licenses.keySet().toArray());
-            licenseList[i] = licenses;
+            // Add the drop-down for all the available licenses. Data obtained from blip.tv.
+            final JComboBox	licenses = (JComboBox) formData.get(MapKeys.LICENSE.getKey());
             applyLabel = new LinkLabel(I18n.getString(APPLY_LABEL_KEY), new Command() {
                 public void execute() {
                     int index = licenses.getSelectedIndex();
-                    for (int i = 0; i < licenseList.length; i++) {
-                        licenseList[i].setSelectedIndex(index);
+                    for (Map<String, Object> map : fileData) {
+                    	((JComboBox) map.get(MapKeys.LICENSE.getKey())).setSelectedIndex(index);
                     }
                 }
             });
+            
             JLabel licenseLabel = new JLabel(I18n.getString(LICENSE_LABEL_KEY));
             topPanel.add(licenseLabel, topPanelGrid.setAnchorIncrY(Grid.eastAnchor));
             topPanel.add(licenses, topPanelGrid.setAnchorIncrX(Grid.westAnchor));
             topPanel.add(applyLabel, topPanelGrid.incrX());
             
-            final JTextField	tagsField = new JTextField(10);
-            tagsList[i] = tagsField;
+            // Add the tags field.
+            final JTextField	tagsField = (JTextField) formData.get(MapKeys.TAGS.getKey());
+            tagsField.setColumns(10);
             applyLabel = new LinkLabel(I18n.getString(APPLY_LABEL_KEY), new Command() {
                 public void execute() {
                     String tags = tagsField.getText();
-                    for (int i = 0; i < tagsList.length; i++)
-                        tagsList[i].setText(tags);
+                    for (Map<String, Object> map : fileData) {
+                    	((JTextField) map.get(MapKeys.TAGS.getKey())).setText(tags);
+                    }
                 }
             });
+            
             JLabel tagsLabel = new JLabel(I18n.getString(TAGS_LABEL_KEY));
             topPanel.add(tagsLabel, topPanelGrid.setAnchorIncrY(Grid.northEastAnchor));
             topPanelGrid.setFill(Grid.horizontalFill);
             topPanel.add(tagsField, topPanelGrid.setAnchorIncrX(Grid.northWestAnchor));
             topPanel.add(applyLabel, topPanelGrid.setAnchorIncrX(Grid.centerAnchor));
             
-            final JComboBox	categories = new JComboBox(MetadataLoader.categories.keySet().toArray());
+            // Add the drop-down containing the available file categories. Data obtained 
+            // from blip.tv.
+            final JComboBox	categories = (JComboBox) formData.get(MapKeys.CATEGORY.getKey());
             categories.setSelectedItem(I18n.getString(DEFAULT_TEXT));
-            categoryList[i] = categories;
             applyLabel = new LinkLabel(I18n.getString(APPLY_LABEL_KEY), new Command() {
                 public void execute() {
                     int index = categories.getSelectedIndex();
-                    for (int i = 0; i < categoryList.length; i++) {
-                        categoryList[i].setSelectedIndex(index);
+                    for (Map<String, Object> map : fileData) {
+                    	((JComboBox) map.get(MapKeys.CATEGORY.getKey())).setSelectedIndex(index);
                     }
                 }
             });
+            
             JLabel categoryLabel = new JLabel(I18n.getString(CATEGORY_LABEL_KEY));
             topPanelGrid.setFill(Grid.noneFill);
             topPanel.add(categoryLabel, topPanelGrid.setAnchorIncrY(Grid.eastAnchor));
             topPanel.add(categories, topPanelGrid.setAnchorIncrX(Grid.westAnchor));
             topPanel.add(applyLabel, topPanelGrid.incrX());
             
-            final JComboBox	ratings = new JComboBox(MetadataLoader.ratings.keySet().toArray());
-            ratings.setSelectedIndex(5);
-            ratingList[i] = ratings;
+            // Add the drop-down for film ratings. Data obtained from blip.tv.
+            final JComboBox	ratings = (JComboBox) formData.get(MapKeys.RATING.getKey());
             applyLabel = new LinkLabel(I18n.getString(APPLY_LABEL_KEY), new Command() {
                 public void execute() {
                     int index = ratings.getSelectedIndex();
-                    for (int i = 0; i < ratingList.length; i++)
-                        ratingList[i].setSelectedIndex(index);
+                    for (Map<String, Object> map : fileData) {
+                    	((JComboBox) map.get(MapKeys.RATING.getKey())).setSelectedIndex(index);
+                    }
                 }
             });
             JLabel ratingLabel = new JLabel(I18n.getString(RATING_LABEL_KEY));
@@ -320,13 +325,15 @@ public class MetaDataStep extends AbstractWizardStep {
             topPanel.add(ratings, topPanelGrid.setAnchorIncrX(Grid.westAnchor));
             topPanel.add(applyLabel, topPanelGrid.incrX());
 
-            final JCheckBox	explicit = new JCheckBox(I18n.getString(EXPLICIT_LABEL_KEY));
-            explicitList[i] = explicit;
+            // Add a check box for explicit content.
+            final JCheckBox	explicit = (JCheckBox) formData.get(MapKeys.EXPLICIT.getKey());
+            explicit.setText(I18n.getString(EXPLICIT_LABEL_KEY));
             applyLabel = new LinkLabel(I18n.getString(APPLY_LABEL_KEY), new Command() {
                 public void execute() {
                     boolean selected = explicit.isSelected();
-                    for (int i = 0; i < explicitList.length; i++)
-                        explicitList[i].setSelected(selected);
+                    for (Map<String, Object> map : fileData) {
+                    	((JCheckBox) map.get(MapKeys.EXPLICIT.getKey())).setSelected(selected);
+                    }
                 }
             });
             topPanelGrid.setAnchorIncrY(Grid.eastAnchor);            
@@ -334,14 +341,15 @@ public class MetaDataStep extends AbstractWizardStep {
             topPanel.add(explicit, topPanelGrid);
             topPanel.add(applyLabel, topPanelGrid.incrX());
 
-            final JComboBox	languages = new JComboBox(MetadataLoader.languages.keySet().toArray());
+            // Add a drop-down for film languages. Data obtained from blip.tv.
+            final JComboBox	languages = (JComboBox) formData.get(MapKeys.LANGUAGE.getKey());
             languages.setSelectedItem("English");
-            languageList[i] = languages;
             applyLabel = new LinkLabel(I18n.getString(APPLY_LABEL_KEY), new Command() {
                 public void execute() {
                     int index = languages.getSelectedIndex();
-                    for (int i = 0; i < languageList.length; i++)
-                        languageList[i].setSelectedIndex(index);
+                    for (Map<String, Object> map : fileData) {
+                    	((JComboBox) map.get(MapKeys.LANGUAGE.getKey())).setSelectedIndex(index);
+                    }
                 }
             });
             JLabel languageLabel = new JLabel(I18n.getString(LANGUAGE_LABEL_KEY));
@@ -350,101 +358,53 @@ public class MetaDataStep extends AbstractWizardStep {
             topPanel.add(languages, topPanelGrid.setAnchorIncrX(Grid.westAnchor));
             topPanel.add(applyLabel, topPanelGrid.incrX());
 
-            boolean noBlogs = (blogNames.length == 0);
-            boolean noDests = (destinations.length == 0);
-            
             JLabel	distribution = null;
             
             paneGrid.setFill(Grid.horizontalFill);
             paneGrid.setRelativeY();
             
-            if (!noBlogs || !noDests) {
+            // If the customer account is a pro-account, then the distribution area is added to the
+            // form.
+            if (model.isDistribution()) {
             	if (distributionMap == null) {
             		distributionMap = new HashMap<JLabel, Set<JPanel>>();
             	}
             	Set<JPanel>	panelSet = new HashSet<JPanel>();
-            	            	            	
+
+            	// This label heads the distribution set of panels and has a triangular arrow icon which
+            	// is active and used to make this area visible or not. A mouse handler is attached to this
+            	// distribution label to manage opening and closing the section.
             	distribution = new JLabel(I18n.getString(DIST_LABEL_KEY), Icons.collapsedIcon, JLabel.HORIZONTAL);
             	distribution.addMouseListener(new MouseHandler());
             	distributionMap.put(distribution, panelSet);
-                
+            	
                 topPanelGrid.incrY();
                 topPanelGrid.setX(0);
                 topPanel.add(distribution, topPanelGrid);
                 
-                if (!noBlogs) {
-                    JPanel blogPanel = new JPanel();
-                    
-            		blogPanel.setLayout(new BoxLayout(blogPanel, BoxLayout.LINE_AXIS));
-            		blogPanel.setVisible(false);
-            		panelSet.add(blogPanel);
-                    
-                    final JCheckBox[] boxes = blogCheckboxList[i];
-                    LinkLabel applyBlogLabel = new LinkLabel(I18n.getString(APPLY_LABEL_KEY), new Command() {
-                        public void execute() {
-                            for (int x = 0; x < blogCheckboxList.length; x++) {
-                                for (int y = 0; y < blogCheckboxList[x].length; y++) {
-                                    blogCheckboxList[x][y].setSelected(boxes[y].isSelected());
-                                }
-                            }
-                        }
-                    });
-                                        
-                    for (int j = 0; j < blogCheckboxList[i].length; j++) {
-                        blogPanel.add(blogCheckboxList[i][j]);
-                        if (j < (blogCheckboxList[i].length - 1)) {
-                        	blogPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-                        }
-                    }
-                    blogPanel.add(Box.createHorizontalGlue());
-                    blogPanel.add(applyBlogLabel);
-                    
-                    setPanelBorder(blogPanel, BLOGS_LABEL_KEY);
-                    panePanel.add(blogPanel, paneGrid);
-                }
+                addCrosspostingPanel(formData, panePanel, paneGrid, panelSet);
+                addCrossuploadingPanel(formData, panePanel, paneGrid, panelSet);
                 
-                if (!noDests) {
-                    JPanel uploadPanel = new JPanel();
-                    
-            		uploadPanel.setLayout(new BoxLayout(uploadPanel, BoxLayout.LINE_AXIS));
-            		uploadPanel.setVisible(false);
-            		panelSet.add(uploadPanel);
-            		setPanelBorder(uploadPanel, XUPLOADS_LABEL_KEY);
-                    
-                    final JCheckBox[] boxes = destCheckboxList[i];
-                    LinkLabel applyDestLabel = new LinkLabel(I18n.getString(APPLY_LABEL_KEY), new Command() {
-                        public void execute() {
-                            for (int x = 0; x < destCheckboxList.length; x++)
-                                for (int y = 0; y < destCheckboxList[x].length; y++)
-                                    destCheckboxList[x][y].setSelected(boxes[y].isSelected());
-                        }
-                    });
-                    
-                    for (int j = 0; j < destCheckboxList[i].length; j++) {
-                        uploadPanel.add(destCheckboxList[i][j]);
-                		uploadPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-                    }
-                    uploadPanel.add(Box.createHorizontalGlue());
-                    uploadPanel.add(applyDestLabel);
-                    panePanel.add(uploadPanel, paneGrid);
-                }
+                JPanel	targetPanel = addTargetsPanel(formData);
+	                
+                targetPanel.setVisible(false);
+                panelSet.add(targetPanel);
+                panePanel.add(targetPanel, paneGrid);
                 
-                if (MetadataLoader.conversionTargets.size() != 0) {
-	                JPanel	targetPanel = addTargetsPanel(i);
-	                targetPanel.setVisible(false);
-	                panelSet.add(targetPanel);
-	                panePanel.add(targetPanel, paneGrid);
-                }
-                
-                if (MetadataLoader.privacySettings.size() != 0) {
-	                JPanel	privacyPanel = addPrivacyPanel(i);
-	                privacyPanel.setVisible(false);
-	                panelSet.add(privacyPanel);
-	                panePanel.add(privacyPanel, paneGrid);
-                }
+            	JPanel	privacyPanel = addPrivacyPanel(formData);
+	                
+	            privacyPanel.setVisible(false);
+	            panelSet.add(privacyPanel);
+	            panePanel.add(privacyPanel, paneGrid);
             }
-
-            pane.addTab(files[i].getName(), panePanel);
+            
+            String	tabName = ((File) formData.get(MapKeys.VIDEOFILE.getKey())).getName();
+            // Very long video file names are contracted down to twenty characters, with an ellipsis
+            // inserted in the middle.
+            if (tabName.length() > 20) {
+            	tabName = tabName.substring(0, 10) + Character.toString('\u2026') + tabName.substring(tabName.length() - 9);
+            }
+            pane.addTab(tabName, panePanel);
         }
 
         setView(viewPanel);
@@ -453,116 +413,17 @@ public class MetaDataStep extends AbstractWizardStep {
     }
 
     public void executeForm() {
-        // this is called when the user clicks "Next"
-        // Create string arrays
-        String[] 	titles = new String[titleList.length];
-        // TODO: why descList? why not match up?
-        String[] 	descriptions = new String[descList.length];
-        String[] 	tags = new String[descList.length];
-        String[] 	categories = new String[descList.length];
-        String[] 	licenses = new String[descList.length];
-        String[] 	ratings = new String[descList.length];
-        String[]	explicitFlags = new String[descList.length];
-        String[] 	languages = new String[descList.length];
-        // TODO: this could result in an NPE, right? maybe not.
-        String[][] 	blogs = new String[blogCheckboxList.length][blogCheckboxList[0].length];
-        String[][] 	destinations = new String[destCheckboxList.length][destCheckboxList[0].length];
-        String[]	mp3Audios = new String[mp3AudioCheckboxList.length];
-        String[]	mpeg4Videos = new String[mpeg4VideoCheckboxList.length];
-        String[]	privateFiles = new String[privateFileCheckboxList.length];
-        String[]	passwordFiles = new String[visiblePasswordCheckboxList.length];
-        String[]	passwordFields = new String[passwordFiles.length];
-        String[]	makePublicFiles = new String[makePublicCheckboxList.length];
-        String[]	makePublicFields = new String[passwordFiles.length];
-        
-        File[] thumbnails = new File[descList.length];
-        // Loop through components and populate the arrays
-        for (int i = 0; i < titleList.length; i++) {
-            // If the user didn't enter a title, set it to the name of the file
-            // minus the dot extension
-            if (titleList[i].getText() != null && titleList[i].getText().equals("")) {
-                String name = model.getFiles()[i].getName();
-                titles[i] = name.substring(0, name.lastIndexOf("."));
-            } else {
-                titles[i] = titleList[i].getText();
-            }
-            
-            descriptions[i] = descList[i].getText();
-            tags[i] = tagsList[i].getText();
-            languages[i] = MetadataLoader.languages.get(languageList[i].getSelectedItem());
-            categories[i] = MetadataLoader.categories.get(categoryList[i].getSelectedItem());
-            licenses[i] = MetadataLoader.licenses.get(licenseList[i].getSelectedItem());
-            // Content rating dropdowns
-            ratings[i] = "";
-            if (ratingList[i].getSelectedIndex() != 0) {
-                ratings[i] = MetadataLoader.ratings.get(ratingList[i].getSelectedItem());
-            }
-            // Explicit checkboxes
-            explicitFlags[i] = explicitList[i].isSelected() ? "1" : "0";
-            // Thumbnail file dropdowns
-            thumbnails[i] = null;
-            if (thumbList[i].getSelectedIndex() != 0) {
-                String filename = (String)thumbList[i].getSelectedItem();
-                Object obj = model.thumbnailFileLookup.get(filename);
-                if (obj != null) {
-                    thumbnails[i] = (File)obj;
-                }
-            }
-            
-            // Cross-post destination dropdowns
-            for (int j = 0; j < blogs[i].length; j++) {
-                if (blogCheckboxList[i][j].isSelected()) {
-                    blogs[i][j] = MetadataLoader.blogs.get(blogCheckboxList[i][j].getText());
-                }
-            }
-            
-            // Cross-upload destination dropdowns
-            for (int j = 0; j < destinations[i].length; j++) {
-                if (destCheckboxList[i][j].isSelected()) {
-                    destinations[i][j] = MetadataLoader.crossuploads.get(destCheckboxList[i][j].getText());
-                }
-            }
-            
-            mp3Audios[i] = (mp3AudioCheckboxList[i].isSelected())? "1" : "0";
-            mpeg4Videos[i] = (mpeg4VideoCheckboxList[i].isSelected())? "1" : "0";
-            
-            privateFiles[i] = "0";
-            passwordFiles[i] = "0";
-            makePublicFiles[i] = "0";
-            passwordFields[i] = "";
-            makePublicFields[i] = "";
-            if (privateFileCheckboxList[i].isSelected()) {
-            	privateFiles[i] = "1";
-            	if (visiblePasswordCheckboxList[i].isSelected()) {
-            		passwordFiles[i] = "1";
-            		passwordFields[i] = String.valueOf(visiblePasswordFieldList[i].getPassword());
-            	}
-            	if (makePublicCheckboxList[i].isSelected()) {
-            		makePublicFiles[i] = "1";
-            		makePublicFields[i] = makePublicFieldList[i].getText();
-            	}
-            }
-        }
-                
-        // Put the arrays in our model
-        model.setTitles(titles);
-        model.setDescriptions(descriptions);
-        model.setTags(tags);
-        model.setCategories(categories);
-        model.setLicenses(licenses);
-        model.setRatings(ratings);
-        model.setExplicitFlags(explicitFlags);
-        model.setLanguages(languages);
-        model.setThumbnails(thumbnails);
-        model.setCrossposts(blogs);
-        model.setCrossuploads(destinations);
-        model.setMp3Audios(mp3Audios);
-        model.setMpeg4Videos(mpeg4Videos);
-        model.setPrivateFiles(privateFiles);
-        model.setPasswordFiles(passwordFiles);
-        model.setMakePublicFiles(makePublicFiles);
-        model.setPasswordFields(passwordFields);
-        model.setMakePublicFields(makePublicFields);
+    	
+    	// If the title fields are empty, then the video file name is inserted
+    	// minus the file extension.
+    	for (Map<String, Object> map : fileData) {
+    		JTextField	field = (JTextField) map.get(MapKeys.TITLE.getKey());
+    		String	title = field.getText().trim();
+    		if (title.equals("")) {
+                String name = ((File) map.get(MapKeys.VIDEOFILE.getKey())).getName();
+                field.setText(name.substring(0, name.lastIndexOf(".")));
+    		}
+    	}
     }
     
     public void applyState() {
@@ -571,52 +432,31 @@ public class MetaDataStep extends AbstractWizardStep {
     public Dimension getPreferredSize() {
         return pane.getPreferredSize();
     }
-    
-    private void createModelData(File[] files) {
-    	
-        titleList = new JTextField[files.length];
-        descList = new JTextArea[files.length];
-        thumbList = new JComboBox[files.length];
-        categoryList = new JComboBox[files.length];
-        licenseList = new JComboBox[files.length];
-        ratingList = new JComboBox[files.length];
-        explicitList = new JCheckBox[files.length];
-        languageList = new JComboBox[files.length];
-        tagsList = new JTextField[files.length];
-        
-        privateFileCheckboxList = new JCheckBox[files.length];
-        visiblePasswordCheckboxList = new JCheckBox[files.length];
-        makePublicCheckboxList = new JCheckBox[files.length];
-        visiblePasswordFieldList = new JPasswordField[files.length];
-        makePublicFieldList = new JTextField[files.length];
-        mp3AudioCheckboxList = new JCheckBox[files.length];
-        mpeg4VideoCheckboxList = new JCheckBox[files.length];
-    }
-        
+            
     /**
      * This method handles the Conversion Targets panel under the Distribution label
      * 
      * @return
      */
-    private JPanel addTargetsPanel(int index) {
+    private JPanel addTargetsPanel(Map<String, Object> formData) {
     	JPanel	target = new JPanel();
     	
 		target.setLayout(new BoxLayout(target, BoxLayout.LINE_AXIS));
 		target.setVisible(false);
 
-		final JCheckBox	mp3Audio = new JCheckBox(I18n.getString(MP3AUDIO_LABEL_KEY));
-		mp3AudioCheckboxList[index] = mp3Audio;
-		final JCheckBox	mpeg4Video = new JCheckBox(I18n.getString(MPEG4VIDEO_LABEL_KEY));
-		mpeg4VideoCheckboxList[index] = mpeg4Video;
+		final JCheckBox	mp3Audio = (JCheckBox) formData.get(MapKeys.MP3AUDIO.getKey());
+		mp3Audio.setText(I18n.getString(MP3AUDIO_LABEL_KEY));
+		
+		final JCheckBox	mpeg4Video = (JCheckBox) formData.get(MapKeys.M4VIDEO.getKey());
+		mpeg4Video.setText(I18n.getString(MPEG4VIDEO_LABEL_KEY));
+		
 		applyLabel = new LinkLabel(I18n.getString(APPLY_LABEL_KEY), new Command() {
             public void execute() {
-                boolean selected = mp3Audio.isSelected();
-                for (int i = 0; i < mp3AudioCheckboxList.length; i++) {
-                    mp3AudioCheckboxList[i].setSelected(selected);
-                }
-                selected = mpeg4Video.isSelected();
-                for (int i = 0; i < mpeg4VideoCheckboxList.length; i++) {
-                	mpeg4VideoCheckboxList[i].setSelected(selected);
+                boolean audioSelected = mp3Audio.isSelected();
+                boolean	videoSelected = mpeg4Video.isSelected();
+                for (Map<String, Object> map : fileData) {
+                	((JCheckBox) map.get(MapKeys.MP3AUDIO.getKey())).setSelected(audioSelected);
+                	((JCheckBox) map.get(MapKeys.M4VIDEO.getKey())).setSelected(videoSelected);
                 }
             }
 		});
@@ -633,147 +473,298 @@ public class MetaDataStep extends AbstractWizardStep {
     }
     
     /**
+     * This method creates the panel containing the list of cross posting sites. The list
+     * is implemented as a popup menu containing JCheckBoxMenuItem components. The top element
+     * is a "Select All" entry that when selected negates all the other entries in the popup
+     * menu. The panel uses the Box layout manager. The popup menu is attached to a JLabel
+     * component in the panel.
+     * 
+     * @param stepData
+     * @param panePanel
+     * @param paneGrid
+     * @param panelSet
+     */
+    @SuppressWarnings("unchecked")
+	private void addCrosspostingPanel(Map<String, Object> formData, JPanel panePanel, Grid paneGrid, Set<JPanel> panelSet) {
+        ArrayList<JCheckBoxMenuItem>	crosspostings = (ArrayList<JCheckBoxMenuItem>) formData.get(MapKeys.CROSSPOSTING.getKey());
+        
+        if (crosspostings.size() == 0) {
+        	return;
+        }
+        
+        JPanel				crosspostingPanel = new JPanel();
+        final JPopupMenu	popup = (JPopupMenu) formData.get(MapKeys.CROSSPOST_POPUP.getKey());
+        
+        if (crosspostPopups == null) {
+        	crosspostPopups = new HashMap<JLabel, JPopupMenu>();
+        }
+        
+        crosspostingPanel.setLayout(new BoxLayout(crosspostingPanel, BoxLayout.LINE_AXIS));
+        crosspostingPanel.setVisible(false);
+		panelSet.add(crosspostingPanel);
+        
+        LinkLabel applyBlogLabel = new LinkLabel(I18n.getString(APPLY_LABEL_KEY), new Command() {
+            public void execute() {
+            	ArrayList<JCheckBoxMenuItem>	crossposts = null;
+            	for (Map<String, Object> map : fileData) {
+            		crossposts = (ArrayList<JCheckBoxMenuItem>) map.get(MapKeys.CROSSPOSTING.getKey());
+            		MenuElement[]	elements = popup.getSubElements();
+            		for (int i = 1; i < elements.length; i++) {
+            			JCheckBoxMenuItem	item = (JCheckBoxMenuItem) elements[i];
+            			crossposts.get(i - 1).setSelected(item.getState());
+            		}
+            	}
+            }
+        });
+
+        JCheckBoxMenuItem	selectAll = new JCheckBoxMenuItem(I18n.getString(SELECTALL_LABEL_KEY));
+        
+        selectAll.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent event) {
+        		MenuElement[] elements = popup.getSubElements();
+        		for (MenuElement element : elements) {
+        			JCheckBoxMenuItem	item = (JCheckBoxMenuItem) element;
+        			item.setState(!item.getState());
+        		}
+        	}
+        });
+        
+		popup.add(selectAll);
+		popup.addSeparator();
+        for (JCheckBoxMenuItem box : crosspostings) {
+        	popup.add(box);
+        }
+
+        JLabel	addView = new JLabel(I18n.getString((model.isMacOS())? CROSSPOST_MAC_KEY : CROSSPOST_WINDOWS_KEY));
+        
+		crosspostingPanel.add(addView);
+		crosspostPopups.put(addView, popup);
+		addView.setForeground(Color.blue);
+		addView.addMouseListener(new PopupHandler());
+		
+        crosspostingPanel.add(Box.createHorizontalGlue());
+        crosspostingPanel.add(applyBlogLabel);
+        
+        setPanelBorder(crosspostingPanel, BLOGS_LABEL_KEY);
+        panePanel.add(crosspostingPanel, paneGrid);
+    }
+
+    /**
+     * This method is exactly the same as addCrosspostingPanel() above, except for the difference
+     * in various variables. A TODO could be trying to merge the two methods into a single one. The
+     * only problem is the potential length of the parameter list (too long).
+     * 
+     * @param stepData
+     * @param panePanel
+     * @param paneGrid
+     * @param panelSet
+     */
+	@SuppressWarnings("unchecked")
+	private void addCrossuploadingPanel(Map<String, Object> formData, JPanel panePanel, Grid paneGrid, Set<JPanel> panelSet) {
+        ArrayList<JCheckBoxMenuItem>	crossuploadings = (ArrayList<JCheckBoxMenuItem>) formData.get(MapKeys.CROSSUPLOADING.getKey());
+        
+        if (crossuploadings.size() == 0) {
+        	return;
+        }
+        
+        JPanel				crossuploadingPanel = new JPanel();
+        final JPopupMenu	popup = (JPopupMenu) formData.get(MapKeys.CROSSUPLOAD_POPUP.getKey());
+        
+        if (crossuploadPopups == null) {
+        	crossuploadPopups = new HashMap<JLabel, JPopupMenu>();
+        }
+        
+        crossuploadingPanel.setLayout(new BoxLayout(crossuploadingPanel, BoxLayout.LINE_AXIS));
+        crossuploadingPanel.setVisible(false);
+		panelSet.add(crossuploadingPanel);
+        
+        LinkLabel applyBlogLabel = new LinkLabel(I18n.getString(APPLY_LABEL_KEY), new Command() {
+            public void execute() {
+            	ArrayList<JCheckBoxMenuItem>	crossuploads = null;
+            	for (Map<String, Object> map : fileData) {
+            		crossuploads = (ArrayList<JCheckBoxMenuItem>) map.get(MapKeys.CROSSUPLOADING.getKey());
+            		MenuElement[]	elements = popup.getSubElements();
+            		for (int i = 1; i < elements.length; i++) {
+            			JCheckBoxMenuItem	item = (JCheckBoxMenuItem) elements[i];
+            			crossuploads.get(i - 1).setSelected(item.getState());
+            		}
+            	}
+            }
+        });
+
+        JCheckBoxMenuItem	selectAll = new JCheckBoxMenuItem(I18n.getString(SELECTALL_LABEL_KEY));
+        
+        selectAll.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent event) {
+        		MenuElement[] elements = popup.getSubElements();
+        		for (MenuElement element : elements) {
+        			JCheckBoxMenuItem	item = (JCheckBoxMenuItem) element;
+        			item.setState(!item.getState());
+        		}
+        	}
+        });
+        
+		popup.add(selectAll);
+		popup.addSeparator();
+        for (JCheckBoxMenuItem box : crossuploadings) {
+        	popup.add(box);
+        }
+
+        JLabel	addView = new JLabel(I18n.getString((model.isMacOS())? CROSSUPLOAD_MAC_KEY : CROSSUPLOAD_WINDOWS_KEY));
+        
+        crossuploadingPanel.add(addView);
+        crossuploadPopups.put(addView, popup);
+		addView.setForeground(Color.blue);
+		addView.addMouseListener(new PopupHandler());
+		
+		crossuploadingPanel.add(Box.createHorizontalGlue());
+		crossuploadingPanel.add(applyBlogLabel);
+        
+        setPanelBorder(crossuploadingPanel, XUPLOADS_LABEL_KEY);
+        panePanel.add(crossuploadingPanel, paneGrid);
+    }
+
+    /**
      * This method creates a JPanel for the customer privacy settings. This is the
      * last panel to be added to the tabbed pane panel.
      * 
      * @param index this is the current file number and tabbed pane tab index
      * @return JPanel the newly created privacy panel
      */
-    private JPanel addPrivacyPanel(int index) {
-    	JPanel	privacy = new JPanel(new GridBagLayout());
+    private JPanel addPrivacyPanel(Map<String, Object> formData) {
+    	JPanel	privacyPanel = new JPanel(new GridBagLayout());
     	Grid	grid = new Grid();
     	
     	grid.setAnchor(Grid.westAnchor);
+    	grid.setFill(Grid.noneFill);
     	grid.setRelativeX();
     	
-    	final JCheckBox	privateFileCheckbox = new JCheckBox(I18n.getString(PRIVATE_LABEL_KEY));
+    	final JCheckBox	privateFile = (JCheckBox) formData.get(MapKeys.PRIVACY.getKey());
+    	privateFile.setText(I18n.getString(PRIVATE_LABEL_KEY));
+		privacyPanel.add(privateFile, grid);
+		
         applyLabel = new LinkLabel(I18n.getString(APPLY_LABEL_KEY), new Command() {
             public void execute() {
-                boolean selected = privateFileCheckbox.isSelected();
-                for (int i = 0; i < privateFileCheckboxList.length; i++) {
-                    privateFileCheckboxList[i].setSelected(selected);
+                boolean selected = privateFile.isSelected();
+                for (Map<String, Object> map : fileData) {
+                	((JCheckBox) map.get(MapKeys.PRIVACY.getKey())).setSelected(selected);
                 }
             }
         });
-        privateFileCheckboxList[index] = privateFileCheckbox;
-		privacy.add(privateFileCheckbox, grid);
-		privacy.add(applyLabel, grid);
+        grid.setAnchor(Grid.eastAnchor);
+        grid.setRemainderX();
+		privacyPanel.add(applyLabel, grid);
+		grid.setColumnSpan(1);
 		
 		// The Private File checkbox controls the state of the password checkbox and the
 		// make public checkbox. Selecting the private file activates the password and
-		// make public checkboxes.
-		privateFileCheckbox.addItemListener(new ItemListener() {
+		// make public checkboxes. It also enables and disables the associated text fields.
+		privateFile.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent event) {
-				JCheckBox	box = (JCheckBox)event.getSource();
-				boolean		selected = box.isSelected();
-				int			i = 0;
-				
-				for (i = 0; i < privateFileCheckboxList.length; i++) {
-					if (box == privateFileCheckboxList[i]) {
-						break;
+				boolean		selected = ((JCheckBox) event.getSource()).isSelected();
+				for (Map<String, Object> map : fileData) {
+					if (selected) {
+						((JCheckBox) map.get(MapKeys.PROTECTED.getKey())).setEnabled(selected);
+						((JCheckBox) map.get(MapKeys.MAKEPUBLIC.getKey())).setEnabled(selected);
+						continue;
+					}
+					else {
+						((JCheckBox) map.get(MapKeys.PROTECTED.getKey())).setSelected(selected);
+						((JCheckBox) map.get(MapKeys.PROTECTED.getKey())).setEnabled(selected);
+						((JPasswordField) map.get(MapKeys.PASSWORD.getKey())).setText("");
+						((JCheckBox) map.get(MapKeys.MAKEPUBLIC.getKey())).setSelected(selected);
+						((JCheckBox) map.get(MapKeys.MAKEPUBLIC.getKey())).setEnabled(selected);
 					}
 				}
-				
-				if (!selected) {
-					visiblePasswordCheckboxList[i].setSelected(selected);
-					makePublicCheckboxList[i].setSelected(selected);
-				}
-				visiblePasswordCheckboxList[i].setEnabled(!visiblePasswordCheckboxList[i].isEnabled());
-				makePublicCheckboxList[i].setEnabled(!makePublicCheckboxList[i].isEnabled());
 			}
 		});
 		
+		grid.setAnchor(Grid.westAnchor);
 		grid.setInsets(0, 20, 0, 0);
-		final JCheckBox	visiblePasswordCheckbox = new JCheckBox(I18n.getString(PASSWORD_LABEL_KEY));
+		grid.incrY();
+		
+		// The privacy password is added next.
+		final JCheckBox	visiblePassword = (JCheckBox) formData.get(MapKeys.PROTECTED.getKey());
+		visiblePassword.setText(I18n.getString(PASSWORD_LABEL_KEY));
+		visiblePassword.setEnabled(false);
+		privacyPanel.add(visiblePassword, grid);
+		
         applyLabel = new LinkLabel(I18n.getString(APPLY_LABEL_KEY), new Command() {
             public void execute() {
-                boolean selected = visiblePasswordCheckbox.isSelected();
-                for (int i = 0; i < visiblePasswordCheckboxList.length; i++) {
-                    visiblePasswordCheckboxList[i].setSelected(selected);
+                boolean selected = visiblePassword.isSelected();
+                for (Map<String, Object> map : fileData) {
+					((JCheckBox) map.get(MapKeys.PROTECTED.getKey())).setSelected(selected);
                 }
-                
             }
         });
-        visiblePasswordCheckboxList[index] = visiblePasswordCheckbox;
         
         // The password checkbox controls the enabled state of the password text field.
-        visiblePasswordCheckbox.addItemListener(new ItemListener() {
+        visiblePassword.addItemListener(new ItemListener() {
         	public void itemStateChanged(ItemEvent event) {
-        		JCheckBox	box = (JCheckBox)event.getSource();
-        		int			i = 0;
-        		
-        		for (i = 0; i < visiblePasswordCheckboxList.length; i++) {
-        			if (box == visiblePasswordCheckboxList[i]) {
+        		JCheckBox	box = (JCheckBox) event.getSource();
+        		for (Map<String, Object> map : fileData) {
+        			if (box == (JCheckBox) map.get(MapKeys.PROTECTED.getKey())) {
+        				((JTextField) map.get(MapKeys.PASSWORD.getKey())).setEnabled(box.isSelected());
         				break;
         			}
         		}
-        		
-        		if (!box.isSelected()) {
-        			visiblePasswordFieldList[i].setText("");
-        		}
-        		visiblePasswordFieldList[i].setEnabled(!visiblePasswordFieldList[i].isEnabled());
         	}
         });
-                
-		grid.incrY();
-		privacy.add(visiblePasswordCheckbox, grid);
-		visiblePasswordCheckbox.setEnabled(false);
-		visiblePasswordField = new JPasswordField(15);
-		visiblePasswordFieldList[index] = visiblePasswordField;
+        
+        
+		JPasswordField	visiblePasswordField = (JPasswordField) formData.get(MapKeys.PASSWORD.getKey());
+		visiblePasswordField.setColumns(15);
 		visiblePasswordField.setEnabled(false);
 		grid.setInsets(0, -100, 0, 0);
 		grid.setAnchor(Grid.eastAnchor);
-		privacy.add(visiblePasswordField, grid);
-		privacy.add(applyLabel, grid);
+		privacyPanel.add(visiblePasswordField, grid);
+		privacyPanel.add(applyLabel, grid);
 
-		final JCheckBox	makePublicCheckbox = new JCheckBox(I18n.getString(PUBLIC_LABEL_KEY));
+		final JCheckBox	makePublic = (JCheckBox) formData.get(MapKeys.MAKEPUBLIC.getKey());
+		makePublic.setText(I18n.getString(PUBLIC_LABEL_KEY));
         applyLabel = new LinkLabel(I18n.getString(APPLY_LABEL_KEY), new Command() {
             public void execute() {
-                boolean selected = makePublicCheckbox.isSelected();
-                for (int i = 0; i < makePublicCheckboxList.length; i++) {
-                    makePublicCheckboxList[i].setSelected(selected);
+                boolean selected = makePublic.isSelected();
+                for (Map<String, Object> map : fileData) {
+                	((JCheckBox) map.get(MapKeys.MAKEPUBLIC.getKey())).setSelected(selected);
                 }
             }
         });
-        makePublicCheckboxList[index] = makePublicCheckbox;
         
         // The make public checkbox controls the enabled state of the date/time text field.
-        makePublicCheckbox.addItemListener(new ItemListener() {
+        makePublic.addItemListener(new ItemListener() {
         	public void itemStateChanged(ItemEvent event) {
-        		JCheckBox	box = (JCheckBox)event.getSource();
-        		int			i = 0;
-        		
-        		for (i = 0; i < makePublicCheckboxList.length; i++) {
-        			if (box == makePublicCheckboxList[i]) {
+        		JCheckBox	box = (JCheckBox) event.getSource();
+        		for (Map<String, Object> map : fileData) {
+        			if (box == (JCheckBox) map.get(MapKeys.MAKEPUBLIC.getKey())) {
+        				((JTextField) map.get(MapKeys.DATETIME.getKey())).setEnabled(box.isSelected());
         				break;
         			}
         		}
-        		
-        		makePublicFieldList[i].setEnabled(!makePublicFieldList[i].isEnabled());
         	}
         });
         
 		grid.setInsets(0, 20, 0, 0);
 		grid.incrY();
-		privacy.add(makePublicCheckbox, grid);
-		makePublicCheckbox.setEnabled(false);
+		privacyPanel.add(makePublic, grid);
+		makePublic.setEnabled(false);
 		
-		makePublicField = new JTextField(15);
 		Calendar	cal = new GregorianCalendar();
 		
+		JTextField	makePublicField = (JTextField) formData.get(MapKeys.DATETIME.getKey());
+		makePublicField.setColumns(15);
 		// The date/time field is initialized with the date set to today plus one day.
 		Formatter	dateFormatter = new Formatter();
 		makePublicField.setText(dateFormatter.format("%4d/%02d/%02d %02d:%02d", cal.get(Calendar.YEAR), (cal.get(Calendar.MONTH) + 1), 
 				(cal.get(Calendar.DAY_OF_MONTH) + 1), cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE)).toString());
 		
-		makePublicFieldList[index] = makePublicField;
 		makePublicField.setEnabled(false);
-		privacy.add(makePublicField, grid);
-		privacy.add(applyLabel, grid);
+		privacyPanel.add(makePublicField, grid);
+		privacyPanel.add(applyLabel, grid);
 		
-		setPanelBorder(privacy, PRIVACY_LABEL_KEY);
+		setPanelBorder(privacyPanel, PRIVACY_LABEL_KEY);
 		
-		return privacy;
+		return privacyPanel;
     }
     
     /**
@@ -784,12 +775,10 @@ public class MetaDataStep extends AbstractWizardStep {
      * @param passwordFields array of String values for the password fields.
      * @return true if selected password fields are filled, else false
      */
-    private boolean checkPasswordFields(JCheckBox[] checkboxList, String[] passwordFields) {
-    	for (int i = 0; i < passwordFields.length; i++) {
-    		if (checkboxList[i].isSelected() && passwordFields[i].trim().equals("")) {
-    			JOptionPane.showMessageDialog(null, "One or more password fields are empty.");
-    			return false;
-    		}
+    private boolean checkPasswordField(JPasswordField passwordField) {
+    	if (passwordField.getPassword().length == 0) {
+    		JOptionPane.showMessageDialog(null, "One or more password fields are empty.");
+    		return false;
     	}
     	
     	return true;
@@ -803,39 +792,25 @@ public class MetaDataStep extends AbstractWizardStep {
      * @param publicFields array of String values from the date/time fields
      * @return true if the date/time fields are valid, otherwise false.
      */
-    private boolean checkPublicFields(JCheckBox[] checkboxList, String[] publicFields) {
+    private boolean checkPublicField(JTextField dateTime) {
 		Pattern	pat = Pattern.compile("^(\\d{4})/(\\d{1,2})/(\\d{1,2})[ ]+(\\d{1,2}):(\\d{2})$");
-	
-    	for (int i = 0; i < publicFields.length; i++) {
-    		String	field = publicFields[i].trim();
-    		
-    		if (checkboxList[i].isSelected() && field.equals("")) {
-    			JOptionPane.showMessageDialog(null, "One or more date/time fields are empty.");
-    			return false;
-    		}
-    		
-    		Matcher	matcher = pat.matcher(field);
-    		if (checkboxList[i].isSelected()) {
-    			if (!matcher.matches()) {
-    				JOptionPane.showMessageDialog(null, "One of more date/time fields are entered incorrectly.");
-    				return false;
-    			}
-    		}
-    		else {
-    			continue;
-    		}
-    		
-    		Calendar	cal = new GregorianCalendar(Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)) - 1,
-    								Integer.parseInt(matcher.group(3)), Integer.parseInt(matcher.group(4)), 
-    								Integer.parseInt(matcher.group(5)));
-    		Calendar	now = new GregorianCalendar();
-    		
-    		now.setTimeInMillis(System.currentTimeMillis());
-    		if (!cal.after(now)) {
-    			JOptionPane.showMessageDialog(null, "One or more date/time fields must be later than current date/time.");
-    			return false;
-    		}
+	    Matcher	matcher = pat.matcher(dateTime.getText());
+	    
+    	if (!matcher.matches()) {
+    		JOptionPane.showMessageDialog(null, "One of more date/time fields are entered incorrectly.");
+    		return false;
     	}
+    		
+		Calendar	cal = new GregorianCalendar(Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)) - 1,
+								Integer.parseInt(matcher.group(3)), Integer.parseInt(matcher.group(4)), 
+								Integer.parseInt(matcher.group(5)));
+		Calendar	now = new GregorianCalendar();
+		
+		now.setTimeInMillis(System.currentTimeMillis());
+		if (!cal.after(now)) {
+			JOptionPane.showMessageDialog(null, "One or more date/time fields must be later than current date/time.");
+			return false;
+		}
     	
     	return true;
     }
@@ -881,4 +856,74 @@ public class MetaDataStep extends AbstractWizardStep {
         }
     }
     
+    /**
+     * This mouse handler is used to display the popup menus associated with the cross posting
+     * and cross upload sections of the form. Only the mouse clicked method is of interest and
+     * displays the popup menu.
+     * 
+     * @author dsklett
+     *
+     */
+    private final class PopupHandler extends MouseAdapter {
+    	
+    	public void mouseClicked(MouseEvent event) {
+    		JLabel	popupLabel = (JLabel) event.getSource();
+    		
+        	if (crosspostPopups != null) {
+	        	for (JLabel label : crosspostPopups.keySet()) {
+	        		if (label.equals(popupLabel)) {
+	        			JPopupMenu popup = crosspostPopups.get(label);
+	        			popup.show(label, event.getX(), event.getY());
+	                    return;
+	        		}
+	        	}
+        	}
+        	
+        	if (crossuploadPopups != null) {
+	        	for (JLabel label : crossuploadPopups.keySet()) {
+	        		if (label.equals(popupLabel)) {
+	        			crossuploadPopups.get(label).show(label, event.getX(), event.getY());
+	                    return;
+	        		}
+	        	}
+        	}
+    		
+    	}
+    }
+    /*
+    private final class PopupListener extends MouseAdapter {
+    	
+    	private JPopupMenu	popup = null;
+    	
+        public void mousePressed(MouseEvent e) {
+        	JLabel	addView = (JLabel) e.getSource();
+        	
+        	if (crosspostPopups != null) {
+	        	for (JLabel label : crosspostPopups.keySet()) {
+	        		if (label.equals(addView)) {
+	        			popup = crosspostPopups.get(label);
+	                    maybeShowPopup(e);
+	                    return;
+	        		}
+	        	}
+        	}
+        	
+        	if (crossuploadPopups != null) {
+	        	for (JLabel label : crossuploadPopups.keySet()) {
+	        		if (label.equals(addView)) {
+	        			popup = crossuploadPopups.get(label);
+	                    maybeShowPopup(e);
+	                    return;
+	        		}
+	        	}
+        	}
+        }
+
+        private void maybeShowPopup(MouseEvent e) {
+            if (e.isPopupTrigger()) {
+                popup.show(e.getComponent(), e.getX(), e.getY());
+            }
+        }
+    }
+*/
 } // class MetaDataStep

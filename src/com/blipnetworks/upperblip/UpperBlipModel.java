@@ -17,51 +17,226 @@ import 	java.util.*;
 
 import	com.blipnetworks.upperblip.wizard.*;
 import	com.blipnetworks.upperblip.wizard.models.*;
+import com.blipnetworks.util.MetadataLoader;
+
 import 	org.apache.commons.httpclient.Cookie;
 
 import javax.swing.*;
 
 /**
  * @author Jared Klett
- * @version $Id: UpperBlipModel.java,v 1.22 2009/06/22 21:07:45 jklett Exp $
+ * @version $Id: UpperBlipModel.java,v 1.23 2011/01/27 19:38:53 jklett Exp $
  */
 
-public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
+public final class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
 	
-    public static final String CVS_REV = "$Revision: 1.22 $";
+    public static final String CVS_REV = "$Revision: 1.23 $";
+
+    /**
+     * This enum class represents each Swing component present in the form frame
+     * in each tabbed pane panel, for each video file to be uploaded. Each enum
+     * value has a specific class assigned. These enum values are used as keys in
+     * the HashMap constructed for each video file, that are in turn added to an
+     * ArrayList whose size is the same as the number of video files to be uploaded.
+     * The class argument is used below to instantiate each form component.
+     * 
+     * @author dsklett
+     *
+     */
+	public enum MapKeys {
+		VIDEOFILE("videofile", File.class),
+		TITLE("title", JTextField.class),
+		DESCRIPTION("description", JTextArea.class),
+		THUMBNAIL("thumbnail", JComboBox.class),
+		LICENSE("license", JComboBox.class),
+		TAGS("tags", JTextField.class),
+		CATEGORY("category", JComboBox.class),
+		RATING("rating", JComboBox.class),
+		EXPLICIT("explicit", JCheckBox.class),
+		LANGUAGE("language", JComboBox.class),
+		MP3AUDIO("mp3audio", JCheckBox.class),
+		M4VIDEO("m4video", JCheckBox.class),
+		PRIVACY("privacy",JCheckBox.class),
+		PROTECTED("protected", JCheckBox.class),
+		PASSWORD("password", JPasswordField.class),
+		MAKEPUBLIC("makepublic", JCheckBox.class),
+		DATETIME("datetime", JTextField.class),
+		CROSSPOSTING("crossposting", ArrayList.class),				// each list entry contains a JCheckBoxMenuItem
+		CROSSPOST_POPUP("crosspostpopup", JPopupMenu.class),		// popup menu contains the above JCheckBoxMenuItem objects
+		CROSSUPLOADING("crossuploading", ArrayList.class),			// each list entry contains a JCheckBoxMenuItem
+		CROSSUPLOAD_POPUP("crossuploadpopup", JPopupMenu.class);	// popup menu contains the above JCheckBoxMenuItem objects
+		
+		private String		key = null;
+		private Class<?>	type = null;
+		
+		private MapKeys(String key, Class<?> type) {
+			this.key = key;
+			this.type = type;
+		}
+						
+		public String getKey() {
+			return key;
+		}
+		
+		public Class<?> getType() {
+			return type;
+		}
+	}
 
 	private static final String	NONE_TEXT = "general.none.text";
 	
-    private File[] 		files;
-    private File[] 		imageFiles;
-    private File[] 		thumbnails;
-    private String[] 	imageFilenames;
-    private String[] 	titles;
-    private String[] 	descriptions;
-    private String[]	tags;
-    private String[] 	categories;
-    private String[] 	licenses;
-    private String[] 	languages;
-    private String[] 	ratings;
-    private String[] 	explicitFlags;
-    private String[][] 	crossposts;
-    private String[] 	postURLs;
-    private String[][] 	crossuploads;
-    private String[][]	conversionTargets;
-    private String[]	mp3Audios;
-    private String[]	mpeg4Videos;
-    private String[]	privateFiles;
-    private String[]	passwordFiles;
-    private String[]	makePublicFiles;
-    private String[]	passwordFields;
-    private String[]	makePublicFields;
-    private String 		username;
-    private String 		password;
-    private boolean 	remember;
-    public Map<String, File> thumbnailFileLookup;
-    public Cookie 		authCookie;
+    private List<File> 			imageFiles;
+    private ArrayList<String> 	imageFilenames;
+    private Map<String, String>	crossposts = null;
+    private Map<String, String>	crossuploads = null;
+    private String 				username;
+    private String 				password;
+    private boolean 			remember;
+    private Map<String, File> 	thumbnailFileLookup;
+    private Cookie 				authCookie;
+    private boolean				distribution = false;
+    private boolean				privateFiles = false;
+    private boolean				macOS = false;
 
-// Accessors //////////////////////////////////////////////////////////////////
+    // This list contains an entry for each video file to be processed and uploaded.
+    // The map contained in each entry is constructed using the enum values found in the
+    // MapKeys enum class shown above.
+    private ArrayList<Map<String, Object>>	fileData = new ArrayList<Map<String, Object>>();
+    // This list contains the name of files submitted by the FileDropStep object, and is used
+    // to prevent the entry of duplicate files.
+    private ArrayList<String>				files = new ArrayList<String>();
+    
+    public UpperBlipModel() {
+    	super();
+    }
+    
+    /**
+     * This method is called from the AuthDialog object after the metadata is downloaded
+     * from blip. This data is added to the fileData map as each video file is accessed
+     * from the FileDrop object.
+     */
+    public void initializeModel() {
+    	
+    	if (MetadataLoader.privacySettings.size() > 0) {
+    		distribution = true;
+    		privateFiles = true;
+    	}
+    	
+    	// There is a one-to-one relation between elements in this list and the list
+    	// used to construct the popup menu for crossposting.
+    	crossposts = MetadataLoader.blogs;
+    	
+    	// There is a one-to-one relation between elements in this list and the list
+    	// used to construct the popup menu for crossuploading.
+    	crossuploads = MetadataLoader.crossuploads;
+    }
+    
+    public boolean isDistribution() {
+    	return distribution;
+    }
+    
+    public boolean isPrivateFiles() {
+    	return privateFiles;
+    }
+    
+    public boolean isMacOS() {
+    	return macOS;
+    }
+    
+    /**
+     * This method is called from the FileDropStep for each video file processed.
+     * Each JComponent is instantiated and added to the map for the current video
+     * file.
+     * 
+     * @param file
+     */
+    public void addFileData(File file) {
+    	String	fileName = file.getName();
+    	
+    	// Do not add duplicate files
+    	if (files.contains(fileName)) {
+    		return;
+    	}
+    	files.add(fileName);
+    	
+    	Map<String, Object>	stepData = new HashMap<String, Object>();
+    	
+    	// Instantiate all the form components
+    	try {
+	    	for (MapKeys key : MapKeys.values()) {
+	    		if (key.getKey().equals(MapKeys.VIDEOFILE.getKey())) {
+	    			continue;
+	    		}
+	    		stepData.put(key.getKey(), (Object) key.getType().newInstance());
+	    	}
+    	} catch (IllegalAccessException e) {
+    		// should never happen
+    		// if it does, let the uncaughtException handler in Main take care of it.
+    	} catch (InstantiationException e) {
+    		// should never happen
+    		// if it does, let the uncaughtException handler in Main take care of it.
+		}
+    	
+    	addFormData(stepData);
+    	
+    	stepData.put(MapKeys.VIDEOFILE.getKey(), file);
+    	fileData.add(stepData);
+    }
+    
+    public ArrayList<Map<String, Object>> getFileData() {
+    	return fileData;
+    }
+    
+    /**
+     * This method preloads certain form fields that are the same for all the video
+     * files selected.
+     * 
+     * @param stepData
+     */
+    @SuppressWarnings("unchecked")
+	private void addFormData(Map<String, Object> stepData) {
+    	JComboBox	licenses = (JComboBox) stepData.get(MapKeys.LICENSE.getKey());
+    	
+    	for (String license : MetadataLoader.licenses.keySet()) {
+    		licenses.addItem(license);
+    	}
+    	
+    	JComboBox	categories = (JComboBox) stepData.get(MapKeys.CATEGORY.getKey());
+    	
+    	for (String category : MetadataLoader.categories.keySet()) {
+    		categories.addItem(category);
+    	}
+    	
+    	JComboBox	languages = (JComboBox) stepData.get(MapKeys.LANGUAGE.getKey());
+    	
+    	for (String	language : MetadataLoader.languages.keySet()) {
+    		languages.addItem(language);
+    	}
+    	
+    	JComboBox	ratings = (JComboBox) stepData.get(MapKeys.RATING.getKey());
+    	
+    	for (String rating : MetadataLoader.ratings.keySet()) {
+    		ratings.addItem(rating);
+    	}
+    	
+    	if (crossposts.size() > 0) {
+    		ArrayList<JCheckBoxMenuItem>	crosspostings = (ArrayList<JCheckBoxMenuItem>) stepData.get(MapKeys.CROSSPOSTING.getKey());
+    	
+    		for (String crosspost : crossposts.keySet()) {
+    			crosspostings.add(new JCheckBoxMenuItem(crosspost));
+    		}
+    	}
+    	
+    	if (crossuploads.size() > 0) {
+    		ArrayList<JCheckBoxMenuItem>	uploads = (ArrayList<JCheckBoxMenuItem>) stepData.get(MapKeys.CROSSUPLOADING.getKey());
+    		
+    		for (String upload : crossuploads.keySet()) {
+    			uploads.add(new JCheckBoxMenuItem(upload));
+    		}
+    	}
+    }
+    
+    // Accessors //////////////////////////////////////////////////////////////////
 
     public boolean isRemembered() {
         return remember;
@@ -74,101 +249,29 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
     public String getPassword() {
         return password;
     }
-
-    public File[] getFiles() {
-        return files;
-    }
-
-    public File[] getImageFiles() {
+    
+    public List<File> getImageFiles() {
         return imageFiles;
     }
 
-    public String[] getImageFilenames() {
+    public ArrayList<String> getImageFilenames() {
         return imageFilenames;
     }
-
-    public String[] getTitles() {
-        return titles;
+    
+    public Map<String, File> getThumbNails() {
+    	return thumbnailFileLookup;
     }
 
-    public String[] getTags() {
-        return tags;
-    }
-
-    public String[] getCategories() {
-        return categories;
-    }
-
-    public String[] getLicenses() {
-        return licenses;
-    }
-
-    public String[] getDescriptions() {
-        return descriptions;
-    }
-
-    public File[] getThumbnails() {
-        return thumbnails;
-    }
-
-    public String[] getLanguages() {
-        return languages;
-    }
-
-    public String[] getRatings() {
-        return ratings;
-    }
-
-    public String[][] getCrossposts() {
-        return crossposts;
-    }
-
-    public String[][] getCrossuploads() {
-        return crossuploads;
-    }
-
-    public String[][] getConversionTargets() {
-    	return conversionTargets;
+    public Map<String, String> getCrossposts() {
+    	return crossposts;
     }
     
-    public String[] getMp3Audios() {
-    	return mp3Audios;
+    public Map<String, String> getCrossuploads() {
+    	return crossuploads;
     }
     
-    public String[] getMpeg4Videos() {
-    	return mpeg4Videos;
-    }
-    
-    public String[] getPrivateFiles() {
-    	return privateFiles;
-    }
-    
-    public String[] getPasswordFiles() {
-    	return passwordFiles;
-    }
-    
-    public String[] getMakePublicFiles() {
-    	return makePublicFiles;
-    }
-    
-    public String[] getPasswordFields() {
-    	return passwordFields;
-    }
-    
-    public String[] getMakePublicFields() {
-    	return makePublicFields;
-    }
-
-    public String[] getPostURLs() {
-        return postURLs;
-    }
-
     public Cookie getAuthCookie() {
         return authCookie;
-    }
-
-    public String[] getExplicitFlags() {
-        return explicitFlags;
     }
 
 // Mutators ///////////////////////////////////////////////////////////////////
@@ -178,17 +281,16 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.username = (username == null)? "" : username;
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = (password == null)? "" : password;
     }
-
-    public void setFiles(File[] files) {
-        this.files = files;
+    
+    public void setMacOS(boolean enable) {
+    	macOS = enable;
     }
-
     public void setPreviousAvailable(boolean enabled) {
     	super.setPreviousAvailable(enabled);
     }
@@ -197,99 +299,20 @@ public class UpperBlipModel extends StaticModel /*implements HelpBroker*/ {
     	super.setCancelAvailable(enabled);
     }
     
-    public void setImageFiles(File[] imageFiles) {
+    public void setImageFiles(List<File> imageFiles) {
+    	
         this.imageFiles = imageFiles;
-        imageFilenames = new String[imageFiles.length + 1];
+        imageFilenames = new ArrayList<String>();
         thumbnailFileLookup = new HashMap<String, File>();
-        imageFilenames[0] = I18n.getString(NONE_TEXT);
-        for (int i = 0; i < imageFiles.length; i++) {
-            imageFilenames[i + 1] = imageFiles[i].getName();
-            thumbnailFileLookup.put(imageFiles[i].getName(), imageFiles[i]);
+        imageFilenames.add(I18n.getString(NONE_TEXT));
+        for (File file : imageFiles) {
+            imageFilenames.add(file.getName());
+            thumbnailFileLookup.put(file.getName(), file);
         }
-    }
-
-    public void setTitles(String[] titles) {
-        this.titles = titles;
-    }
-
-    public void setTags(String[] tags) {
-        this.tags = tags;
-    }
-
-    public void setCategories(String[] categories) {
-        this.categories = categories;
-    }
-
-    public void setLicenses(String[] licenses) {
-        this.licenses = licenses;
-    }
-
-    public void setDescriptions(String[] descriptions) {
-        this.descriptions = descriptions;
-    }
-
-    public void setThumbnails(File[] thumbnails) {
-        this.thumbnails = thumbnails;
-    }
-
-    public void setLanguages(String[] languages) {
-        this.languages = languages;
-    }
-
-    public void setRatings(String[] ratings) {
-        this.ratings = ratings;
-    }
-
-    public void setCrossposts(String[][] crossposts) {
-        this.crossposts = crossposts;
-    }
-
-    public void setCrossuploads(String[][] crossuploads) {
-        this.crossuploads = crossuploads;
-    }
-
-    public void setConversionTargets(String[][] targets) {
-    	this.conversionTargets = targets;
-    }
-    
-    public void setMp3Audios(String[] mp3Audio) {
-    	this.mp3Audios = mp3Audio;
-    }
-    
-    public void setMpeg4Videos(String[] mpeg4Video) {
-    	this.mpeg4Videos = mpeg4Video;
-    }
-    
-    public void setPrivateFiles(String[] privateFiles) {
-    	this.privateFiles = privateFiles;
-    }
-    
-    public void setPasswordFiles(String[] passwordFiles) {
-    	this.passwordFiles = passwordFiles;
-    }
-    
-    public void setMakePublicFiles(String[] makePublicFiles) {
-    	this.makePublicFiles = makePublicFiles;
-    }
-    
-    public void setPasswordFields(String[] passwordFields) {
-    	this.passwordFields = passwordFields;
-    }
-    
-    public void setMakePublicFields(String[] makePublicFields) {
-    	this.makePublicFields = makePublicFields;
-    }
-    
-    public void setPostURLs(String[] postURLs) {
-        this.postURLs = postURLs;
     }
 
     public void setAuthCookie(Cookie authCookie) {
         this.authCookie = authCookie;
-    }
-
-    public void setExplicitFlags(String[] explicitFlags) {
-        this.explicitFlags = explicitFlags;
     }
     
     public void setNextAvailable(boolean enable) {

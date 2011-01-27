@@ -2,6 +2,10 @@ package com.blipnetworks.upperblip;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Properties;
 
 import javax.mail.Address;
@@ -10,13 +14,8 @@ import javax.mail.MessagingException;
 import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.event.ConnectionAdapter;
-import javax.mail.event.ConnectionEvent;
-import javax.mail.event.TransportAdapter;
-import javax.mail.event.TransportEvent;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-import javax.swing.JOptionPane;
 
 import com.sun.mail.smtp.SMTPMessage;
 
@@ -25,16 +24,27 @@ import com.sun.mail.smtp.SMTPMessage;
  * to blip.tv via e-mail. This implements a send-only system.
  * 
  * @author dsklett
- * @version $Id: ExceptionReporter.java,v 1.2 2009/06/22 21:07:45 jklett Exp $
+ * @version $Id: ExceptionReporter.java,v 1.3 2011/01/27 19:38:53 jklett Exp $
  */
-public class ExceptionReporter implements Runnable {
+public final class ExceptionReporter implements Runnable, Observer {
 	
-	private String				fault = null;
-	private StackTraceElement[]	elements = null;
+	private Thread								exceptionThread = null;
+	private Exception							exception = null;
+	private String								userName = null;
+	private int									buildNumber = 0;
+	private Map<Thread, StackTraceElement[]>	traces = null;
+	private String								text = null;
 	
-	public ExceptionReporter(String fault, StackTraceElement[] elements) {
-		this.fault = fault;
-		this.elements = elements;		
+	public ExceptionReporter(String userName, int buildNumber, Thread thread, Throwable exp, Map<Thread, StackTraceElement[]> traces) {
+		this.userName = userName;
+		this.buildNumber = buildNumber;
+		exceptionThread = thread;
+		this.exception = (Exception) exp;
+		this.traces = traces;
+	}
+	
+	public void update(Observable obs, Object obj) {
+		text = (String) obj;
 	}
 	
 	public void run() {
@@ -69,12 +79,9 @@ public class ExceptionReporter implements Runnable {
 		} catch (MessagingException e) {
 			return;
 		}
-
 	}
 	
 	public class ProblemMailer {
-
-		//private MailAuthentication	ma = null;
 		private Properties			props = null;
 		private Session				session = null;
 		private Transport			trans = null;
@@ -82,18 +89,12 @@ public class ExceptionReporter implements Runnable {
 		
 		public ProblemMailer(Properties props) {
 			this.props = props;
-			//ma = new MailAuthentication(props.getProperty("mail.user"), props.getProperty("mail.password"));
 		}
 		
 		public void setUpTransport() throws AddressException, NoSuchProviderException, MessagingException {
-			//session = Session.getInstance(props, ma);
 			session = Session.getInstance(props);
 			destination[0] = new InternetAddress(props.getProperty("mail.to"));
 			trans = session.getTransport(destination[0]);
-			
-			trans.addConnectionListener(new ConnectionHandler()); 
-			trans.addTransportListener(new TransportHandler());
-			
 			trans.connect();
 		}
 		
@@ -101,31 +102,94 @@ public class ExceptionReporter implements Runnable {
 			Message	smtpMessage = new SMTPMessage(session);
 			StringBuilder	builder = new StringBuilder();
 			
+			builder.append("Build Number: " + String.valueOf(buildNumber) + "\n");
+			builder.append("Java Version: " + System.getProperty("java.version") + "\n");
+			builder.append("[OS: " + System.getProperty("os.name") + "]  [Version: " + System.getProperty("os.version") + "]\n");
+			builder.append("Blip User ID: " + userName + "\n\n");
+			
+			if (text.equals("")) {
+				builder.append("No message entered by customer.\n\n");
+			}
+			else {
+				addCustomerMessage(builder);
+			}
+			
 			builder.append("Exception: ");
-			builder.append(fault);
-			builder.append("\n");
+			builder.append(exception.toString() + "\n");
+			addThreadInformation(builder, exceptionThread);
+			
 			smtpMessage.setSubject("UpperBlip Exception Report");
-			for (StackTraceElement element : elements) {
+			
+			for (StackTraceElement element : exceptionThread.getStackTrace()) {
+				builder.append("\t");
 				builder.append(element.toString());
 				builder.append("\n");
 			}
+			builder.append("\n");
+			addRemainingThreads(builder);
+			
 			smtpMessage.setText(builder.toString());
 			trans.sendMessage(smtpMessage, destination);
 			trans.close();
 		}
 		
-		private class TransportHandler extends TransportAdapter {
+		private void addCustomerMessage(StringBuilder builder) {
+			int		scanLimit = 200;
+			int		totalLength = 2000;
+			int		start = 0;
+			int		i = 0;
+			String	sub = null;
 			
-			public void messageNotDelivered(TransportEvent event) {
-				JOptionPane.showMessageDialog(null, "Unable to deliver error e-mail");
+			if (text.length() > totalLength) {
+				text = text.substring(0, totalLength);
+			}
+			
+			builder.append("Customer comments:\n");
+			while (start < text.length()) {
+				i = text.indexOf(" ", start + scanLimit);
+				if (i < 0) {
+					sub = text.substring(start);
+					if (!sub.equals(" ") && !sub.equals("\n")) {
+						builder.append(sub);
+					}
+					builder.append("\n\n");
+					return;
+				}
+				else {
+					sub = text.substring(start, i);
+					if (!sub.equals(" ") && !sub.equals("\n")) {
+						builder.append(sub);
+					}
+				}
+				builder.append("\n");
+				start = i;
 			}
 		}
 		
-		private class ConnectionHandler extends ConnectionAdapter {
+		private void addRemainingThreads(StringBuilder builder) {
 			
-			public void disconnected(ConnectionEvent event) {
-				JOptionPane.showMessageDialog(null, "E-mail connection disconnected");
+			for (Iterator<Thread> cursor = traces.keySet().iterator(); cursor.hasNext(); ) {
+				Thread	thread = cursor.next();
+				if (thread.getId() == exceptionThread.getId()) {
+					continue;
+				}
+				addThreadInformation(builder, thread);
+				StackTraceElement[]	elements = traces.get(thread);
+				for (StackTraceElement element : elements) {
+					builder.append("\t");
+					builder.append(element.toString());
+					builder.append("\n");
+				}
+				builder.append("\n");
 			}
+		}
+		
+		private void addThreadInformation(StringBuilder builder, Thread thread) {
+			builder.append("[Thread ID: ");
+			builder.append(Long.toString(thread.getId()));
+			builder.append("]  [Name: ");
+			builder.append(thread.getName());
+			builder.append("]\n");
 		}
 	}
 
